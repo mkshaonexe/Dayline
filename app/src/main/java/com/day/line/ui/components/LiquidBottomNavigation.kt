@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.day.line.ui.theme.GlassBlack
+import com.day.line.ui.theme.DaylineOrange
 
 sealed class BottomNavItem(
     val title: String,
@@ -103,8 +104,8 @@ fun LiquidBottomNavigation(
                                 Modifier.background(
                                     brush = Brush.linearGradient(
                                         colors = listOf(
-                                            Color(0xFF4CAF50).copy(alpha = 0.8f), // Richer Green
-                                            Color(0xFF81C784).copy(alpha = 0.6f)  // Lighter shine
+                                            DaylineOrange, // Primary Orange
+                                            Color(0xFFFFB74D).copy(alpha = 0.6f)  // Lighter Orange shine
                                         )
                                     )
                                 )
