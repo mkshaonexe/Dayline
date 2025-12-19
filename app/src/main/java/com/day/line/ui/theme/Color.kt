@@ -2,9 +2,11 @@ package com.day.line.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val DaylineOrange = Color(0xFFFF7E67) // Primary Accent
+val DaylineOrange = Color(0xFFFF6B00) // Vibrant Orange for "Rise and Shine"
 val SoftTeal = Color(0xFF4DB6AC)      // Night/Evening
-val WarmPink = Color(0xFFF06292)      // Morning
+val WarmPink = Color(0xFFFF6B00)      // Deprecated: Mapped to Orange for consistency
+val GlassBlack = Color(0xCC111111)    // Transparent black for glass effect
+val GlassWhite = Color(0xCCFFFFFF)    // Transparent white for glass effect
 val SoftGray = Color(0xFFE0E0E0)
 val DarkGray = Color(0xFF424242)
 

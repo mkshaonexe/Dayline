@@ -5,17 +5,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.day.line.ui.components.BottomNavItem
 import com.day.line.ui.components.CalendarStrip
+import com.day.line.ui.components.LiquidBottomNavigation
 import com.day.line.ui.components.TimelineNode
 import com.day.line.ui.components.TimelineNodeType
 import com.day.line.ui.theme.DaylineOrange
@@ -25,12 +33,29 @@ import com.day.line.ui.theme.WarmPink
 
 @Composable
 fun HomeScreen() {
-    Surface(
+    val items = listOf(
+        BottomNavItem.Home,
+        BottomNavItem.Analytics,
+        BottomNavItem.Tasks,
+        BottomNavItem.Profile
+    )
+    var currentRoute by remember { mutableStateOf("home") }
+
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF5F5F5) // Light background
-    ) {
+        containerColor = Color(0xFFF5F5F5), // Light background
+        bottomBar = {
+            LiquidBottomNavigation(
+                items = items,
+                currentRoute = currentRoute,
+                onItemClick = { currentRoute = it.route }
+            )
+        }
+    ) { innerPadding ->
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             CalendarStrip()
             
@@ -46,7 +71,7 @@ fun HomeScreen() {
                     time = "08:00 AM",
                     title = "Rise and Shine",
                     type = TimelineNodeType.START,
-                    color = WarmPink,
+                    color = DaylineOrange,
                     icon = Icons.Default.WbSunny
                 )
                 

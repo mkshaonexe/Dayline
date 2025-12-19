@@ -29,10 +29,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.clip
+import com.day.line.ui.theme.DarkGray
 import com.day.line.ui.theme.DaylineOrange
 import com.day.line.ui.theme.DaylineTheme
 import com.day.line.ui.theme.SoftGray
 import com.day.line.ui.theme.SoftTeal
+import com.day.line.ui.theme.TextBlack
 import com.day.line.ui.theme.WarmPink
 
 enum class TimelineNodeType {
@@ -52,16 +55,16 @@ fun TimelineNode(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp) // Fixed height for now, dynamic later
+            .height(100.dp) 
     ) {
         // Time Column
         Text(
             text = time,
-            style = MaterialTheme.typography.labelMedium,
-            color = SoftGray,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = if (time.isNotEmpty()) DarkGray else Color.Transparent,
             modifier = Modifier
-                .width(60.dp)
-                .padding(top = 24.dp, end = 8.dp),
+                .width(70.dp)
+                .padding(top = 28.dp, end = 12.dp),
             textAlign = androidx.compose.ui.text.style.TextAlign.End
         )
 
@@ -77,7 +80,7 @@ fun TimelineNode(
                 Canvas(modifier = Modifier
                     .width(2.dp)
                     .fillMaxHeight()
-                    .padding(top = 40.dp) // Start after the node
+                    .padding(top = 48.dp) // Start after the node center
                 ) {
                     val pathEffect = if (type == TimelineNodeType.GAP) {
                         PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
@@ -85,11 +88,12 @@ fun TimelineNode(
                         null
                     }
 
+                    // Draw line extending to bottom
                     drawLine(
-                        color = if (type == TimelineNodeType.GAP) SoftGray else color,
+                        color = if (type == TimelineNodeType.GAP) SoftGray else color.copy(alpha = 0.5f),
                         start = Offset(center.x, 0f),
-                        end = Offset(center.x, size.height),
-                        strokeWidth = 4.dp.toPx(),
+                        end = Offset(center.x, size.height + 40.dp.toPx()), // Extend to connect next node
+                        strokeWidth = 3.dp.toPx(),
                         pathEffect = pathEffect
                     )
                 }
@@ -98,9 +102,15 @@ fun TimelineNode(
             // The Node Icon
             Box(
                 modifier = Modifier
-                    .padding(top = 10.dp)
-                    .size(if (type == TimelineNodeType.START || type == TimelineNodeType.END) 48.dp else 40.dp)
-                    .background(color, CircleShape),
+                    .padding(top = 16.dp)
+                    .size(if (type == TimelineNodeType.START || type == TimelineNodeType.END) 56.dp else 40.dp)
+                    .background(color, CircleShape)
+                    .padding(4.dp) // Border effect
+                    .clip(CircleShape)
+                    .background(color = color)
+                    .then(
+                        if (icon != null) Modifier else Modifier.background(Color.White, CircleShape)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 if (icon != null) {
@@ -108,7 +118,14 @@ fun TimelineNode(
                         imageVector = icon,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(28.dp)
+                    )
+                } else {
+                    // Inner dot for simple tasks
+                     Box(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .background(color, CircleShape)
                     )
                 }
             }
@@ -117,13 +134,14 @@ fun TimelineNode(
         // Content
         Column(
             modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                .padding(start = 20.dp, top = 24.dp, end = 16.dp)
                 .weight(1f)
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = TextBlack
             )
             if (subtitle != null) {
                 Text(
