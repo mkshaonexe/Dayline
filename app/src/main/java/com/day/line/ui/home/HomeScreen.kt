@@ -2,6 +2,7 @@ package com.day.line.ui.home
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -130,29 +132,87 @@ fun HomeScreen(
                         .align(Alignment.BottomEnd)
                         .padding(end = 16.dp, bottom = 70.dp) // Adjusted padding for smaller overlay FAB
                 ) {
-                    // Radiant Gradient FAB
+                    // Radiant Gradient FAB with Liquid Glass Effect
                     androidx.compose.animation.AnimatedVisibility(
                         visible = isBottomBarVisible,
                         enter = scaleIn(animationSpec = tween(600)) + fadeIn(animationSpec = tween(600)),
                         exit = scaleOut(animationSpec = tween(600)) + fadeOut(animationSpec = tween(600))
                     ) {
+                        val fabColor = DaylineOrange
+                        
+                        // Liquid Glass Gradients
+                        // 1. Base Gradient
+                        val baseGradient = androidx.compose.ui.graphics.Brush.linearGradient(
+                            colors = listOf(
+                                com.day.line.ui.theme.NeonOrange,
+                                com.day.line.ui.theme.DaylineOrange
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(100f, 100f)
+                        )
+
+                        // 2. Top Highlight
+                        val topHighlight = androidx.compose.ui.graphics.Brush.verticalGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.45f),
+                                Color.Transparent
+                            ),
+                            startY = 0f,
+                            endY = 50f
+                        )
+
+                        // 3. Bottom Shadow
+                        val bottomShadow = androidx.compose.ui.graphics.Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.15f)
+                            ),
+                            startY = 50f,
+                            endY = 100f
+                        )
+                        
+                        // 4. Glass Border
+                        val glassBorder = androidx.compose.ui.graphics.Brush.linearGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.7f),
+                                Color.White.copy(alpha = 0.2f),
+                                Color.White.copy(alpha = 0.5f)
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(100f, 100f)
+                        )
+
                         Box(
                             modifier = Modifier
-                                .size(50.dp) // Reduced size
-                                .shadow(8.dp, CircleShape, spotColor = DaylineOrange)
-                                .clip(CircleShape)
-                                .background(
-                                    brush = androidx.compose.ui.graphics.Brush.linearGradient(
-                                        colors = listOf(com.day.line.ui.theme.NeonOrange, com.day.line.ui.theme.DaylineOrange)
-                                    )
+                                .size(56.dp) // Standard FAB size
+                                // Outer Shadow
+                                .shadow(
+                                    elevation = 12.dp, // Slightly higher elevation for FAB
+                                    shape = CircleShape,
+                                    spotColor = fabColor.copy(alpha = 0.6f),
+                                    ambientColor = fabColor.copy(alpha = 0.3f)
                                 )
+                                .clip(CircleShape)
+                                .background(brush = baseGradient)
+                                // Border
+                                .border(
+                                    width = 1.5.dp,
+                                    brush = glassBorder,
+                                    shape = CircleShape
+                                )
+                                // Highlights/Shadows
+                                .drawWithContent {
+                                    drawContent()
+                                    drawRect(brush = topHighlight)
+                                    drawRect(brush = bottomShadow)
+                                }
                                 .clickable { showAddTaskDialog = true },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Add Task",
-                                tint = Color.White,
+                                tint = Color.White, // White icon looks best on orange
                                 modifier = Modifier.size(24.dp)
                             )
                         }
