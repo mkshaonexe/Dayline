@@ -64,7 +64,7 @@ fun LiquidBottomNavigation(
 
     Box(
         modifier = Modifier
-            .padding(24.dp) // More margin for floating effect
+            .padding(horizontal = 16.dp, vertical = 12.dp) // Reduced margin (Removed 'Red' space)
             .fillMaxWidth()
             .height(64.dp) // Smaller height
             .clip(RoundedCornerShape(32.dp)) // Adjusted corners
