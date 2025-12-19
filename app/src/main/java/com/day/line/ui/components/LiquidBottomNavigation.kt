@@ -18,9 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AvTimer
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PieChart
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ViewStream
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,10 +48,10 @@ sealed class BottomNavItem(
     val icon: ImageVector,
     val route: String
 ) {
-    object Home : BottomNavItem("Home", Icons.Default.Home, "home")
-    object Analytics : BottomNavItem("Stats", Icons.Default.PieChart, "stats") // Placeholder icon
-    object Tasks : BottomNavItem("Tasks", Icons.Default.CheckCircle, "tasks")
+    object Journaling : BottomNavItem("Journal", Icons.Default.Edit, "journaling")
+    object Dayline : BottomNavItem("Dayline", Icons.Default.ViewStream, "dayline")
     object Profile : BottomNavItem("Profile", Icons.Default.Person, "profile")
+    object Settings : BottomNavItem("Settings", Icons.Default.Settings, "settings")
 }
 
 @Composable
@@ -160,10 +161,10 @@ fun LiquidBottomNavigation(
 @Composable
 fun PreviewLiquidBottomNav() {
     val items = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Analytics,
-        BottomNavItem.Tasks,
-        BottomNavItem.Profile
+        BottomNavItem.Journaling,
+        BottomNavItem.Dayline,
+        BottomNavItem.Profile,
+        BottomNavItem.Settings
     )
     var currentRoute by remember { mutableIntStateOf(0) }
     
