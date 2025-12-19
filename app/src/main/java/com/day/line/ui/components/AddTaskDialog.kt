@@ -111,14 +111,7 @@ fun AddTaskDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(110.dp) // Reduced height
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        DaylineOrange,     // Vibrant Orange
-                                        Color(0xFFFF8533)  // Neon Orange
-                                    )
-                                )
-                            )
+                            .background(Color(0xFFF5F5F5)) // Soft off-white ash
                     ) {
                         // Close Button
                         IconButton(
@@ -126,13 +119,13 @@ fun AddTaskDialog(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(12.dp)
-                                .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                                .background(Color.Black.copy(alpha = 0.05f), CircleShape)
                                 .size(28.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Close",
-                                tint = Color.White,
+                                tint = Color.Black.copy(alpha = 0.7f),
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -150,17 +143,17 @@ fun AddTaskDialog(
                                         text = "Structure Your Day", // Placeholder
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.White.copy(alpha = 0.6f)
+                                        color = Color.Black.copy(alpha = 0.4f)
                                     )
                                 }
                                 BasicTextField(
                                     value = taskTitle,
                                     onValueChange = { taskTitle = it },
                                     textStyle = MaterialTheme.typography.titleLarge.copy(
-                                        color = Color.White,
+                                        color = Color.Black.copy(alpha = 0.87f),
                                         fontWeight = FontWeight.Bold
                                     ),
-                                    cursorBrush = androidx.compose.ui.graphics.SolidColor(Color.White)
+                                    cursorBrush = androidx.compose.ui.graphics.SolidColor(DaylineOrange)
                                 )
                             }
                             
@@ -173,7 +166,7 @@ fun AddTaskDialog(
                             Text(
                                 text = timeText,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White.copy(alpha = 0.8f)
+                                color = Color.Black.copy(alpha = 0.6f)
                             )
                         }
                     }
