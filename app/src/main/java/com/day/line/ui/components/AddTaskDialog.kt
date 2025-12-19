@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
@@ -169,11 +170,27 @@ fun AddTaskDialog(
                                     color = Color.White.copy(alpha = 0.7f)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "Structure Your Day",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
+BasicTextField(
+                                    value = taskTitle,
+                                    onValueChange = { taskTitle = it },
+                                    textStyle = MaterialTheme.typography.headlineMedium.copy(
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    cursorBrush = androidx.compose.ui.graphics.SolidColor(Color.White),
+                                    decorationBox = { innerTextField ->
+                                        Box(contentAlignment = Alignment.CenterStart) {
+                                            if (taskTitle.isEmpty()) {
+                                                Text(
+                                                    text = "Structure Your Day",
+                                                    style = MaterialTheme.typography.headlineMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color.White.copy(alpha = 0.5f)
+                                                )
+                                            }
+                                            innerTextField()
+                                        }
+                                    }
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Divider(
