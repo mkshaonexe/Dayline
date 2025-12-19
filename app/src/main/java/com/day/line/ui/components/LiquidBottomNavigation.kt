@@ -64,10 +64,10 @@ fun LiquidBottomNavigation(
 
     Box(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 12.dp) // Reduced margin (Removed 'Red' space)
+            // Padding removed as per user request
             .fillMaxWidth()
             .height(64.dp) // Smaller height
-            .clip(RoundedCornerShape(32.dp)) // Adjusted corners
+            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)) // Top corners rounded
             .background(
                 color = Color.White.copy(alpha = 0.9f) // Light Glass background
             )
