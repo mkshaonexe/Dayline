@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -41,12 +42,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.day.line.ui.theme.DaylineOrange
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 
-import com.day.line.ui.theme.GlassBlack
 import com.day.line.ui.theme.DaylineOrange
+import com.day.line.ui.theme.NeonOrange
+import com.day.line.ui.theme.ElectricBlue
+import com.day.line.ui.theme.GlassBlack
+import com.day.line.ui.theme.GlassWhite
+import com.day.line.ui.theme.GlassBorderLight
+import com.day.line.ui.theme.GlassBorderDark
 
 sealed class BottomNavItem(
     val title: String,
@@ -66,47 +71,43 @@ fun LiquidBottomNavigation(
     onItemClick: (BottomNavItem) -> Unit
 ) {
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it != -1 } ?: 0
+    val isDark = isSystemInDarkTheme()
 
-    // Determine glass colors based on theme
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme() 
-    
-    // Premium Glass Effect Tuning
-    // We utilize gradients to simulate the refractive properties of glass.
-    
-    // Glass Background: Top-down gradient (lighter at top to simulate overhead light)
-    val glassGradient = Brush.verticalGradient(
+    // Premium Glass Effect: Directional Gradient for realistic lighting
+    val glassGradient = Brush.linearGradient(
         colors = if (isDark) listOf(
-            Color(0xFF2D2D2D).copy(alpha = 0.7f), // Top: Slightly lighter/reflective
-            Color(0xFF1A1A1A).copy(alpha = 0.5f)  // Bottom: More transparent
+            Color(0xFF252525).copy(alpha = 0.9f), // Top-Left Light
+            Color(0xFF151515).copy(alpha = 0.8f)  // Bottom-Right Shadow
         ) else listOf(
-            Color(0xFFFFFFFF).copy(alpha = 0.9f),
-            Color(0xFFF0F0F0).copy(alpha = 0.6f)
+            Color(0xFFFFFFFF).copy(alpha = 0.95f),
+            Color(0xFFF2F2F2).copy(alpha = 0.85f)
+        ),
+        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+        end = androidx.compose.ui.geometry.Offset(1000f, 100f) // Angled light
+    )
+
+    // Border: Subtle rim light
+    val borderBrush = Brush.verticalGradient(
+        colors = if (isDark) listOf(
+            GlassBorderDark.copy(alpha = 0.2f),
+            GlassBorderDark.copy(alpha = 0.05f)
+        ) else listOf(
+            GlassBorderLight.copy(alpha = 0.6f),
+            GlassBorderLight.copy(alpha = 0.1f)
         )
     )
 
-    // Glass Border: Simulate a "rim light" effect
-    // Top border is white/bright (catching light), bottom is darker/transparent
-    val borderGradient = Brush.verticalGradient(
-        colors = if (isDark) listOf(
-            Color.White.copy(alpha = 0.4f),       // Top rim highlight
-            Color.White.copy(alpha = 0.05f)       // Fading out
-        ) else listOf(
-            Color.White.copy(alpha = 0.8f),
-            Color.White.copy(alpha = 0.2f)
-        )
-    )
-
-    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.1f)
-    val unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.6f) else Color.Black.copy(alpha = 0.15f)
+    val unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f) // Faded for hierarchy
 
     Box(
         modifier = Modifier
-            .padding(start = 24.dp, end = 24.dp, bottom = 24.dp) // Lifted up slightly more for floating effect
+            .padding(start = 20.dp, end = 20.dp, bottom = 30.dp) // Generous float
             .fillMaxWidth()
-            .height(72.dp) // Slightly taller for the pill shape
+            .height(80.dp) // Taller, premium feel
             .shadow(
-                elevation = 16.dp, // Deeper shadow for floating depth
-                shape = RoundedCornerShape(100.dp), // Full pill shape
+                elevation = 24.dp, // High elevation for "float"
+                shape = RoundedCornerShape(100.dp),
                 spotColor = shadowColor,
                 ambientColor = shadowColor
             )
@@ -114,10 +115,10 @@ fun LiquidBottomNavigation(
             .background(brush = glassGradient)
             .border(
                 width = 1.dp,
-                brush = borderGradient,
+                brush = borderBrush,
                 shape = RoundedCornerShape(100.dp)
             )
-            .padding(horizontal = 8.dp, vertical = 4.dp) // Inner padding for content
+            .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -127,11 +128,11 @@ fun LiquidBottomNavigation(
             items.forEachIndexed { index, item ->
                 val isSelected = index == selectedIndex
                 
-                // Animate weight/size for liquid effect
+                // Spring Animation for "Fluid" feel
                 val weight by animateFloatAsState(
-                    targetValue = if (isSelected) 1.5f else 1f,
+                    targetValue = if (isSelected) 1.8f else 1f, // More expansion
                     animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy, // Smoother, less bounce
+                        dampingRatio = Spring.DampingRatioLowBouncy,
                         stiffness = Spring.StiffnessLow
                     ),
                     label = "weight"
@@ -141,7 +142,7 @@ fun LiquidBottomNavigation(
                     modifier = Modifier
                         .weight(weight)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(32.dp))
+                        .clip(RoundedCornerShape(100.dp)) // Fully rounded internal pills
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -151,8 +152,8 @@ fun LiquidBottomNavigation(
                                 Modifier.background(
                                     brush = Brush.linearGradient(
                                         colors = listOf(
-                                            DaylineOrange, // Primary Orange
-                                            Color(0xFFFFB74D).copy(alpha = 0.6f)  // Lighter Orange shine
+                                            DaylineOrange,     // Core
+                                            NeonOrange         // Shine
                                         )
                                     )
                                 )
@@ -163,7 +164,6 @@ fun LiquidBottomNavigation(
                     contentAlignment = Alignment.Center
                 ) {
                     if (isSelected) {
-                        // Expanded view with text
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
@@ -175,17 +175,17 @@ fun LiquidBottomNavigation(
                                 modifier = Modifier.size(24.dp)
                             )
                             
-                            Box(modifier = Modifier.padding(start = 8.dp)) {
+                            Box(modifier = Modifier.padding(start = 10.dp)) {
                                 Text(
                                     text = item.title,
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp
+                                    fontSize = 14.sp,
+                                    letterSpacing = 0.5.sp // Clean typography
                                 )
                             }
                         }
                     } else {
-                        // Icon only
                         Icon(
                             imageVector = item.icon,
                             contentDescription = item.title,
@@ -210,7 +210,7 @@ fun PreviewLiquidBottomNav() {
     )
     var currentRoute by remember { mutableIntStateOf(0) }
     
-    Box(modifier = Modifier.background(Color.Black).padding(20.dp)) {
+    Box(modifier = Modifier.background(Color(0xFF141414)).padding(40.dp)) {
         LiquidBottomNavigation(
             items = items,
             currentRoute = items[currentRoute].route,

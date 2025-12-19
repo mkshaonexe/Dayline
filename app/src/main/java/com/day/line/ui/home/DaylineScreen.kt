@@ -25,12 +25,12 @@ import com.day.line.ui.components.TaskTimelineNode
 import com.day.line.ui.components.TimelineNode
 import com.day.line.ui.components.TimelineNodeType
 import com.day.line.ui.theme.DaylineOrange
-import com.day.line.ui.theme.SoftGray
+import com.day.line.ui.theme.TextGrey
 import com.day.line.ui.theme.SoftTeal
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-import com.day.line.ui.theme.SageBackground
+import com.day.line.ui.theme.CreamBackground
 
 @Composable
 fun DaylineScreen(
@@ -54,7 +54,7 @@ fun DaylineScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(SageBackground)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -75,7 +75,7 @@ fun DaylineScreen(
                     title = "Reflect on the respite",
                     subtitle = "Tap + to add tasks",
                     type = TimelineNodeType.GAP,
-                    color = SoftGray
+                    color = TextGrey
                 )
             } else {
                 // Render user tasks

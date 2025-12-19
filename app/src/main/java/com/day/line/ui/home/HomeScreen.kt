@@ -1,6 +1,8 @@
 package com.day.line.ui.home
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -126,22 +130,30 @@ fun HomeScreen(
                         .align(Alignment.BottomEnd)
                         .padding(end = 16.dp, bottom = 90.dp) // Adjusted padding for overlay FAB
                 ) {
+                    // Radiant Gradient FAB
                     androidx.compose.animation.AnimatedVisibility(
                         visible = isBottomBarVisible,
                         enter = scaleIn(animationSpec = tween(600)) + fadeIn(animationSpec = tween(600)),
                         exit = scaleOut(animationSpec = tween(600)) + fadeOut(animationSpec = tween(600))
                     ) {
-                        FloatingActionButton(
-                            onClick = { showAddTaskDialog = true },
-                            containerColor = DaylineOrange,
-                            contentColor = Color.White,
-                            shape = CircleShape,
-                            modifier = Modifier.size(56.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp) // Slightly larger for impact
+                                .shadow(12.dp, CircleShape, spotColor = DaylineOrange)
+                                .clip(CircleShape)
+                                .background(
+                                    brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                                        colors = listOf(com.day.line.ui.theme.NeonOrange, com.day.line.ui.theme.DaylineOrange)
+                                    )
+                                )
+                                .clickable { showAddTaskDialog = true },
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Add Task",
-                                modifier = Modifier.size(24.dp)
+                                tint = Color.White,
+                                modifier = Modifier.size(32.dp)
                             )
                         }
                     }

@@ -16,30 +16,34 @@ private val DarkColorScheme = darkColorScheme(
     primary = Primary,
     secondary = Secondary,
     tertiary = Tertiary,
-    background = DarkBackground,
-    surface = DarkSurface,
+    background = BackgroundDark,
+    surface = SurfaceDark,
     onPrimary = Color.White,
     onSecondary = Color.Black,
     onTertiary = Color.White,
-    onBackground = DarkTextPrimary,
-    onSurface = DarkTextPrimary,
-    surfaceVariant = DarkSurface, // Keep variants consistent
-    onSurfaceVariant = DarkTextSecondary,
-    outline = DarkTextSecondary,
-    outlineVariant = DarkTextSecondary.copy(alpha = 0.5f)
+    onBackground = TextWhite,
+    onSurface = TextWhite,
+    surfaceVariant = DarkSurface,
+    onSurfaceVariant = TextGrey,
+    outline = GlassBorderDark,
+    outlineVariant = GlassBorderDark.copy(alpha = 0.3f)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
     secondary = Secondary,
     tertiary = Tertiary,
-    background = CreamBackground,
-    surface = CreamBackground,
+    background = BackgroundLight,
+    surface = SurfaceLight,
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
+    onBackground = TextBlack,
+    onSurface = TextBlack,
+    surfaceVariant = Color(0xFFF0F0F0),
+    onSurfaceVariant = TextGrey,
+    outline = GlassBorderLight,
+    outlineVariant = GlassBorderLight.copy(alpha = 0.5f)
 )
 
 @Composable
