@@ -64,7 +64,7 @@ fun LiquidBottomNavigation(
 
     Box(
         modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, bottom = 32.dp) // Provide floating margins
+            .padding(start = 20.dp, end = 20.dp, bottom = 12.dp) // Provide floating margins
             .fillMaxWidth()
             .height(64.dp)
             .clip(RoundedCornerShape(50)) // Full pill shape
