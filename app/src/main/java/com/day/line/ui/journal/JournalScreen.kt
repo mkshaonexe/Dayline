@@ -34,77 +34,86 @@ import com.day.line.ui.theme.DaylineOrange
 
 @Composable
 fun JournalScreen() {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp)
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        Text(
-            text = "Journal",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        Text(
-            text = "Capture your journey",
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        // Write new entry card
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = DaylineOrange),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                top = 24.dp,
+                start = 24.dp,
+                end = 24.dp,
+                bottom = 120.dp // Added extra padding for floating nav bar
+            ),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "New Entry",
-                        tint = Color.White,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.size(12.dp))
+            // Header Section
+            item {
+                Column {
+                    Spacer(modifier = Modifier.height(32.dp))
                     Text(
-                        text = "New Entry",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+                        text = "Journal",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Capture your journey",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-        }
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        Text(
-            text = "Recent Entries",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        LazyColumn(
-            contentPadding = PaddingValues(bottom = 100.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+
+            // New Entry Button
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp), // Slightly adjusted height to look more like a button/banner
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = DaylineOrange),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "New Entry",
+                                tint = Color.White,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.size(12.dp))
+                            Text(
+                                text = "New Entry",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Recent Entries Header
+            item {
+                Text(
+                    text = "Recent Entries",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+
+            // Entries List
             items(5) {
                 JournalEntryItem()
             }
