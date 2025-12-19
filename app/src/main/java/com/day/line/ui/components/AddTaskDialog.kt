@@ -98,7 +98,7 @@ fun AddTaskDialog(
                     .fillMaxHeight(0.9f)
                     .clickable(enabled = false) {}, // Prevent clicks from closing dialog
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -223,8 +223,8 @@ BasicTextField(
                                 onClick = { showDatePicker = true },
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
-                                colors = CardDefaults.outlinedCardColors(containerColor = Color.White),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -242,6 +242,7 @@ BasicTextField(
                                     Text(
                                         text = dateDisplay.format(dateFormatter),
                                         style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.weight(1f)
                                     )
                                     Checkbox(
@@ -251,7 +252,7 @@ BasicTextField(
                                             checkedColor = Color(0xFFD4817C)
                                         )
                                     )
-                                    Text(text = "All-Day", style = MaterialTheme.typography.bodyMedium)
+                                    Text(text = "All-Day", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                                 }
                             }
 
@@ -261,8 +262,8 @@ BasicTextField(
                                     onClick = { showEnhancedTimePicker = !showEnhancedTimePicker },
                                     modifier = Modifier.fillMaxWidth().offset(y = (-1).dp), // Overlap border
                                     shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 12.dp, bottomEnd = 12.dp),
-                                    colors = CardDefaults.outlinedCardColors(containerColor = Color.White),
-                                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                                    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                                 ) {
                                     Row(
                                         modifier = Modifier
@@ -280,6 +281,7 @@ BasicTextField(
                                         Text(
                                             text = "${startTime.format(timeFormatter)} - ${endTime.format(timeFormatter)}",
                                             style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier.weight(1f)
                                         )
                                     }
@@ -332,8 +334,8 @@ BasicTextField(
                             OutlinedCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(24.dp),
-                                colors = CardDefaults.outlinedCardColors(containerColor = Color.White),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -344,24 +346,24 @@ BasicTextField(
                                     Icon(
                                         imageVector = Icons.Default.Repeat,
                                         contentDescription = null,
-                                        tint = Color.Gray,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Text(
                                         text = "Repeat",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Surface(
-                                        color = Color(0xFFF0F0F0),
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
                                         shape = RoundedCornerShape(4.dp)
                                     ) {
                                         Text(
                                             text = "★ PRO",
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = Color.Gray,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                                             fontWeight = FontWeight.Bold
                                         )
@@ -375,8 +377,8 @@ BasicTextField(
                             OutlinedCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.outlinedCardColors(containerColor = Color.White),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                             ) {
                                 Column {
                                     Row(
@@ -386,16 +388,16 @@ BasicTextField(
                                         Box(
                                             modifier = Modifier
                                                 .size(20.dp)
-                                                .border(1.5.dp, Color.LightGray, RoundedCornerShape(4.dp))
+                                                .border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(4.dp))
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(
                                             text = "Add Subtask",
                                             style = MaterialTheme.typography.bodyLarge,
-                                            color = Color.LightGray
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
-                                    Divider(color = Color.LightGray.copy(alpha = 0.3f))
+                                    Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                                     // Notes Input
                                     OutlinedTextField(
                                         value = notes,
@@ -405,7 +407,7 @@ BasicTextField(
                                         placeholder = { 
                                             Text(
                                                 "Add notes, meeting links or phone numbers...",
-                                                color = Color.LightGray,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 style = MaterialTheme.typography.bodyMedium
                                             ) 
                                         },
@@ -444,8 +446,8 @@ BasicTextField(
                                     .align(Alignment.CenterEnd)
                                     .height(48.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFEEEEEE),
-                                    contentColor = Color.Gray
+                                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    contentColor = MaterialTheme.colorScheme.primary
                                 ),
                                 shape = RoundedCornerShape(24.dp)
                             ) {

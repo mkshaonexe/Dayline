@@ -38,11 +38,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.day.line.ui.theme.DaylineOrange
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+
 import com.day.line.ui.theme.GlassBlack
 import com.day.line.ui.theme.DaylineOrange
 
@@ -66,27 +68,19 @@ fun LiquidBottomNavigation(
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it != -1 } ?: 0
 
     // Determine glass colors based on theme
-    // We can rely on MaterialTheme.colorScheme.background luminance or simple state
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme() // Or pass it in. For now, system theme check.
-    // However, since we force theme in Main, this composable needs to know about it.
-    // The easiest way is to check background color brightness or assume if surface is dark.
-    // Let's use MaterialTheme.colorScheme.surface's luminance logic implicitly by using tokens, 
-    // BUT we want glass.
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme() 
     
-    // Better: Check if primary container is dark?
-    // Let's check a known dark color token, e.g. background
-    // Color.luminance requires api 26 for Color class in some contexts, or we can just assume standard.
-    // Safest: Use MaterialTheme.colorScheme.background == Color(0xFF1C1B1F) (approx).
-    
-    // Actually, simpler: Use a theme aware variable.
-    val glassBackgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
-    val glassBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+    // Premium Glass Effect Tuning
+    // Dark mode: More transparent to show depth, subtle white border for definition.
+    // Light mode: More opaque to hide content behind, subtle grey border.
+    val glassBackgroundColor = if (isDark) MaterialTheme.colorScheme.surface.copy(alpha = 0.75f) else MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+    val glassBorderColor = if (isDark) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.6f) else MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f)
     val unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-    val shadowColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f)
 
     Box(
         modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, bottom = 12.dp) // Provide floating margins
+            .padding(start = 20.dp, end = 20.dp, bottom = 12.dp) 
             .fillMaxWidth()
             .height(64.dp)
             .shadow(
@@ -95,14 +89,14 @@ fun LiquidBottomNavigation(
                 spotColor = shadowColor,
                 ambientColor = shadowColor
             )
-            .clip(RoundedCornerShape(50)) // Full pill shape
+            .clip(RoundedCornerShape(50)) 
             .background(color = glassBackgroundColor)
             .border(
                 width = 1.dp,
                 color = glassBorderColor,
                 shape = RoundedCornerShape(50)
             )
-            .padding(4.dp) // Inner padding
+            .padding(4.dp) 
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

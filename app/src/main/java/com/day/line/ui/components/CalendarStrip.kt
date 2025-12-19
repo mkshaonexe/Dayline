@@ -66,7 +66,7 @@ fun CalendarStrip(
                 text = currentDate.format(monthYearFormatter).uppercase(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onBackground,
                 letterSpacing = 1.sp
             )
             // Icon placeholder
@@ -111,7 +111,7 @@ fun DayItem(
         Text(
             text = day,
             style = MaterialTheme.typography.labelMedium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Box(
             modifier = Modifier
@@ -133,7 +133,7 @@ fun DayItem(
             Text(
                 text = date,
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (isSelected) Color.White else Color.DarkGray,
+                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
             )
         }

@@ -13,6 +13,12 @@ val DarkGray = Color(0xFF424242)
 val TextBlack = Color(0xFF1D1B20)
 val TextWhite = Color(0xFFFFFFFF)
 
+// Premium Dark Theme Colors
+val DarkBackground = Color(0xFF121212) // Deep Matte Black
+val DarkSurface = Color(0xFF1E1E1E)    // Slightly lighter for cards
+val DarkTextPrimary = Color(0xFFE6E1E5) // Soft White for high legibility
+val DarkTextSecondary = Color(0xFFCAC4D0) // Light Grey for subtitles
+
 // Material 3 mappings
 val Primary = DaylineOrange
 val Secondary = SoftTeal

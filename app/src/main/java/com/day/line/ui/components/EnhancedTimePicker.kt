@@ -48,7 +48,7 @@ fun EnhancedTimePicker(
             .fillMaxWidth()
             .padding(16.dp)
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(16.dp)),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
@@ -72,7 +72,7 @@ fun EnhancedTimePicker(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close",
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -95,7 +95,7 @@ fun EnhancedTimePicker(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "to",
-                    tint = Color.Gray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
@@ -111,7 +111,7 @@ fun EnhancedTimePicker(
                 Icon(
                     imageVector = Icons.Default.Public, // Placeholder for globe/timezone icon
                     contentDescription = "Timezone",
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -154,7 +154,7 @@ fun EnhancedTimePicker(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Presets",
                     modifier = Modifier.size(16.dp),
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -207,9 +207,9 @@ fun TimeInputBox(
     Surface(
         modifier = modifier
             .height(48.dp)
-            .border(1.dp, Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(12.dp)),
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp)),
         shape = RoundedCornerShape(12.dp),
-        color = Color.White
+        color = MaterialTheme.colorScheme.surface
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -218,6 +218,7 @@ fun TimeInputBox(
             Text(
                 text = time.format(formatter),
                 style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -228,8 +229,8 @@ fun TimeInputBox(
 fun DurationBadge(text: String) {
     Surface(
         shape = RoundedCornerShape(20.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
-        color = Color.White
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -237,10 +238,11 @@ fun DurationBadge(text: String) {
         ) {
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
              Spacer(modifier = Modifier.width(4.dp))
-             Text("▼", fontSize = androidx.compose.ui.unit.TextUnit(8f, androidx.compose.ui.unit.TextUnitType.Sp), color = Color.Gray)
+             Text("▼", fontSize = androidx.compose.ui.unit.TextUnit(8f, androidx.compose.ui.unit.TextUnitType.Sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -257,8 +259,8 @@ fun PresetChip(
             .height(36.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(18.dp),
-        color = if (selected) Color(0xFFFFE4E1) else Color.White,
-        border = if (!selected) androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.3f)) else null
+        color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        border = if (!selected) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -267,7 +269,7 @@ fun PresetChip(
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (selected) DaylineOrange else Color.Black,
+                color = if (selected) DaylineOrange else MaterialTheme.colorScheme.onSurface,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
             )
         }

@@ -61,7 +61,7 @@ fun TimelineNode(
         Text(
             text = time,
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = if (time.isNotEmpty()) DarkGray else Color.Transparent,
+            color = if (time.isNotEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else Color.Transparent,
             modifier = Modifier
                 .width(70.dp)
                 .padding(top = 28.dp, end = 12.dp),
@@ -109,7 +109,7 @@ fun TimelineNode(
                     .clip(CircleShape)
                     .background(color = color)
                     .then(
-                        if (icon != null) Modifier else Modifier.background(Color.White, CircleShape)
+                        if (icon != null) Modifier else Modifier.background(MaterialTheme.colorScheme.surface, CircleShape)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -141,13 +141,13 @@ fun TimelineNode(
                 text = title,
                 style = MaterialTheme.typography.titleMedium, // Slightly smaller/cleaner
                 fontWeight = FontWeight.Bold,
-                color = TextBlack
+                color = MaterialTheme.colorScheme.onBackground
             )
             if (subtitle != null) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
@@ -174,7 +174,7 @@ fun TaskTimelineNode(
         Text(
             text = time,
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .width(70.dp)
                 .padding(top = 28.dp, end = 12.dp),
@@ -212,7 +212,7 @@ fun TaskTimelineNode(
                     .background(color, CircleShape)
                     .padding(4.dp)
                     .clip(CircleShape)
-                    .background(Color.White, CircleShape),
+                    .background(MaterialTheme.colorScheme.surface, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
@@ -233,13 +233,13 @@ fun TaskTimelineNode(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = TextBlack
+                color = MaterialTheme.colorScheme.onBackground
             )
             if (duration.isNotEmpty()) {
                 Text(
                     text = duration,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
