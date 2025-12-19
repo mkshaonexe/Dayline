@@ -20,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -69,8 +70,8 @@ fun AddTaskDialog(
     var showEnhancedTimePicker by remember { mutableStateOf(false) }
     
     val dateDisplay = LocalDate.of(selectedYear, selectedMonth, selectedDay)
-    val dateFormatter = DateTimeFormatter.ofPattern("EEE, dd. MMM yyyy")
-    val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+    val dateFormatter = DateTimeFormatter.ofPattern("EEE, dd. MMM")
+    val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -94,368 +95,338 @@ fun AddTaskDialog(
             // Dialog Content
             Card(
                 modifier = Modifier
-                    .fillMaxWidth(0.95f)
-                    .fillMaxHeight(0.9f)
+                    .fillMaxWidth(0.9f)
+                    .heightIn(max = 600.dp) // Limit maximum height
+                    .wrapContentHeight() // Allow it to shrink
                     .clickable(enabled = false) {}, // Prevent clicks from closing dialog
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        // 1. Header Section with Gradient
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(220.dp)
-                                .background(
-                                    Brush.verticalGradient(
-                                        colors = listOf(
-                                            Color(0xFFD4817C), // Muted Pink/Red
-                                            Color(0xFFC7716C)
-                                        )
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // 1. Compact Header Section
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(110.dp) // Reduced height
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        DaylineOrange,     // Vibrant Orange
+                                        Color(0xFFFF8533)  // Neon Orange
                                     )
                                 )
+                            )
+                    ) {
+                        // Close Button
+                        IconButton(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(12.dp)
+                                .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                                .size(28.dp)
                         ) {
-                            // Close Button
-                            IconButton(
-                                onClick = onDismiss,
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(top = 16.dp, end = 16.dp)
-                                    .background(Color.White.copy(alpha = 0.2f), CircleShape)
-                                    .size(32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Close",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-
-                            // Content inside Header
-                            Column(
-                                modifier = Modifier
-                                    .padding(start = 24.dp, top = 60.dp)
-                            ) {
-                                // Timeline Graphic Placeholder
-                                Box(
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .background(Color.White.copy(alpha = 0.9f), RoundedCornerShape(16.dp))
-                                        .padding(8.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                     // Simple visual representation of task/check
-                                     Icon(
-                                         imageVector = Icons.Default.Schedule, // Using schedule as placeholder
-                                         contentDescription = null,
-                                         tint = Color(0xFFD4817C)
-                                     )
-                                }
-                            }
-                            
-                            Column(
-                                modifier = Modifier
-                                    .padding(start = 88.dp, top = 70.dp, end = 24.dp)
-                            ) {
-                                // Time Range Text
-                                val durationMins = ChronoUnit.MINUTES.between(startTime, endTime)
-                                Text(
-                                    text = if (isAllDay) "All-Day" else "${startTime.format(DateTimeFormatter.ofPattern("h:mm a"))} – ${endTime.format(DateTimeFormatter.ofPattern("h:mm a"))} ($durationMins min)",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-BasicTextField(
-                                    value = taskTitle,
-                                    onValueChange = { taskTitle = it },
-                                    textStyle = MaterialTheme.typography.headlineMedium.copy(
-                                        color = Color.White,
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    cursorBrush = androidx.compose.ui.graphics.SolidColor(Color.White),
-                                    decorationBox = { innerTextField ->
-                                        Box(contentAlignment = Alignment.CenterStart) {
-                                            if (taskTitle.isEmpty()) {
-                                                Text(
-                                                    text = "Structure Your Day",
-                                                    style = MaterialTheme.typography.headlineMedium,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = Color.White.copy(alpha = 0.5f)
-                                                )
-                                            }
-                                            innerTextField()
-                                        }
-                                    }
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Divider(
-                                    color = Color.White.copy(alpha = 0.3f),
-                                    thickness = 1.dp,
-                                    modifier = Modifier.width(200.dp)
-                                )
-                            }
-                            
-                            // Hollow Circle decoration
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .padding(end = 24.dp)
-                                    .size(24.dp)
-                                    .border(2.dp, Color.White.copy(alpha = 0.5f), CircleShape)
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
 
-                        // 2. Form Content
+                        // Compact Content
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState())
-                                .padding(24.dp)
+                                .padding(start = 24.dp, end = 24.dp)
+                                .align(Alignment.CenterStart)
                         ) {
-                            // Date Row
+                            // Title Input
+                            Box(contentAlignment = Alignment.CenterStart) {
+                                if (taskTitle.isEmpty()) {
+                                    Text(
+                                        text = "Structure Your Day", // Placeholder
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White.copy(alpha = 0.6f)
+                                    )
+                                }
+                                BasicTextField(
+                                    value = taskTitle,
+                                    onValueChange = { taskTitle = it },
+                                    textStyle = MaterialTheme.typography.titleLarge.copy(
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    cursorBrush = androidx.compose.ui.graphics.SolidColor(Color.White)
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(4.dp))
+                            
+                            // Subtitle / Time Summary
+                            val durationMins = ChronoUnit.MINUTES.between(startTime, endTime)
+                            val timeText = if (isAllDay) "All-Day" else "${startTime.format(timeFormatter)} – ${endTime.format(timeFormatter)} ($durationMins min)"
+                            
+                            Text(
+                                text = timeText,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                        }
+                    }
+
+                    // 2. Form Content
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 20.dp, vertical = 20.dp)
+                    ) {
+                        // Date Row
+                        OutlinedCard(
+                            onClick = { showDatePicker = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp), // Unified shape instead of split top/bottom
+                            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f))
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CalendarToday,
+                                    contentDescription = null,
+                                    tint = DaylineOrange,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = "${dateDisplay.format(dateFormatter)} ${dateDisplay.year}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                  Checkbox(
+                                      checked = isAllDay,
+                                      onCheckedChange = { isAllDay = it },
+                                      colors = CheckboxDefaults.colors(
+                                          checkedColor = DaylineOrange,
+                                          uncheckedColor = MaterialTheme.colorScheme.outline
+                                      ),
+                                      modifier = Modifier.scale(0.8f) // Make checkbox smaller
+                                  )
+                                  Text(text = "All-Day", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            }
+                        }
+
+                        // Time Row (Only if not All-Day)
+                        if (!isAllDay) {
+                            Spacer(modifier = Modifier.height(12.dp))
                             OutlinedCard(
-                                onClick = { showDatePicker = true },
+                                onClick = { showEnhancedTimePicker = !showEnhancedTimePicker },
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f))
                             ) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(16.dp),
+                                        .padding(12.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.CalendarToday,
+                                        imageVector = Icons.Default.Schedule,
                                         contentDescription = null,
-                                        tint = Color(0xFFD4817C),
-                                        modifier = Modifier.size(20.dp)
+                                        tint = DaylineOrange,
+                                        modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Text(
-                                        text = dateDisplay.format(dateFormatter),
-                                        style = MaterialTheme.typography.bodyLarge,
+                                        text = "${startTime.format(timeFormatter)} - ${endTime.format(timeFormatter)}",
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.weight(1f)
                                     )
-                                    Checkbox(
-                                        checked = isAllDay,
-                                        onCheckedChange = { isAllDay = it },
-                                        colors = CheckboxDefaults.colors(
-                                            checkedColor = Color(0xFFD4817C)
-                                        )
-                                    )
-                                    Text(text = "All-Day", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
                                 }
                             }
-
-                            // Time Row (Only if not All-Day)
-                            if (!isAllDay) {
-                                OutlinedCard(
-                                    onClick = { showEnhancedTimePicker = !showEnhancedTimePicker },
-                                    modifier = Modifier.fillMaxWidth().offset(y = (-1).dp), // Overlap border
-                                    shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 12.dp, bottomEnd = 12.dp),
-                                    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                            
+                            // Enhanced Time Picker Dialog Logic
+                            if (showEnhancedTimePicker) {
+                                Dialog(
+                                    onDismissRequest = { showEnhancedTimePicker = false },
+                                    properties = DialogProperties(
+                                        usePlatformDefaultWidth = false,
+                                        decorFitsSystemWindows = false
+                                    )
                                 ) {
-                                    Row(
+                                    Box(
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Schedule,
-                                            contentDescription = null,
-                                            tint = Color(0xFFD4817C),
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        Text(
-                                            text = "${startTime.format(timeFormatter)} - ${endTime.format(timeFormatter)}",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                    }
-                                }
-                                
-// Enhanced Time Picker Dialog
-                                if (showEnhancedTimePicker) {
-                                    Dialog(
-                                        onDismissRequest = { showEnhancedTimePicker = false },
-                                        properties = DialogProperties(
-                                            usePlatformDefaultWidth = false, // Allow custom width
-                                            decorFitsSystemWindows = false
-                                        )
+                                            .fillMaxSize()
+                                            .background(Color.Black.copy(alpha = 0.5f))
+                                            .clickable { showEnhancedTimePicker = false },
+                                        contentAlignment = Alignment.Center
                                     ) {
                                         Box(
                                             modifier = Modifier
-                                                .fillMaxSize()
-                                                .background(Color.Black.copy(alpha = 0.5f))
-                                                .clickable { showEnhancedTimePicker = false },
-                                            contentAlignment = Alignment.Center
+                                                .fillMaxWidth(0.9f)
+                                                .clickable(enabled = false) {}
                                         ) {
-                                            // The actual picker content
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth(0.9f) // Allow some side padding
-                                                    .clickable(enabled = false) {} // Prevent click-through
-                                            ) {
-                                                EnhancedTimePicker(
-                                                    startTime = startTime,
-                                                    endTime = endTime,
-                                                    onStartTimeChange = { newStart ->
-                                                        val duration = ChronoUnit.MINUTES.between(startTime, endTime)
-                                                        startTime = newStart
-                                                        endTime = newStart.plusMinutes(duration) // Keep duration
-                                                    },
-                                                    onEndTimeChange = { newEnd ->
-                                                        endTime = newEnd
-                                                    },
-                                                    onDismiss = { showEnhancedTimePicker = false }
-                                                )
-                                            }
+                                            EnhancedTimePicker(
+                                                startTime = startTime,
+                                                endTime = endTime,
+                                                onStartTimeChange = { newStart ->
+                                                    val duration = ChronoUnit.MINUTES.between(startTime, endTime)
+                                                    startTime = newStart
+                                                    endTime = newStart.plusMinutes(duration)
+                                                },
+                                                onEndTimeChange = { newEnd ->
+                                                    endTime = newEnd
+                                                },
+                                                onDismiss = { showEnhancedTimePicker = false }
+                                            )
                                         }
                                     }
                                 }
                             }
+                        }
 
-                            Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                            // Repeat Row
-                            OutlinedCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(24.dp),
-                                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                        // Repeat Row
+                        OutlinedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f))
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                                Icon(
+                                    imageVector = Icons.Default.Repeat,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = "Repeat",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Surface(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(4.dp)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Repeat,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
                                     Text(
-                                        text = "Repeat",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Surface(
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        shape = RoundedCornerShape(4.dp)
-                                    ) {
-                                        Text(
-                                            text = "★ PRO",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Subtask Section
-                            OutlinedCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                            ) {
-                                Column {
-                                    Row(
-                                        modifier = Modifier.padding(16.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(20.dp)
-                                                .border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(4.dp))
-                                        )
-                                        Spacer(modifier = Modifier.width(12.dp))
-                                        Text(
-                                            text = "Add Subtask",
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                    Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                                    // Notes Input
-                                    OutlinedTextField(
-                                        value = notes,
-                                        onValueChange = { notes = it },
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        placeholder = { 
-                                            Text(
-                                                "Add notes, meeting links or phone numbers...",
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                style = MaterialTheme.typography.bodyMedium
-                                            ) 
-                                        },
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedBorderColor = Color.Transparent,
-                                            unfocusedBorderColor = Color.Transparent
-                                        ),
-                                        minLines = 3
+                                        text = "PRO",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                        fontWeight = FontWeight.Bold
                                     )
                                 }
                             }
                         }
 
-                        // Bottom Action Bar
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Subtask & Notes Section
+                        OutlinedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha=0.5f))
                         ) {
-                            Button(
-                                onClick = {
-                                    // Create and Save Task
-                                    val finalTitle = if (taskTitle.isBlank()) "Structure Your Day" else taskTitle
-                                    val task = Task(
-                                        title = finalTitle,
-                                        date = Task.formatDate(selectedYear, selectedMonth, selectedDay),
-                                        startTime = Task.formatTime(startTime.hour, startTime.minute),
-                                        endTime = Task.formatTime(endTime.hour, endTime.minute),
-                                        isAllDay = isAllDay,
-                                        notes = notes
+                            Column {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(4.dp))
                                     )
-                                    onSave(task)
-                                    onDismiss()
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .height(48.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                    contentColor = MaterialTheme.colorScheme.primary
-                                ),
-                                shape = RoundedCornerShape(24.dp)
-                            ) {
-                                Text(
-                                    text = "Create Task",
-                                    fontWeight = FontWeight.SemiBold
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(
+                                        text = "Add Subtask",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                // Notes Input
+                                OutlinedTextField(
+                                    value = notes,
+                                    onValueChange = { notes = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    placeholder = { 
+                                        Text(
+                                            "Add notes, links...",
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        ) 
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = Color.Transparent,
+                                        unfocusedBorderColor = Color.Transparent,
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent
+                                    ),
+                                    minLines = 2,
+                                    maxLines = 4
                                 )
                             }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(20.dp))
+                        
+                        // Action Button
+                        Button(
+                            onClick = {
+                                // Create and Save Task
+                                val finalTitle = if (taskTitle.isBlank()) "Structure Your Day" else taskTitle
+                                val task = Task(
+                                    title = finalTitle,
+                                    date = Task.formatDate(selectedYear, selectedMonth, selectedDay),
+                                    startTime = Task.formatTime(startTime.hour, startTime.minute),
+                                    endTime = Task.formatTime(endTime.hour, endTime.minute),
+                                    isAllDay = isAllDay,
+                                    notes = notes
+                                )
+                                onSave(task)
+                                onDismiss()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = DaylineOrange,
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(24.dp)
+                        ) {
+                            Text(
+                                text = "Create Task",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
                     }
                 }
@@ -499,7 +470,7 @@ BasicTextField(
                         }
                         showDatePicker = false
                     }
-                ) { Text("OK") }
+                ) { Text("OK", color = DaylineOrange) }
             }
         }
     }
