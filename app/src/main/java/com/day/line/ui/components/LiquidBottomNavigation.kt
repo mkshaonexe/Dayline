@@ -68,7 +68,7 @@ fun LiquidBottomNavigation(
             .height(64.dp) // Smaller height
             .clip(RoundedCornerShape(32.dp)) // Adjusted corners
             .background(
-                color = Color.Black.copy(alpha = 0.6f) // Darker Glass background
+                color = Color.White.copy(alpha = 0.9f) // Light Glass background
             )
             .padding(4.dp) // Inner padding
     ) {
@@ -146,7 +146,7 @@ fun LiquidBottomNavigation(
                         Icon(
                             imageVector = item.icon,
                             contentDescription = item.title,
-                            tint = Color.Gray,
+                            tint = Color.Gray, // Darker gray for better visibility on white
                             modifier = Modifier.size(28.dp)
                         )
                     }
