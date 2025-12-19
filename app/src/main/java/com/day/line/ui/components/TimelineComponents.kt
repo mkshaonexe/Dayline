@@ -3,6 +3,7 @@ package com.day.line.ui.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -14,6 +15,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -148,20 +151,86 @@ fun TimelineNode(
                     .size(56.dp) // Slightly larger container for the squircle effect
                     .padding(vertical = 4.dp)
             ) {
-                // Background Shape
-                // Using a Box with rounded corners to simulate the squircle/rounded rect
+                // Liquid Glass Effect
+                
+                // 1. Base Gradient (The "Liquid")
+                // Mix the node color with a bit of gradient to give it depth
+                val baseGradient = androidx.compose.ui.graphics.Brush.linearGradient(
+                    colors = listOf(
+                        color,
+                        color.copy(alpha = 0.8f)
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset(100f, 100f)
+                )
+
+                // 2. Top Highlight (Light reflection from top)
+                val topHighlight = androidx.compose.ui.graphics.Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.45f), // Stronger highlight
+                        Color.Transparent
+                    ),
+                    startY = 0f,
+                    endY = 50f
+                )
+
+                // 3. Bottom Shadow (Inner depth)
+                val bottomShadow = androidx.compose.ui.graphics.Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.Black.copy(alpha = 0.15f) // Subtle shadow
+                    ),
+                    startY = 50f, // starts lower
+                    endY = 100f
+                )
+
+                // 4. Glass Border (The "Container" Rim)
+                val glassBorder = androidx.compose.ui.graphics.Brush.linearGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.7f),
+                        Color.White.copy(alpha = 0.2f),
+                        Color.White.copy(alpha = 0.5f)
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset(100f, 100f)
+                )
+
+                // Apply all layers to the box
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        // Outer Shadow for 3D elevation
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(20.dp),
+                            spotColor = color.copy(alpha = 0.5f), 
+                            ambientColor = color.copy(alpha = 0.2f)
+                        )
                         .clip(RoundedCornerShape(20.dp))
-                        .background(color)
+                        .background(brush = baseGradient)
+                        // Add border
+                        .border(
+                            width = 1.5.dp,
+                            brush = glassBorder,
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        // Draw highlights/shadows
+                        .drawWithContent {
+                            drawContent()
+                            drawRect(brush = topHighlight)
+                            drawRect(brush = bottomShadow)
+                        }
                 )
                 
-                // Icon
+                // Icon - Tinted white or proper contrast color for glass look
+                // The prompt says "thoes icon liek the new apple liquid glass" and keeps the icon.
+                // Usually glass icons are white or very dark. 
+                // Let's use a very dark tint for contrast on these pastel colors, 
+                // or keep the existing "Color.Black.copy(alpha = 0.7f)" but maybe sharpen it.
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color.Black.copy(alpha = 0.7f), // Dark iconography
+                    tint = Color.Black.copy(alpha = 0.75f), 
                     modifier = Modifier.size(24.dp)
                 )
             }
