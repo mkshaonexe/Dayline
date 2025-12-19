@@ -62,17 +62,12 @@ fun LiquidBottomNavigation(
 
     Box(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(24.dp) // More margin for floating effect
             .fillMaxWidth()
-            .height(80.dp)
-            .clip(RoundedCornerShape(40.dp))
+            .height(64.dp) // Smaller height
+            .clip(RoundedCornerShape(32.dp)) // Adjusted corners
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF2C2C2C),
-                        Color(0xFF1A1A1A)
-                    )
-                )
+                color = Color.Black.copy(alpha = 0.3f) // Glass/Transparent background
             )
             .padding(4.dp) // Inner padding
     ) {
@@ -88,7 +83,7 @@ fun LiquidBottomNavigation(
                 val weight by animateFloatAsState(
                     targetValue = if (isSelected) 1.5f else 1f,
                     animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        dampingRatio = Spring.DampingRatioLowBouncy, // More "fluid" bounce
                         stiffness = Spring.StiffnessLow
                     ),
                     label = "weight"
@@ -98,7 +93,7 @@ fun LiquidBottomNavigation(
                     modifier = Modifier
                         .weight(weight)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(40.dp))
+                        .clip(RoundedCornerShape(32.dp))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -108,8 +103,8 @@ fun LiquidBottomNavigation(
                                 Modifier.background(
                                     brush = Brush.linearGradient(
                                         colors = listOf(
-                                            Color(0xFF4CAF50).copy(alpha = 0.8f), // Green-ish transparent
-                                            Color(0xFF2E7D32).copy(alpha = 0.8f)  // Darker green
+                                            Color(0xFF4CAF50).copy(alpha = 0.7f), // Softer Green Glass
+                                            Color(0xFF81C784).copy(alpha = 0.5f)  // Lighter shine
                                         )
                                     )
                                 )
