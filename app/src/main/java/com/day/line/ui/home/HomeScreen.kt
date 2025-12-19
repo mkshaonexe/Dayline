@@ -17,9 +17,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.day.line.ui.components.AddTaskDialog
@@ -44,37 +57,33 @@ fun HomeScreen(
     // Default to Dayline as it's the core feature
     var currentRoute by remember { mutableStateOf(BottomNavItem.Dayline.route) }
     var showAddTaskDialog by remember { mutableStateOf(false) }
+    var isBottomBarVisible by remember { mutableStateOf(true) }
     val selectedDate by viewModel.selectedDate.collectAsState()
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                // If scrolling down (delta < 0), hide. If scrolling up (delta > 0), show.
+                if (available.y < -5f) {
+                    isBottomBarVisible = false
+                } else if (available.y > 5f) {
+                    isBottomBarVisible = true
+                }
+                return Offset.Zero
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color(0xFFF5F5F5),
-
-        floatingActionButton = {
-            // Only show FAB on Dayline screen
-            if (currentRoute == BottomNavItem.Dayline.route) {
-                FloatingActionButton(
-                    onClick = { showAddTaskDialog = true },
-                    containerColor = DaylineOrange,
-                    contentColor = Color.White,
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .padding(bottom = 90.dp) // Lift FAB above the floating nav bar
-                        .size(56.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add Task",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-        }
+        // FAB moved to main content to coordinate animation with Bottom Bar
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .nestedScroll(nestedScrollConnection)
         ) {
             Crossfade(targetState = currentRoute, label = "NavigationCrossfade") { route ->
                 when (route) {
@@ -86,16 +95,56 @@ fun HomeScreen(
                 }
             }
             
-            // Floating Bottom Navigation Overlay
+            // Floating Bottom Navigation Overlay & FAB
             Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                modifier = Modifier.align(Alignment.BottomCenter)
             ) {
-                LiquidBottomNavigation(
-                    items = items,
-                    currentRoute = currentRoute,
-                    onItemClick = { currentRoute = it.route }
-                )
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isBottomBarVisible,
+                    enter = slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(durationMillis = 800, easing = LinearOutSlowInEasing)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 800)),
+                    exit = slideOutVertically(
+                        targetOffsetY = { it },
+                        animationSpec = tween(durationMillis = 800, easing = FastOutLinearInEasing)
+                    ) + fadeOut(animationSpec = tween(durationMillis = 800))
+                ) {
+                    LiquidBottomNavigation(
+                        items = items,
+                        currentRoute = currentRoute,
+                        onItemClick = { currentRoute = it.route }
+                    )
+                }
+            }
+
+            // Floating Action Button (FAB) - Also animated
+            if (currentRoute == BottomNavItem.Dayline.route) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = 90.dp) // Adjusted padding for overlay FAB
+                ) {
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = isBottomBarVisible,
+                        enter = scaleIn(animationSpec = tween(600)) + fadeIn(animationSpec = tween(600)),
+                        exit = scaleOut(animationSpec = tween(600)) + fadeOut(animationSpec = tween(600))
+                    ) {
+                        FloatingActionButton(
+                            onClick = { showAddTaskDialog = true },
+                            containerColor = DaylineOrange,
+                            contentColor = Color.White,
+                            shape = CircleShape,
+                            modifier = Modifier.size(56.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add Task",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
             }
 
             // Add Task Dialog (Overlay)
