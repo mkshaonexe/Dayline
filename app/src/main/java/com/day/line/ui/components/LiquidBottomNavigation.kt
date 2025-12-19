@@ -73,7 +73,7 @@ fun LiquidBottomNavigation(
     // Premium Glass Effect Tuning
     // Dark mode: More transparent to show depth, subtle white border for definition.
     // Light mode: More opaque to hide content behind, subtle grey border.
-    val glassBackgroundColor = if (isDark) MaterialTheme.colorScheme.surface.copy(alpha = 0.70f) else MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+    val glassBackgroundColor = if (isDark) MaterialTheme.colorScheme.surface.copy(alpha = 0.75f) else MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
     val glassBorderColor = if (isDark) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
     val shadowColor = if (isDark) Color.Black.copy(alpha = 0.6f) else MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f)
     val unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
