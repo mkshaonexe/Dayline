@@ -12,6 +12,9 @@ data class Task(
     val id: Long = 0,
     
     val title: String,
+
+    val icon: String = "default", // Icon name (e.g., "Notifications", "List", "Face", "PlayArrow")
+
     
     // Date in format: yyyy-MM-dd (e.g., "2025-12-19")
     val date: String,

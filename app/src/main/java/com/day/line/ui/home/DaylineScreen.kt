@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +27,11 @@ fun DaylineScreen(
             .fillMaxSize()
             .padding(bottom = 80.dp) // Add padding to avoid overlap with floating bottom bar
     ) {
-        CalendarStrip()
+        val selectedDate by viewModel.selectedDate.collectAsState()
+        CalendarStrip(
+            selectedDate = selectedDate,
+            onDateSelected = { viewModel.selectDate(it) }
+        )
 
         // Visual Section Separator
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -37,55 +43,65 @@ fun DaylineScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
         
+        val timelineItems by viewModel.timelineItems.collectAsState()
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            item {
-                TimelineNode(
-                    time = "05:30",
-                    title = "Wake up!",
-                    subtitle = "A well-deserved break.",
-                    icon = Icons.Default.Notifications,
-                    color = PastelRed
-                )
-            }
-            item {
-                TimelineNode(
-                    time = "08:30",
-                    endTime = "09:00",
-                    duration = "30 min",
-                    title = "Plan Day",
-                    icon = Icons.Default.List,
-                    color = PastelActionBlue
-                )
-            }
-            item {
-                TimelineNode(
-                    time = "09:00",
-                    endTime = "09:30",
-                    duration = "30 min",
-                    title = "Get Ready",
-                    icon = Icons.Default.Face,
-                    color = PastelOrange
-                )
-            }
-            item {
-                TimelineNode(
-                    time = "11:24",
-                    duration = "20m remaining",
-                    title = "Filming",
-                    subtitle = "Downtime—recharge complete.",
-                    icon = Icons.Default.PlayArrow,
-                    color = PastelGreen,
-                    isLast = true
-                )
+            items(timelineItems.size) { index ->
+                val item = timelineItems[index]
+                val isLast = index == timelineItems.lastIndex
+
+                when (item) {
+                    is TaskViewModel.TimelineItem.Fixed -> {
+                        TimelineNode(
+                            time = item.time,
+                            title = item.title,
+                            subtitle = item.subtitle,
+                            icon = getIconByName(item.iconName),
+                            color = Color(item.colorHex), // Convert Long to Color
+                            isLast = isLast
+                        )
+                    }
+                    is TaskViewModel.TimelineItem.UserTask -> {
+                        val task = item.task
+                        TimelineNode(
+                            time = task.startTime,
+                            endTime = task.endTime,
+                            duration = task.getDuration(),
+                            title = task.title,
+                            subtitle = task.notes.takeIf { it.isNotEmpty() },
+                            icon = getIconByName(task.icon),
+                            color = DaylineOrange, // Or dynamic color
+                            isLast = isLast
+                        )
+                    }
+                }
             }
             // Extra space at bottom
             item { 
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }
+    }
+}
+
+private fun getIconByName(name: String): androidx.compose.ui.graphics.vector.ImageVector {
+    return when (name) {
+        "Notifications" -> Icons.Default.Notifications
+        "List" -> Icons.Default.List
+        "Face" -> Icons.Default.Face
+        "PlayArrow" -> Icons.Default.PlayArrow
+        "Bedtime" -> Icons.Default.Bedtime // Ensure this icon exists or use fallback
+        "Work" -> Icons.Default.Work
+        "FitnessCenter" -> Icons.Default.FitnessCenter
+        "LocalCafe" -> Icons.Default.LocalCafe
+        "Create" -> Icons.Default.Create
+        "Code" -> Icons.Default.Code
+        "MusicNote" -> Icons.Default.MusicNote
+        "Book" -> Icons.Default.Book
+        else -> Icons.Default.Star // Default fallback
     }
 }

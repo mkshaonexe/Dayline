@@ -408,8 +408,10 @@ fun AddTaskDialog(
                                     startTime = Task.formatTime(startTime.hour, startTime.minute),
                                     endTime = Task.formatTime(endTime.hour, endTime.minute),
                                     isAllDay = isAllDay,
-                                    notes = notes
+                                    notes = notes,
+                                    icon = listOf("Notifications", "List", "Face", "PlayArrow", "Work", "FitnessCenter", "LocalCafe", "Create", "Code", "MusicNote", "Book").random()
                                 )
+
                                 onSave(task)
                                 onDismiss()
                             },
