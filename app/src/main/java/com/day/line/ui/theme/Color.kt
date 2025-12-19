@@ -13,6 +13,9 @@ val DarkGray = Color(0xFF424242)
 val TextBlack = Color(0xFF1D1B20)
 val TextWhite = Color(0xFFFFFFFF)
 
+val CreamBackground = Color(0xFFF5EBCF)
+val SageBackground = Color(0xFFC2CCA8)
+
 // Premium Dark Theme Colors
 val DarkBackground = Color(0xFF121212) // Deep Matte Black
 val DarkSurface = Color(0xFF1E1E1E)    // Slightly lighter for cards

@@ -30,6 +30,8 @@ import com.day.line.ui.theme.SoftTeal
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+import com.day.line.ui.theme.SageBackground
+
 @Composable
 fun DaylineScreen(
     viewModel: TaskViewModel = hiltViewModel()
@@ -52,7 +54,7 @@ fun DaylineScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colorScheme.background)
+                .background(SageBackground)
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             
