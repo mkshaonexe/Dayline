@@ -67,7 +67,7 @@ fun LiquidBottomNavigation(
             .height(64.dp) // Smaller height
             .clip(RoundedCornerShape(32.dp)) // Adjusted corners
             .background(
-                color = Color.Black.copy(alpha = 0.3f) // Glass/Transparent background
+                color = Color.Black.copy(alpha = 0.6f) // Darker Glass background
             )
             .padding(4.dp) // Inner padding
     ) {
@@ -83,7 +83,7 @@ fun LiquidBottomNavigation(
                 val weight by animateFloatAsState(
                     targetValue = if (isSelected) 1.5f else 1f,
                     animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy, // More "fluid" bounce
+                        dampingRatio = Spring.DampingRatioNoBouncy, // Smoother, less bounce
                         stiffness = Spring.StiffnessLow
                     ),
                     label = "weight"
@@ -103,8 +103,8 @@ fun LiquidBottomNavigation(
                                 Modifier.background(
                                     brush = Brush.linearGradient(
                                         colors = listOf(
-                                            Color(0xFF4CAF50).copy(alpha = 0.7f), // Softer Green Glass
-                                            Color(0xFF81C784).copy(alpha = 0.5f)  // Lighter shine
+                                            Color(0xFF4CAF50).copy(alpha = 0.8f), // Richer Green
+                                            Color(0xFF81C784).copy(alpha = 0.6f)  // Lighter shine
                                         )
                                     )
                                 )

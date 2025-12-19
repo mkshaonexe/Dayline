@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.day.line.ui.theme.DaylineOrange
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -61,9 +63,11 @@ fun CalendarStrip(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = currentDate.format(monthYearFormatter),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                text = currentDate.format(monthYearFormatter).uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.DarkGray,
+                letterSpacing = 1.sp
             )
             // Icon placeholder
         }
@@ -112,9 +116,9 @@ fun DayItem(
         Box(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .size(36.dp)
+                .size(40.dp) // Slightly easier to tap
                 .background(
-                    if (isSelected) Color.Black else Color.Transparent,
+                    if (isSelected) DaylineOrange else Color.Transparent, // Use brand color
                     CircleShape
                 )
                 .then(
@@ -129,8 +133,8 @@ fun DayItem(
             Text(
                 text = date,
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (isSelected) Color.White else Color.Black,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                color = if (isSelected) Color.White else Color.DarkGray,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
             )
         }
     }

@@ -90,10 +90,10 @@ fun TimelineNode(
 
                     // Draw line extending to bottom
                     drawLine(
-                        color = if (type == TimelineNodeType.GAP) SoftGray else color.copy(alpha = 0.5f),
+                        color = if (type == TimelineNodeType.GAP) SoftGray else color.copy(alpha = 0.3f), // Subtler line
                         start = Offset(center.x, 0f),
-                        end = Offset(center.x, size.height + 40.dp.toPx()), // Extend to connect next node
-                        strokeWidth = 3.dp.toPx(),
+                        end = Offset(center.x, size.height + 40.dp.toPx()), 
+                        strokeWidth = 2.dp.toPx(), // Thinner line
                         pathEffect = pathEffect
                     )
                 }
@@ -105,7 +105,7 @@ fun TimelineNode(
                     .padding(top = 16.dp)
                     .size(if (type == TimelineNodeType.START || type == TimelineNodeType.END) 56.dp else 40.dp)
                     .background(color, CircleShape)
-                    .padding(4.dp) // Border effect
+                    .padding(if (type == TimelineNodeType.START || type == TimelineNodeType.END) 4.dp else 2.dp) // Thinner border
                     .clip(CircleShape)
                     .background(color = color)
                     .then(
@@ -124,7 +124,7 @@ fun TimelineNode(
                     // Inner dot for simple tasks
                      Box(
                         modifier = Modifier
-                            .size(16.dp)
+                            .size(12.dp) // Smaller inner dot
                             .background(color, CircleShape)
                     )
                 }
@@ -139,7 +139,7 @@ fun TimelineNode(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium, // Slightly smaller/cleaner
                 fontWeight = FontWeight.Bold,
                 color = TextBlack
             )

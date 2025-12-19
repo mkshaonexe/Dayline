@@ -76,12 +76,12 @@ fun HomeScreen(
                 shape = CircleShape,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
-                    .size(64.dp)
+                    .size(56.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add Task",
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
