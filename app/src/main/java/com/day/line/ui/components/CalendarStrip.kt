@@ -21,20 +21,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.day.line.ui.theme.DaylineOrange
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun CalendarStrip(
-    selectedDate: String = "2025-12-19",
-    onDateSelected: (String) -> Unit = {}
+    selectedDate: String,
+    onDateSelected: (String) -> Unit
 ) {
-    // Parse selected date to highlight the correct day
-    val selectedDay = try {
-        selectedDate.split("-").last().toInt()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val currentDate = try {
+        LocalDate.parse(selectedDate, formatter)
     } catch (e: Exception) {
-        19
+        LocalDate.of(2025, 12, 19)
     }
+
+    // Calculate start of the week (Monday)
+    // If we want a scrolling calendar later, we'd need more logic. 
+    // For now, let's just show the week surrounding the selected date
+    // or specifically the current week. 
+    // Let's stick to "Week containing the selected date" logic for now.
+    val startOfWeek = currentDate.with(DayOfWeek.MONDAY)
     
+    val weekDates = (0..6).map { startOfWeek.plusDays(it.toLong()) }
+    
+    val monthYearFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,7 +61,7 @@ fun CalendarStrip(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "December 2025",
+                text = currentDate.format(monthYearFormatter),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -60,16 +75,17 @@ fun CalendarStrip(
                 .padding(top = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-            val dates = listOf("15", "16", "17", "18", "19", "20", "21")
-            
-            days.forEachIndexed { index, day ->
+            weekDates.forEach { date ->
+                val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                val dayOfMonth = date.dayOfMonth.toString()
+                val isSelected = date.isEqual(currentDate)
+
                 DayItem(
-                    day = day,
-                    date = dates[index],
-                    isSelected = dates[index].toInt() == selectedDay,
+                    day = dayName,
+                    date = dayOfMonth,
+                    isSelected = isSelected,
                     onClick = {
-                        onDateSelected("2025-12-${dates[index]}")
+                        onDateSelected(date.format(formatter))
                     }
                 )
             }
@@ -134,5 +150,8 @@ private fun Modifier.clickableWithoutRipple(onClick: () -> Unit): Modifier {
 @Preview(showBackground = true)
 @Composable
 fun CalendarStripPreview() {
-    CalendarStrip()
+    CalendarStrip(
+        selectedDate = "2025-12-19",
+        onDateSelected = {}
+    )
 }

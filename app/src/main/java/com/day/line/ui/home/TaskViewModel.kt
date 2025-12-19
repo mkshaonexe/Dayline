@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.day.line.data.Task
 import com.day.line.data.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -29,13 +31,16 @@ class TaskViewModel @Inject constructor(
     val selectedDate: StateFlow<String> = _selectedDate.asStateFlow()
     
     // Tasks for the selected date
-    val tasksForSelectedDate: StateFlow<List<Task>> = 
-        repository.getTasksForDate(_selectedDate.value)
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val tasksForSelectedDate: StateFlow<List<Task>> = _selectedDate
+        .flatMapLatest { date ->
+            repository.getTasksForDate(date)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
     
     fun selectDate(date: String) {
         _selectedDate.value = date
