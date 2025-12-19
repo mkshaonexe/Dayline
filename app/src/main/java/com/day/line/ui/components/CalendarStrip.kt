@@ -1,6 +1,8 @@
 package com.day.line.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,7 +24,17 @@ import androidx.compose.ui.unit.dp
 import com.day.line.ui.theme.DaylineOrange
 
 @Composable
-fun CalendarStrip() {
+fun CalendarStrip(
+    selectedDate: String = "2025-12-19",
+    onDateSelected: (String) -> Unit = {}
+) {
+    // Parse selected date to highlight the correct day
+    val selectedDay = try {
+        selectedDate.split("-").last().toInt()
+    } catch (e: Exception) {
+        19
+    }
+    
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,7 +67,10 @@ fun CalendarStrip() {
                 DayItem(
                     day = day,
                     date = dates[index],
-                    isSelected = index == 3 // Dummy selection
+                    isSelected = dates[index].toInt() == selectedDay,
+                    onClick = {
+                        onDateSelected("2025-12-${dates[index]}")
+                    }
                 )
             }
         }
@@ -62,9 +78,15 @@ fun CalendarStrip() {
 }
 
 @Composable
-fun DayItem(day: String, date: String, isSelected: Boolean) {
+fun DayItem(
+    day: String, 
+    date: String, 
+    isSelected: Boolean,
+    onClick: () -> Unit = {}
+) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(4.dp)
     ) {
         Text(
             text = day,
@@ -76,8 +98,15 @@ fun DayItem(day: String, date: String, isSelected: Boolean) {
                 .padding(top = 8.dp)
                 .size(36.dp)
                 .background(
-                    if (isSelected) Color.Black else Color.Transparent, // Using Black for selected day based on image
+                    if (isSelected) Color.Black else Color.Transparent,
                     CircleShape
+                )
+                .then(
+                    if (!isSelected) {
+                        Modifier.clickableWithoutRipple { onClick() }
+                    } else {
+                        Modifier
+                    }
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -89,6 +118,17 @@ fun DayItem(day: String, date: String, isSelected: Boolean) {
             )
         }
     }
+}
+
+@Composable
+private fun Modifier.clickableWithoutRipple(onClick: () -> Unit): Modifier {
+    return this.then(
+        clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = onClick
+        )
+    )
 }
 
 @Preview(showBackground = true)

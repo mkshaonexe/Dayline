@@ -155,6 +155,98 @@ fun TimelineNode(
     }
 }
 
+@Composable
+fun TaskTimelineNode(
+    time: String,
+    title: String,
+    duration: String = "",
+    notes: String = "",
+    color: Color = DaylineOrange,
+    isLast: Boolean = false,
+    onClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+    ) {
+        // Time Column
+        Text(
+            text = time,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = DarkGray,
+            modifier = Modifier
+                .width(70.dp)
+                .padding(top = 28.dp, end = 12.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.End
+        )
+
+        // Timeline Line & Node
+        Box(
+            modifier = Modifier
+                .width(40.dp)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            // The connecting line
+            if (!isLast) {
+                Canvas(modifier = Modifier
+                    .width(2.dp)
+                    .fillMaxHeight()
+                    .padding(top = 48.dp)
+                ) {
+                    drawLine(
+                        color = color.copy(alpha = 0.5f),
+                        start = Offset(center.x, 0f),
+                        end = Offset(center.x, size.height + 40.dp.toPx()),
+                        strokeWidth = 3.dp.toPx()
+                    )
+                }
+            }
+
+            // The Node Icon
+            Box(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .size(40.dp)
+                    .background(color, CircleShape)
+                    .padding(4.dp)
+                    .clip(CircleShape)
+                    .background(Color.White, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .background(color, CircleShape)
+                )
+            }
+        }
+
+        // Content
+        Column(
+            modifier = Modifier
+                .padding(start = 20.dp, top = 24.dp, end = 16.dp)
+                .weight(1f)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = TextBlack
+            )
+            if (duration.isNotEmpty()) {
+                Text(
+                    text = duration,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TimelinePreview() {
