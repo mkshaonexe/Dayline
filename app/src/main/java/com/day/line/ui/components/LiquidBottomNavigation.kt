@@ -71,32 +71,53 @@ fun LiquidBottomNavigation(
     val isDark = androidx.compose.foundation.isSystemInDarkTheme() 
     
     // Premium Glass Effect Tuning
-    // Dark mode: More transparent to show depth, subtle white border for definition.
-    // Light mode: More opaque to hide content behind, subtle grey border.
-    val glassBackgroundColor = if (isDark) MaterialTheme.colorScheme.surface.copy(alpha = 0.75f) else MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
-    val glassBorderColor = if (isDark) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.6f) else MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f)
+    // We utilize gradients to simulate the refractive properties of glass.
+    
+    // Glass Background: Top-down gradient (lighter at top to simulate overhead light)
+    val glassGradient = Brush.verticalGradient(
+        colors = if (isDark) listOf(
+            Color(0xFF2D2D2D).copy(alpha = 0.7f), // Top: Slightly lighter/reflective
+            Color(0xFF1A1A1A).copy(alpha = 0.5f)  // Bottom: More transparent
+        ) else listOf(
+            Color(0xFFFFFFFF).copy(alpha = 0.9f),
+            Color(0xFFF0F0F0).copy(alpha = 0.6f)
+        )
+    )
+
+    // Glass Border: Simulate a "rim light" effect
+    // Top border is white/bright (catching light), bottom is darker/transparent
+    val borderGradient = Brush.verticalGradient(
+        colors = if (isDark) listOf(
+            Color.White.copy(alpha = 0.4f),       // Top rim highlight
+            Color.White.copy(alpha = 0.05f)       // Fading out
+        ) else listOf(
+            Color.White.copy(alpha = 0.8f),
+            Color.White.copy(alpha = 0.2f)
+        )
+    )
+
+    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.1f)
     val unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
 
     Box(
         modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, bottom = 12.dp) 
+            .padding(start = 24.dp, end = 24.dp, bottom = 24.dp) // Lifted up slightly more for floating effect
             .fillMaxWidth()
-            .height(64.dp)
+            .height(72.dp) // Slightly taller for the pill shape
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(50),
+                elevation = 16.dp, // Deeper shadow for floating depth
+                shape = RoundedCornerShape(100.dp), // Full pill shape
                 spotColor = shadowColor,
                 ambientColor = shadowColor
             )
-            .clip(RoundedCornerShape(50)) 
-            .background(color = glassBackgroundColor)
+            .clip(RoundedCornerShape(100.dp))
+            .background(brush = glassGradient)
             .border(
                 width = 1.dp,
-                color = glassBorderColor,
-                shape = RoundedCornerShape(50)
+                brush = borderGradient,
+                shape = RoundedCornerShape(100.dp)
             )
-            .padding(4.dp) 
+            .padding(horizontal = 8.dp, vertical = 4.dp) // Inner padding for content
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
