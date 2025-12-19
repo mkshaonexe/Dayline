@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -67,9 +69,20 @@ fun LiquidBottomNavigation(
             .padding(start = 20.dp, end = 20.dp, bottom = 12.dp) // Provide floating margins
             .fillMaxWidth()
             .height(64.dp)
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(50),
+                spotColor = Color(0x40000000), // Soft black shadow
+                ambientColor = Color(0x40000000)
+            )
             .clip(RoundedCornerShape(50)) // Full pill shape
             .background(
-                color = Color.White.copy(alpha = 0.9f) // Light Glass background
+                color = Color.White.copy(alpha = 0.95f) // Slightly more opaque for better contrast
+            )
+            .border(
+                width = 1.dp,
+                color = Color(0xFFEEEEEE), // Subtle grey border
+                shape = RoundedCornerShape(50)
             )
             .padding(4.dp) // Inner padding
     ) {
