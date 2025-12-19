@@ -128,7 +128,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(end = 16.dp, bottom = 90.dp) // Adjusted padding for overlay FAB
+                        .padding(end = 16.dp, bottom = 70.dp) // Adjusted padding for smaller overlay FAB
                 ) {
                     // Radiant Gradient FAB
                     androidx.compose.animation.AnimatedVisibility(
@@ -138,8 +138,8 @@ fun HomeScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(64.dp) // Slightly larger for impact
-                                .shadow(12.dp, CircleShape, spotColor = DaylineOrange)
+                                .size(50.dp) // Reduced size
+                                .shadow(8.dp, CircleShape, spotColor = DaylineOrange)
                                 .clip(CircleShape)
                                 .background(
                                     brush = androidx.compose.ui.graphics.Brush.linearGradient(
@@ -153,7 +153,7 @@ fun HomeScreen(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Add Task",
                                 tint = Color.White,
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }

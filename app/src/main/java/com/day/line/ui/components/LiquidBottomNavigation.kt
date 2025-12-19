@@ -102,9 +102,9 @@ fun LiquidBottomNavigation(
 
     Box(
         modifier = Modifier
-            .padding(start = 20.dp, end = 20.dp, bottom = 30.dp) // Generous float
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp) // Generous float
             .fillMaxWidth()
-            .height(80.dp) // Taller, premium feel
+            .height(60.dp) // Compact, premium feel
             .shadow(
                 elevation = 24.dp, // High elevation for "float"
                 shape = RoundedCornerShape(100.dp),
@@ -172,7 +172,7 @@ fun LiquidBottomNavigation(
                                 imageVector = item.icon,
                                 contentDescription = item.title,
                                 tint = Color.White,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                             
                             Box(modifier = Modifier.padding(start = 10.dp)) {
@@ -180,7 +180,7 @@ fun LiquidBottomNavigation(
                                     text = item.title,
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
+                                    fontSize = 12.sp,
                                     letterSpacing = 0.5.sp // Clean typography
                                 )
                             }
@@ -190,7 +190,7 @@ fun LiquidBottomNavigation(
                             imageVector = item.icon,
                             contentDescription = item.title,
                             tint = unselectedIconColor, 
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
