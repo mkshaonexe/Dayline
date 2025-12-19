@@ -34,14 +34,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.day.line.ui.theme.DaylineOrange
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
+    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF9F9F9))
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp)
     ) {
         Spacer(modifier = Modifier.height(32.dp))
@@ -50,7 +57,7 @@ fun SettingsScreen() {
             text = "Settings",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
         
         Spacer(modifier = Modifier.height(32.dp))
@@ -59,13 +66,17 @@ fun SettingsScreen() {
             SettingsItem(
                 icon = Icons.Default.Palette,
                 title = "Dark Mode",
-                hasSwitch = true
+                hasSwitch = true,
+                isChecked = isDarkTheme,
+                onCheckedChange = { viewModel.toggleTheme(it) }
             )
             Spacer(modifier = Modifier.height(12.dp))
             SettingsItem(
                 icon = Icons.Default.Notifications,
                 title = "Notifications",
-                hasSwitch = true
+                hasSwitch = true,
+                isChecked = false, // Placeholder
+                onCheckedChange = { }
             )
         }
         
@@ -88,7 +99,7 @@ fun SettingsSection(title: String, content: @Composable () -> Unit) {
             text = title,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, // M3 variant color for subtitles
             modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
         )
         content()
@@ -100,16 +111,16 @@ fun SettingsItem(
     icon: ImageVector,
     title: String,
     subtitle: String? = null,
-    hasSwitch: Boolean = false
+    hasSwitch: Boolean = false,
+    isChecked: Boolean = false,
+    onCheckedChange: (Boolean) -> Unit = {}
 ) {
-    var isChecked by remember { mutableStateOf(false) }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { if(hasSwitch) isChecked = !isChecked },
+            .clickable { if(hasSwitch) onCheckedChange(!isChecked) },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -132,13 +143,13 @@ fun SettingsItem(
                     text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (subtitle != null) {
                     Text(
                         text = subtitle,
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -146,7 +157,7 @@ fun SettingsItem(
             if (hasSwitch) {
                 Switch(
                     checked = isChecked,
-                    onCheckedChange = { isChecked = it },
+                    onCheckedChange = onCheckedChange,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = DaylineOrange,
@@ -158,7 +169,7 @@ fun SettingsItem(
                 Icon(
                     imageVector = Icons.Default.ChevronRight,
                     contentDescription = null,
-                    tint = Color.LightGray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

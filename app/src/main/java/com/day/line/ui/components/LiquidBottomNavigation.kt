@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ViewStream
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,6 +65,25 @@ fun LiquidBottomNavigation(
 ) {
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it != -1 } ?: 0
 
+    // Determine glass colors based on theme
+    // We can rely on MaterialTheme.colorScheme.background luminance or simple state
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme() // Or pass it in. For now, system theme check.
+    // However, since we force theme in Main, this composable needs to know about it.
+    // The easiest way is to check background color brightness or assume if surface is dark.
+    // Let's use MaterialTheme.colorScheme.surface's luminance logic implicitly by using tokens, 
+    // BUT we want glass.
+    
+    // Better: Check if primary container is dark?
+    // Let's check a known dark color token, e.g. background
+    // Color.luminance requires api 26 for Color class in some contexts, or we can just assume standard.
+    // Safest: Use MaterialTheme.colorScheme.background == Color(0xFF1C1B1F) (approx).
+    
+    // Actually, simpler: Use a theme aware variable.
+    val glassBackgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+    val glassBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+    val unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    val shadowColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.2f)
+
     Box(
         modifier = Modifier
             .padding(start = 20.dp, end = 20.dp, bottom = 12.dp) // Provide floating margins
@@ -72,16 +92,14 @@ fun LiquidBottomNavigation(
             .shadow(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(50),
-                spotColor = Color(0x40000000), // Soft black shadow
-                ambientColor = Color(0x40000000)
+                spotColor = shadowColor,
+                ambientColor = shadowColor
             )
             .clip(RoundedCornerShape(50)) // Full pill shape
-            .background(
-                color = Color.White.copy(alpha = 0.95f) // Slightly more opaque for better contrast
-            )
+            .background(color = glassBackgroundColor)
             .border(
                 width = 1.dp,
-                color = Color(0xFFEEEEEE), // Subtle grey border
+                color = glassBorderColor,
                 shape = RoundedCornerShape(50)
             )
             .padding(4.dp) // Inner padding
@@ -141,10 +159,6 @@ fun LiquidBottomNavigation(
                                 tint = Color.White,
                                 modifier = Modifier.size(24.dp)
                             )
-                            // Text hidden on very small screens or just shown next to icon
-                            // For this specific design, it shows text below or beside. 
-                            // The reference image shows "Home" text below icon or just icon. 
-                            // Let's stick to the image style: Icon + Text for selected
                             
                             Box(modifier = Modifier.padding(start = 8.dp)) {
                                 Text(
@@ -160,7 +174,7 @@ fun LiquidBottomNavigation(
                         Icon(
                             imageVector = item.icon,
                             contentDescription = item.title,
-                            tint = Color.Gray, // Darker gray for better visibility on white
+                            tint = unselectedIconColor, 
                             modifier = Modifier.size(28.dp)
                         )
                     }
