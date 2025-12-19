@@ -1,10 +1,6 @@
 package com.day.line.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -272,26 +268,43 @@ fun AddTaskDialog(
                                     }
                                 }
                                 
-                                // Enhanced Time Picker Overlay
-                                AnimatedVisibility(
-                                    visible = showEnhancedTimePicker,
-                                    enter = expandVertically() + fadeIn(),
-                                    exit = shrinkVertically() + fadeOut()
-                                ) {
-                                    Box(modifier = Modifier.padding(top = 8.dp)) {
-                                        EnhancedTimePicker(
-                                            startTime = startTime,
-                                            endTime = endTime,
-                                            onStartTimeChange = { newStart ->
-                                                val duration = ChronoUnit.MINUTES.between(startTime, endTime)
-                                                startTime = newStart
-                                                endTime = newStart.plusMinutes(duration) // Keep duration
-                                            },
-                                            onEndTimeChange = { newEnd ->
-                                                endTime = newEnd
-                                            },
-                                            onDismiss = { showEnhancedTimePicker = false }
+// Enhanced Time Picker Dialog
+                                if (showEnhancedTimePicker) {
+                                    Dialog(
+                                        onDismissRequest = { showEnhancedTimePicker = false },
+                                        properties = DialogProperties(
+                                            usePlatformDefaultWidth = false, // Allow custom width
+                                            decorFitsSystemWindows = false
                                         )
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(Color.Black.copy(alpha = 0.5f))
+                                                .clickable { showEnhancedTimePicker = false },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            // The actual picker content
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(0.9f) // Allow some side padding
+                                                    .clickable(enabled = false) {} // Prevent click-through
+                                            ) {
+                                                EnhancedTimePicker(
+                                                    startTime = startTime,
+                                                    endTime = endTime,
+                                                    onStartTimeChange = { newStart ->
+                                                        val duration = ChronoUnit.MINUTES.between(startTime, endTime)
+                                                        startTime = newStart
+                                                        endTime = newStart.plusMinutes(duration) // Keep duration
+                                                    },
+                                                    onEndTimeChange = { newEnd ->
+                                                        endTime = newEnd
+                                                    },
+                                                    onDismiss = { showEnhancedTimePicker = false }
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
