@@ -26,7 +26,6 @@ fun DaylineScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 80.dp) // Add padding to avoid overlap with floating bottom bar
             .background(Color.White) // Default background
     ) {
         val selectedDate by viewModel.selectedDate.collectAsState()
@@ -37,10 +36,14 @@ fun DaylineScreen(
                 .fillMaxWidth()
                 .background(PastelGrey)
         ) {
-            CalendarStrip(
-                selectedDate = selectedDate,
-                onDateSelected = { viewModel.selectDate(it) }
-            )
+            // Apply status bar padding to the content inside the grey box
+            // so the grey background extends behind the status bar
+            Box(modifier = Modifier.statusBarsPadding()) {
+                CalendarStrip(
+                    selectedDate = selectedDate,
+                    onDateSelected = { viewModel.selectDate(it) }
+                )
+            }
         }
 
         // Visual Section Separator
@@ -57,7 +60,8 @@ fun DaylineScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(Color.White) // Explicit white background for tasks
+                .background(Color.White), // Explicit white background for tasks
+            contentPadding = PaddingValues(bottom = 100.dp) // Space for FAB/Nav + Nav Bar
         ) {
             // Spacer at top of list
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -100,10 +104,6 @@ fun DaylineScreen(
                         )
                     }
                 }
-            }
-            // Extra space at bottom
-            item { 
-                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }
