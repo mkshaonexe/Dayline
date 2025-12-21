@@ -44,24 +44,55 @@ class NotificationScheduler(private val context: Context) {
             val zoneId = ZoneId.systemDefault()
             val triggerTime = localDateTime.atZone(zoneId).toInstant().toEpochMilli()
 
-            val intent = Intent(context, NotificationReceiver::class.java).apply {
-                putExtra("TASK_ID", task.id)
-                putExtra("TASK_TITLE", task.title)
-            }
-
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                task.id.toInt(),
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-
+            // Check if this is a "Wind Down" task
+            val isWindDown = task.title.contains("Wind Down", ignoreCase = true)
+            
+            // Schedule the main notification
             if (triggerTime > System.currentTimeMillis()) {
+                val intent = Intent(context, NotificationReceiver::class.java).apply {
+                    putExtra("TASK_ID", task.id)
+                    putExtra("TASK_TITLE", task.title)
+                    putExtra("IS_PRE_REMINDER", false)
+                }
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    task.id.toInt(),
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     triggerTime,
                     pendingIntent
                 )
+                
+                // For Wind Down tasks, schedule an additional reminder 30 minutes before
+                if (isWindDown) {
+                    val preReminderTime = triggerTime - (30 * 60 * 1000) // 30 minutes before
+                    
+                    if (preReminderTime > System.currentTimeMillis()) {
+                        val preIntent = Intent(context, NotificationReceiver::class.java).apply {
+                            putExtra("TASK_ID", task.id)
+                            putExtra("TASK_TITLE", task.title)
+                            putExtra("IS_PRE_REMINDER", true)
+                        }
+
+                        val prePendingIntent = PendingIntent.getBroadcast(
+                            context,
+                            (task.id.toInt() + 1000000), // Different ID for pre-reminder
+                            preIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            preReminderTime,
+                            prePendingIntent
+                        )
+                    }
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -69,13 +100,24 @@ class NotificationScheduler(private val context: Context) {
     }
     
     fun cancelNotification(task: Task) {
-         val intent = Intent(context, NotificationReceiver::class.java)
-         val pendingIntent = PendingIntent.getBroadcast(
+        // Cancel main notification
+        val intent = Intent(context, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
             context,
             task.id.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
+        
+        // Cancel pre-reminder if it exists (for Wind Down tasks)
+        val preIntent = Intent(context, NotificationReceiver::class.java)
+        val prePendingIntent = PendingIntent.getBroadcast(
+            context,
+            (task.id.toInt() + 1000000),
+            preIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(prePendingIntent)
     }
 }

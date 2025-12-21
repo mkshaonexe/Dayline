@@ -12,17 +12,21 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val taskId = intent.getLongExtra("TASK_ID", -1)
         val taskTitle = intent.getStringExtra("TASK_TITLE") ?: "Task Reminder"
+        val isPreReminder = intent.getBooleanExtra("IS_PRE_REMINDER", false)
         
         if (taskId != -1L) {
              val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
              
-             // Ensure channel exists (id: "task_reminders")
-             // Note: Channel creation is best done in App or Helper, but we can double check here or trust it's done.
+             val (title, message) = if (isPreReminder) {
+                 "Wind Down Reminder" to "Your wind down is in 30 min - lower your screen time"
+             } else {
+                 "Task Reminder" to taskTitle
+             }
              
              val notification = NotificationCompat.Builder(context, "task_reminders")
-                 .setSmallIcon(R.mipmap.ic_launcher_round) // Replace with valid icon
-                 .setContentTitle("Task Reminder")
-                 .setContentText(taskTitle)
+                 .setSmallIcon(R.mipmap.ic_launcher_round)
+                 .setContentTitle(title)
+                 .setContentText(message)
                  .setPriority(NotificationCompat.PRIORITY_HIGH)
                  .setAutoCancel(true)
                  .build()
