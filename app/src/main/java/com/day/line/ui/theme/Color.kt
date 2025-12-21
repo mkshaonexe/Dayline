@@ -44,3 +44,17 @@ val PastelGrey = Color(0xFFF5F5F5) // Background grey
 val TextDark = Color(0xFF2C2C2C)
 val TextLight = Color(0xFF757575)
 val TimelineLineColor = Color(0xFFE0E0E0)
+
+// Dynamic Task Palette (Premium Muted/Pastel Tones)
+val TaskPalette = listOf(
+    Color(0xFFFF8A00), // Dayline Orange (Default)
+    Color(0xFF4DB6AC), // Soft Teal
+    Color(0xFF7986CB), // Periwinkle Blue
+    Color(0xFFE57373), // Soft Red
+    Color(0xFFFFD54F), // Amber
+    Color(0xFF9575CD), // Deep Purple
+    Color(0xFF4FC3F7), // Light Blue
+    Color(0xFFAED581), // Light Green
+    Color(0xFFF06292), // Pink
+    Color(0xFF4DD0E1)  // Cyan
+)

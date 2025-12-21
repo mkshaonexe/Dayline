@@ -125,7 +125,7 @@ fun DaylineScreen(
                             notes = task.notes.takeIf { it.isNotEmpty() },
                             
                             icon = getIconByName(task.icon),
-                            color = DaylineOrange, // Or dynamic color
+                            color = getTaskColor(task), // Dynamic deterministic color
                             isLast = isLast,
                             isCompleted = task.isCompleted,
                             onToggleCompletion = {
@@ -207,4 +207,11 @@ private fun getIconByName(name: String): androidx.compose.ui.graphics.vector.Ima
         "Book" -> Icons.Default.Book
         else -> Icons.Default.Star // Default fallback
     }
+}
+
+private fun getTaskColor(task: Task): androidx.compose.ui.graphics.Color {
+    // Deterministic color based on task title hash
+    // This ensures the same task always gets the same color, but different tasks get different colors.
+    val index = kotlin.math.abs(task.title.hashCode()) % TaskPalette.size
+    return TaskPalette[index]
 }
