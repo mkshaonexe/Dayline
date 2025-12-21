@@ -85,8 +85,8 @@ fun SettingsScreen(
         SettingsSection("About") {
             SettingsItem(
                 icon = Icons.Default.Info,
-                title = "Version 0.1.0",
-                subtitle = "Build 234"
+                title = "Version 0.5.6",
+                subtitle = "Last updated: 11:21 PM, Dec 21, 2025"
             )
         }
     }
