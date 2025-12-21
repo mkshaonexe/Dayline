@@ -46,7 +46,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.day.line.ui.components.AddTaskDialog
 import com.day.line.ui.components.BottomNavItem
 import com.day.line.ui.components.LiquidBottomNavigation
-import com.day.line.ui.theme.DaylineOrange
+import com.day.line.ui.theme.DaylinePink
+import com.day.line.ui.theme.NeonPink
 import com.day.line.ui.journal.JournalScreen
 import com.day.line.ui.profile.ProfileScreen
 import com.day.line.ui.settings.SettingsScreen
@@ -141,14 +142,14 @@ fun HomeScreen(
                         enter = scaleIn(animationSpec = tween(600)) + fadeIn(animationSpec = tween(600)),
                         exit = scaleOut(animationSpec = tween(600)) + fadeOut(animationSpec = tween(600))
                     ) {
-                        val fabColor = DaylineOrange
+                        val fabColor = DaylinePink
                         
                         // Liquid Glass Gradients
                         // 1. Base Gradient
                         val baseGradient = androidx.compose.ui.graphics.Brush.linearGradient(
                             colors = listOf(
-                                com.day.line.ui.theme.NeonOrange,
-                                com.day.line.ui.theme.DaylineOrange
+                                com.day.line.ui.theme.NeonPink,
+                                com.day.line.ui.theme.DaylinePink
                             ),
                             start = Offset(0f, 0f),
                             end = Offset(100f, 100f)
