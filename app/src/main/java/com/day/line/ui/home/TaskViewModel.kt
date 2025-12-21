@@ -19,9 +19,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+import com.day.line.ui.notification.NotificationScheduler
+
 @HiltViewModel
 class TaskViewModel @Inject constructor(
-    private val repository: TaskRepository
+    private val repository: TaskRepository,
+    private val notificationScheduler: NotificationScheduler
 ) : ViewModel() {
     
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -116,18 +119,21 @@ class TaskViewModel @Inject constructor(
     fun addTask(task: Task) {
         viewModelScope.launch {
             repository.insertTask(task)
+            notificationScheduler.scheduleNotification(task)
         }
     }
     
     fun updateTask(task: Task) {
         viewModelScope.launch {
             repository.updateTask(task)
+            notificationScheduler.scheduleNotification(task)
         }
     }
     
     fun deleteTask(task: Task) {
         viewModelScope.launch {
             repository.deleteTask(task)
+            notificationScheduler.cancelNotification(task)
         }
     }
     
