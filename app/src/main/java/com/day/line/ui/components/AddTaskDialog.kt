@@ -15,6 +15,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
@@ -62,7 +64,7 @@ fun AddTaskDialog(
     var newSubtaskText by remember { mutableStateOf("") }
 
     // Icon State
-    var iconName by remember { mutableStateOf(taskToEdit?.icon ?: "Star") }
+    var iconName by remember { mutableStateOf(taskToEdit?.icon ?: "Edit") }
     var isManualIcon by remember { mutableStateOf(taskToEdit != null) } // Assume manual if editing, or false if new
     var showIconPicker by remember { mutableStateOf(false) }
 
@@ -70,7 +72,7 @@ fun AddTaskDialog(
     LaunchedEffect(taskTitle) {
         if (!isManualIcon && taskTitle.isNotEmpty()) {
             val predicted = TaskIconUtils.predictIconName(taskTitle)
-            if (predicted != "Star") {
+            if (predicted != "Edit") {
                 iconName = predicted
             }
         }
@@ -106,6 +108,13 @@ fun AddTaskDialog(
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        if (taskToEdit == null) {
+            focusRequester.requestFocus()
+        }
+    }
 
     // Helper to save task
     fun saveTask() {
@@ -232,6 +241,7 @@ fun AddTaskDialog(
                         BasicTextField(
                             value = taskTitle,
                             onValueChange = { taskTitle = it },
+                            modifier = Modifier.focusRequester(focusRequester),
                             textStyle = TextStyle(
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,

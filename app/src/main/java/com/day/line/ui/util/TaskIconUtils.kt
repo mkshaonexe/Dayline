@@ -8,6 +8,7 @@ object TaskIconUtils {
 
     val AvailableIcons = listOf(
         "Work" to Icons.Filled.Work,
+        "Edit" to Icons.Filled.Edit,
         "Book" to Icons.Filled.Book,
         "FitnessCenter" to Icons.Filled.FitnessCenter,
         "MusicNote" to Icons.Filled.MusicNote,
@@ -30,7 +31,7 @@ object TaskIconUtils {
     )
 
     fun getIconByName(name: String): ImageVector {
-        return AvailableIcons.find { it.first == name }?.second ?: Icons.Filled.Star
+        return AvailableIcons.find { it.first == name }?.second ?: Icons.Filled.Edit
     }
 
     fun predictIconName(title: String): String {
@@ -49,7 +50,7 @@ object TaskIconUtils {
             lowerTitle.contains("clean") || lowerTitle.contains("house") || lowerTitle.contains("chore") -> "Home"
             lowerTitle.contains("call") || lowerTitle.contains("phone") -> "Call"
             lowerTitle.contains("flight") || lowerTitle.contains("fly") || lowerTitle.contains("travel") || lowerTitle.contains("trip") -> "Flight"
-            else -> "Star" // Default
+            else -> "Edit" // Default
         }
     }
 }
