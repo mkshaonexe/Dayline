@@ -75,7 +75,11 @@ fun DaylineScreen(
                             subtitle = task.notes.takeIf { it.isNotEmpty() },
                             icon = getIconByName(task.icon),
                             color = DaylineOrange, // Or dynamic color
-                            isLast = isLast
+                            isLast = isLast,
+                            isCompleted = task.isCompleted,
+                            onToggleCompletion = {
+                                viewModel.updateTask(task.copy(isCompleted = !task.isCompleted))
+                            }
                         )
                     }
                 }

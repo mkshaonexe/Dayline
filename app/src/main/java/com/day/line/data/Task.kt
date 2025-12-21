@@ -29,6 +29,8 @@ data class Task(
     
     // Subtasks stored as JSON string
     val subtasks: String = "[]",
+
+    val isCompleted: Boolean = false,
     
     val createdAt: Long = System.currentTimeMillis()
 ) {

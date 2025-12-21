@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -123,7 +124,9 @@ fun TimelineNode(
     subtitle: String? = null,
     icon: ImageVector,
     color: Color,
-    isLast: Boolean = false
+    isLast: Boolean = false,
+    isCompleted: Boolean = false,
+    onToggleCompletion: () -> Unit = {}
 ) {
     IntrinsicHeightRow {
         // Time Column
@@ -223,10 +226,6 @@ fun TimelineNode(
                 )
                 
                 // Icon - Tinted white or proper contrast color for glass look
-                // The prompt says "thoes icon liek the new apple liquid glass" and keeps the icon.
-                // Usually glass icons are white or very dark. 
-                // Let's use a very dark tint for contrast on these pastel colors, 
-                // or keep the existing "Color.Black.copy(alpha = 0.7f)" but maybe sharpen it.
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
@@ -285,7 +284,8 @@ fun TimelineNode(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = TextDark
+                    color = if (isCompleted) TextLight else TextDark, // Grey out if completed
+                    textDecoration = if (isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null // Strike through
                 )
             )
             
@@ -307,22 +307,32 @@ fun TimelineNode(
                 .padding(top = 24.dp, end = 16.dp),
              horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val checkColor = if (isCompleted) DaylineOrange else TimelineLineColor
             Box(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(Color.Transparent)
-                    .then(Modifier.background(Color.Transparent)), // Placeholder for custom checkbox
+                    .background(if (isCompleted) DaylineOrange else Color.Transparent)
+                    .clickable { onToggleCompletion() },
                 contentAlignment = Alignment.Center
             ) {
-                // Circle outline
-                 Canvas(modifier = Modifier.fillMaxSize()) {
-                     drawCircle(
-                         color = TimelineLineColor,
-                         radius = size.minDimension / 2,
-                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f)
-                     )
-                 }
+                if (isCompleted) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Completed",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                } else {
+                    // Circle outline
+                     Canvas(modifier = Modifier.fillMaxSize()) {
+                         drawCircle(
+                             color = TimelineLineColor,
+                             radius = size.minDimension / 2,
+                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f)
+                         )
+                     }
+                }
             }
         }
     }
