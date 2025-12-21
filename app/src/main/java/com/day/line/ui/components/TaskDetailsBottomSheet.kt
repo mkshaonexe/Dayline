@@ -103,7 +103,51 @@ fun TaskDetailsBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Notes Section
+            if (task.notes.isNotEmpty()) {
+                Text(
+                    text = "Notes",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylineOrange),
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = task.notes,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextDark
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Subtasks Section
+            if (task.subtasks.isNotEmpty() && task.subtasks != "[]") {
+                val subtasks = try {
+                     val jsonArray = org.json.JSONArray(task.subtasks)
+                     List(jsonArray.length()) { jsonArray.getString(it) }
+                } catch (e: Exception) { emptyList() }
+                
+                if (subtasks.isNotEmpty()) {
+                     Text(
+                        text = "Subtasks",
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylineOrange),
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    subtasks.forEach { subtask ->
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 4.dp)) {
+                            Icon(Icons.Default.CheckBoxOutlineBlank, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = subtask, style = MaterialTheme.typography.bodyMedium, color = TextDark)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp)) // Reduced spacer as content was added
 
             // Action Buttons Row (Delete, Duplicate, Incomplete)
             Row(

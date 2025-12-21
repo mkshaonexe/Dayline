@@ -89,6 +89,14 @@ fun DaylineScreen(
                     }
                     is TaskViewModel.TimelineItem.UserTask -> {
                         val task = item.task
+                        // Parse subtasks
+                        val subtasksList = try {
+                            if (task.subtasks.isNotEmpty()) {
+                                val jsonArray = org.json.JSONArray(task.subtasks)
+                                List(jsonArray.length()) { jsonArray.getString(it) }
+                            } else emptyList()
+                        } catch (e: Exception) { emptyList() }
+
                         TimelineNode(
                             time = task.startTime,
                             endTime = task.endTime,
@@ -106,7 +114,16 @@ fun DaylineScreen(
                                 java.time.Duration.between(start, end).toMinutes()
                             } catch (e: Exception) { null },
                             title = task.title,
-                            subtitle = task.notes.takeIf { it.isNotEmpty() },
+                            subtitle = null, // Subtitle is now used for duration if needed, but here we pass duration separately if TimelineNode supports it, or we rely on TimelineNode logic. Wait, TimelineNode signature changed.
+                            // I need to match the NEW signature of TimelineNode I just wrote?
+                            // No, I called TimelineNode directly in the replaced code above but the code I'm replacing here calls "TimelineNode" (the generic one) or "TaskTimelineNode"?
+                            // The original code called TimelineNode. 
+                            // My previous step updated TimelineNode signature to accept subtasks/notes.
+                            // So I should pass them here.
+                            
+                            subtasks = subtasksList,
+                            notes = task.notes.takeIf { it.isNotEmpty() },
+                            
                             icon = getIconByName(task.icon),
                             color = DaylineOrange, // Or dynamic color
                             isLast = isLast,

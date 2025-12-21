@@ -24,6 +24,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.day.line.data.Task
 import com.day.line.ui.theme.DaylineOrange
+import org.json.JSONArray
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -40,6 +41,23 @@ fun AddTaskDialog(
     var taskTitle by remember { mutableStateOf(taskToEdit?.title ?: "") }
     var notes by remember { mutableStateOf(taskToEdit?.notes ?: "") }
     var isAllDay by remember { mutableStateOf(taskToEdit?.isAllDay ?: false) }
+    
+    // Subtasks State
+    // Parse existing subtasks from JSON string
+    val initialSubtasks = remember(taskToEdit) {
+        try {
+            if (!taskToEdit?.subtasks.isNullOrEmpty()) {
+                val jsonArray = JSONArray(taskToEdit.subtasks)
+                List(jsonArray.length()) { jsonArray.getString(it) }
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+    val subtasks = remember { mutableStateListOf<String>().apply { addAll(initialSubtasks) } }
+    var newSubtaskText by remember { mutableStateOf("") }
     
     // Date & Time Logic
     val initialDate = remember {
@@ -83,11 +101,20 @@ fun AddTaskDialog(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = Color(0xFFF9F9F9), // Light modern background
+            contentWindowInsets = WindowInsets.statusBars, // Handle status bar overlap
             floatingActionButton = {
                 // Done Button (Floating)
                 FloatingActionButton(
                     onClick = {
                         val finalTitle = if (taskTitle.isBlank()) "New Task" else taskTitle
+                        
+                        // Serialize subtasks to JSON
+                        val subtasksJson = try {
+                            val jsonArray = JSONArray()
+                            subtasks.forEach { jsonArray.put(it) }
+                            jsonArray.toString()
+                        } catch (e: Exception) { "[]" }
+
                         val task = Task(
                             id = taskToEdit?.id ?: 0,
                             title = finalTitle,
@@ -96,6 +123,7 @@ fun AddTaskDialog(
                             endTime = endTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                             isAllDay = isAllDay,
                             notes = notes,
+                            subtasks = subtasksJson,
                             icon = "Work", // Default or selector
                             isCompleted = taskToEdit?.isCompleted ?: false
                         )
@@ -262,7 +290,8 @@ fun AddTaskDialog(
                 // 5. Subtasks & Notes (Split View)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
+                    verticalAlignment = Alignment.Top
                 ) {
                     // Left Column: add subtask
                     Column(modifier = Modifier.weight(1f)) {
@@ -273,10 +302,12 @@ fun AddTaskDialog(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        // Placeholder Subtasks (Visual only for now, or simple implementing)
-                        // Implementing dynamic list might be complex for this snippet, keeping it visual
-                        repeat(3) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                        // Existing Subtasks
+                        subtasks.forEachIndexed { index, subtask ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            ) {
                                 Icon(
                                     Icons.Default.CheckBoxOutlineBlank,
                                     contentDescription = null,
@@ -284,14 +315,61 @@ fun AddTaskDialog(
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Box(
+                                Text(
+                                    text = subtask,
+                                    modifier = Modifier.weight(1f),
+                                    style = TextStyle(fontSize = 14.sp)
+                                )
+                                // Delete subtask
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Remove",
+                                    tint = Color.Red.copy(alpha=0.5f),
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .height(1.dp)
-                                        .background(Color(0xFFFFCDD2))
+                                        .size(16.dp)
+                                        .clickable { subtasks.removeAt(index) }
                                 )
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+
+                        // Add New Subtask Input
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Add",
+                                tint = DaylineOrange,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable {
+                                        if (newSubtaskText.isNotBlank()) {
+                                            subtasks.add(newSubtaskText)
+                                            newSubtaskText = ""
+                                        }
+                                    }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            BasicTextField(
+                                value = newSubtaskText,
+                                onValueChange = { newSubtaskText = it },
+                                textStyle = TextStyle(fontSize = 14.sp, color = Color.Black),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(IntrinsicSize.Min),
+                                decorationBox = { innerTextField ->
+                                    Box {
+                                        if (newSubtaskText.isEmpty()) {
+                                             Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(1.dp)
+                                                    .align(Alignment.CenterStart)
+                                                    .background(Color(0xFFFFCDD2))
+                                            )
+                                        }
+                                        innerTextField()
+                                    }
+                                }
+                            )
                         }
                     }
 
@@ -309,7 +387,9 @@ fun AddTaskDialog(
                             value = notes,
                             onValueChange = { notes = it },
                             textStyle = TextStyle(fontSize = 14.sp, color = Color.DarkGray),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 100.dp), // Ensure visible height
                             decorationBox = { innerTextField ->
                                 Column {
                                     if (notes.isEmpty()) {
@@ -335,7 +415,7 @@ fun AddTaskDialog(
         }
     }
     
-    // Logic for DatePicker and TimePicker Dialogs
+    // ... DatePicker and EnhancedTimePicker logic (unchanged) ...
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = selectedDateState.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -358,7 +438,7 @@ fun AddTaskDialog(
             DatePicker(state = datePickerState)
         }
     }
-    
+
     if (showTimePicker) {
          Dialog(
              onDismissRequest = { showTimePicker = false },
@@ -392,4 +472,3 @@ fun AddTaskDialog(
          }
     }
 }
-

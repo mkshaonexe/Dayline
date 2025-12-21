@@ -46,6 +46,8 @@ fun TimelineNode(
     time: String,
     title: String,
     subtitle: String? = null,
+    subtasks: List<String> = emptyList(),
+    notes: String? = null,
     icon: ImageVector? = null,
     color: Color,
     type: TimelineNodeType,
@@ -54,7 +56,7 @@ fun TimelineNode(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp) // Generous height for spacing
+            .height(IntrinsicSize.Min) // Flexible height
     ) {
         // Time Column - Modern Typography
         Text(
@@ -144,7 +146,7 @@ fun TimelineNode(
         // Content
         Column(
             modifier = Modifier
-                .padding(start = 24.dp, top = 26.dp, end = 16.dp)
+                .padding(start = 24.dp, top = 26.dp, end = 16.dp, bottom = 24.dp)
                 .weight(1f)
         ) {
             Text(
@@ -161,6 +163,31 @@ fun TimelineNode(
                     modifier = Modifier.padding(top = 6.dp)
                 )
             }
+            
+            // Notes
+            if (!notes.isNullOrEmpty()) {
+                Text(
+                    text = notes,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            // Subtasks
+            if (subtasks.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                subtasks.forEach { subtask ->
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 2.dp)) {
+                         Box(modifier = Modifier.size(6.dp).background(color.copy(alpha=0.5f), CircleShape))
+                         Spacer(modifier = Modifier.width(8.dp))
+                         Text(
+                             text = subtask,
+                             style = MaterialTheme.typography.bodySmall,
+                             color = MaterialTheme.colorScheme.onSurface.copy(alpha=0.8f)
+                         )
+                    }
+                }
+            }
         }
     }
 }
@@ -171,6 +198,7 @@ fun TaskTimelineNode(
     title: String,
     duration: String = "",
     notes: String = "",
+    subtasks: List<String> = emptyList(),
     color: Color = DaylineOrange,
     isLast: Boolean = false,
     onClick: () -> Unit = {}
@@ -180,6 +208,8 @@ fun TaskTimelineNode(
         time = time,
         title = title,
         subtitle = if (duration.isNotEmpty()) duration else null,
+        notes = notes,
+        subtasks = subtasks,
         type = TimelineNodeType.TASK,
         color = color,
         isLast = isLast
