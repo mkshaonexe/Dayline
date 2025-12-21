@@ -21,6 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import com.day.line.ui.theme.*
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -54,9 +61,35 @@ fun CalendarStrip(
     
     val monthYearFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
 
+    val haptic = LocalHapticFeedback.current
+    var totalDrag by remember { mutableFloatStateOf(0f) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onDragStart = { totalDrag = 0f },
+                    onDragEnd = { totalDrag = 0f }
+                ) { change, dragAmount ->
+                    change.consume()
+                    totalDrag += dragAmount
+                    
+                    val threshold = 100f // Pixels to trigger change
+                    
+                    if (totalDrag > threshold) {
+                        // Swipe Right -> Previous Day
+                        onDateSelected(currentDate.minusDays(1).format(formatter))
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        totalDrag = 0f // Reset to require another full swipe distance for next change
+                    } else if (totalDrag < -threshold) {
+                        // Swipe Left -> Next Day
+                        onDateSelected(currentDate.plusDays(1).format(formatter))
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        totalDrag = 0f
+                    }
+                }
+            }
             .padding(vertical = 24.dp, horizontal = 16.dp) // Balanced vertical padding
     ) {
         Row(
