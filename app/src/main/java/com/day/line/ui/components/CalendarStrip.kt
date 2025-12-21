@@ -10,7 +10,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.day.line.ui.theme.DaylineOrange
+import com.day.line.ui.theme.*
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -51,28 +57,45 @@ fun CalendarStrip(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(vertical = 24.dp, horizontal = 16.dp) // Balanced vertical padding
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Capitalize first letter logic is handled naturally by the formatter "MMMM yyyy" (e.g. December 2025)
+            // But just in case, we use the default output which is Title Case for months in English.
             Text(
-                text = currentDate.format(monthYearFormatter).uppercase(),
-                style = MaterialTheme.typography.titleMedium,
+                text = currentDate.format(monthYearFormatter), 
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp), // Balanced Title Size
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
-                letterSpacing = 1.sp
+                letterSpacing = 0.5.sp 
             )
-            // Icon placeholder
+            
+            // Restore Icons
+            Row {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Calendar",
+                    tint = PastelRed,
+                    modifier = Modifier.size(24.dp).padding(end = 12.dp)
+                )
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = PastelRed,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
         
         // Days Row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
+                .padding(top = 24.dp), 
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             weekDates.forEach { date ->
@@ -102,19 +125,20 @@ fun DayItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(4.dp)
+        modifier = Modifier.padding(2.dp)
     ) {
         Text(
             text = day,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), // Smaller, cleaner day name
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            fontWeight = FontWeight.Normal
         )
         Box(
             modifier = Modifier
                 .padding(top = 8.dp)
-                .size(40.dp) // Slightly easier to tap
+                .size(40.dp) // Balanced circle size
                 .background(
-                    if (isSelected) DaylineOrange else Color.Transparent, // Use brand color
+                    if (isSelected) DaylineOrange else Color.Transparent, 
                     CircleShape
                 )
                 .then(
@@ -128,10 +152,24 @@ fun DayItem(
         ) {
             Text(
                 text = date,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleMedium,
                 color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp // Balanced date size
             )
+        }
+        
+        // Task Indicator Dots
+        Row(modifier = Modifier.padding(top = 6.dp)) {
+            if (isSelected || date.toInt() % 2 != 0) { // Dummy logic: show dots for selected or odd days
+                 Box(modifier = Modifier.size(4.dp).background(PastelRed, CircleShape))
+                 if (date.toInt() % 3 == 0) {
+                     androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(2.dp))
+                     Box(modifier = Modifier.size(4.dp).background(PastelBlue, CircleShape))
+                 }
+            } else {
+                androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(4.dp))
+            }
         }
     }
 }
