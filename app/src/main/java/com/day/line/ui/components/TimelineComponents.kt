@@ -193,12 +193,10 @@ fun TimelineNode(
                 
                 // 1. Base Gradient (The "Liquid")
                 // Mix the node color with a bit of gradient to give it depth
-                val displayColor = if (isCompleted) Color(0xFF4CAF50) else color // Success Green or Token Color
-
                 val baseGradient = androidx.compose.ui.graphics.Brush.linearGradient(
                     colors = listOf(
-                        displayColor,
-                        displayColor.copy(alpha = 0.8f)
+                        color,
+                        color.copy(alpha = 0.8f)
                     ),
                     start = Offset(0f, 0f),
                     end = Offset(100f, 100f)
@@ -243,8 +241,8 @@ fun TimelineNode(
                         .shadow(
                             elevation = 8.dp,
                             shape = RoundedCornerShape(20.dp),
-                            spotColor = displayColor.copy(alpha = 0.5f), 
-                            ambientColor = displayColor.copy(alpha = 0.2f)
+                            spotColor = color.copy(alpha = 0.5f), 
+                            ambientColor = color.copy(alpha = 0.2f)
                         )
                         .clip(RoundedCornerShape(20.dp))
                         .background(brush = baseGradient)
@@ -382,10 +380,10 @@ fun TimelineNode(
                 modifier = Modifier
                     .size(28.dp) // Increased from 24dp for better visibility
                     .clip(CircleShape)
-                    .background(if (isCompleted) DaylineOrange else Color.White)
+                    .background(if (isCompleted) Color(0xFF4CAF50) else Color.White) // Green if completed
                     .border(
                         width = 2.5.dp, // Thicker border for better visibility
-                        color = if (isCompleted) DaylineOrange else Color.Gray.copy(alpha = 0.5f),
+                        color = if (isCompleted) Color(0xFF4CAF50) else Color.Gray.copy(alpha = 0.5f), // Green border if completed
                         shape = CircleShape
                     )
                     .clickable { onToggleCompletion() },
