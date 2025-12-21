@@ -340,12 +340,16 @@ fun TimelineNode(
                 .padding(top = 24.dp, end = 16.dp),
              horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val checkColor = if (isCompleted) DaylineOrange else TimelineLineColor
             Box(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(28.dp) // Increased from 24dp for better visibility
                     .clip(CircleShape)
-                    .background(if (isCompleted) DaylineOrange else Color.Transparent)
+                    .background(if (isCompleted) DaylineOrange else Color.White)
+                    .border(
+                        width = 2.5.dp, // Thicker border for better visibility
+                        color = if (isCompleted) DaylineOrange else Color.Gray.copy(alpha = 0.5f),
+                        shape = CircleShape
+                    )
                     .clickable { onToggleCompletion() },
                 contentAlignment = Alignment.Center
             ) {
@@ -354,17 +358,8 @@ fun TimelineNode(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Completed",
                         tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
-                } else {
-                    // Circle outline
-                     Canvas(modifier = Modifier.fillMaxSize()) {
-                         drawCircle(
-                             color = TimelineLineColor,
-                             radius = size.minDimension / 2,
-                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f)
-                         )
-                     }
                 }
             }
         }
