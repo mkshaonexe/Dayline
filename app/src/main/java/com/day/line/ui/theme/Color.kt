@@ -3,8 +3,8 @@ package com.day.line.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Brand Colors
-val DaylineOrange = Color(0xFFFF6B00) // Core Brand Color
-val NeonOrange = Color(0xFFFF8533)    // Highlight/Glow
+val DaylineOrange = Color(0xFFFF8A00) // Refined Sunset Orange
+val NeonOrange = Color(0xFFFF9E40)    // Vibrancy kept but harmonized
 val SoftTeal = Color(0xFF4DB6AC)      // Secondary/Evening
 val ElectricBlue = Color(0xFF2979FF)  // Accent for active states
 
