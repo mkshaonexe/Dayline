@@ -58,5 +58,8 @@ val TaskPalette = listOf(
     Color(0xFF4FC3F7), // Light Blue
     Color(0xFFAED581), // Light Green
     Color(0xFFF06292), // Pink
-    Color(0xFF4DD0E1)  // Cyan
+    Color(0xFF4DD0E1), // Cyan
+    Color(0xFFA5D6A7)  // Light Pastel Green
 )
+
+val LightPastelGreen = Color(0xFFA5D6A7)

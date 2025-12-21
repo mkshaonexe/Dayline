@@ -160,6 +160,10 @@ fun AddTaskDialog(
         onDismiss()
     }
 
+    // Dynamic UI Color Logic
+    // Default to LightPastelGreen if no color is selected, otherwise use the selected color
+    val uiColor = selectedColor ?: com.day.line.ui.theme.LightPastelGreen
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -172,10 +176,10 @@ fun AddTaskDialog(
             containerColor = Color(0xFFF9F9F9), // Light background
             contentWindowInsets = WindowInsets.statusBars,
             floatingActionButton = {
-                // Bottom-right Save Button (Orange with Check) - Kept from reference
+                // Bottom-right Save Button (Dynamic Color with Check)
                 FloatingActionButton(
                     onClick = { saveTask() },
-                    containerColor = DaylineOrange,
+                    containerColor = uiColor,
                     contentColor = Color.White,
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -275,7 +279,7 @@ fun AddTaskDialog(
                     Icon(
                         imageVector = TaskIconUtils.getIconByName(iconName),
                         contentDescription = "Icon",
-                        tint = selectedColor ?: DaylineOrange,
+                        tint = uiColor,
                         modifier = Modifier
                             .size(32.dp)
                             .clickable { showIconPicker = true }
@@ -292,7 +296,7 @@ fun AddTaskDialog(
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black
                             ),
-                            cursorBrush = SolidColor(DaylineOrange),
+                            cursorBrush = SolidColor(uiColor),
                             decorationBox = { innerTextField ->
                                 Column {
                                     if (taskTitle.isEmpty()) {
@@ -336,7 +340,7 @@ fun AddTaskDialog(
                         Icon(
                             Icons.Default.CalendarToday,
                             contentDescription = "Date",
-                            tint = DaylineOrange,
+                            tint = uiColor,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
@@ -384,7 +388,7 @@ fun AddTaskDialog(
                     Icon(
                         Icons.Default.Repeat,
                         contentDescription = "Repeat",
-                        tint = DaylineOrange,
+                        tint = uiColor,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -412,7 +416,7 @@ fun AddTaskDialog(
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = "Add",
-                                tint = DaylineOrange,
+                                tint = uiColor,
                                 modifier = Modifier
                                     .size(20.dp)
                                     .clickable {
@@ -519,7 +523,7 @@ fun AddTaskDialog(
                         selectedDateState = date
                      }
                      showDatePicker = false
-                 }) { Text("OK", color = DaylineOrange) }
+                 }) { Text("OK", color = uiColor) }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) { Text("Cancel", color = Color.Gray) }
@@ -589,16 +593,16 @@ fun AddTaskDialog(
                                         showIconPicker = false
                                     }
                                     .background(
-                                        if (iconName == name) (selectedColor ?: DaylineOrange).copy(alpha = 0.2f) else Color.Transparent,
+                                        if (iconName == name) uiColor.copy(alpha = 0.2f) else Color.Transparent,
                                         RoundedCornerShape(8.dp)
                                     )
                                     .border(
                                         1.dp,
-                                        if (iconName == name) (selectedColor ?: DaylineOrange) else Color.LightGray,
+                                        if (iconName == name) uiColor else Color.LightGray,
                                         RoundedCornerShape(8.dp)
                                     )
                             ) {
-                                Icon(icon, contentDescription = name, tint = if (iconName == name) (selectedColor ?: DaylineOrange) else Color.Gray)
+                                Icon(icon, contentDescription = name, tint = if (iconName == name) uiColor else Color.Gray)
                             }
                         }
                     }
@@ -607,7 +611,7 @@ fun AddTaskDialog(
                         onClick = { showIconPicker = false },
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Text("Cancel", color = selectedColor ?: DaylineOrange)
+                        Text("Cancel", color = uiColor)
                     }
                 }
             }
@@ -627,7 +631,8 @@ fun AddTaskDialog(
                     
                     val colors = com.day.line.ui.theme.TaskPalette + listOf(
                          com.day.line.ui.theme.DaylinePink,
-                         com.day.line.ui.theme.NeonPink
+                         com.day.line.ui.theme.NeonPink,
+                         com.day.line.ui.theme.LightPastelGreen
                     )
                     
                     androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
@@ -646,7 +651,7 @@ fun AddTaskDialog(
                                         selectedColor = null
                                         showColorPicker = false
                                     }
-                                    .border(2.dp, if (selectedColor == null) DaylineOrange else Color.LightGray, androidx.compose.foundation.shape.CircleShape)
+                                    .border(2.dp, if (selectedColor == null) uiColor else Color.LightGray, androidx.compose.foundation.shape.CircleShape)
                                     .padding(4.dp)
                             ) {
                                 Canvas(modifier = Modifier.fillMaxSize()) {
@@ -686,7 +691,7 @@ fun AddTaskDialog(
                         onClick = { showColorPicker = false },
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Text("Cancel", color = DaylineOrange)
+                        Text("Cancel", color = uiColor)
                     }
                 }
             }
