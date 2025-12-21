@@ -62,7 +62,11 @@ fun DaylineScreen(
                             subtitle = item.subtitle,
                             icon = getIconByName(item.iconName),
                             color = Color(item.colorHex), // Convert Long to Color
-                            isLast = isLast
+                            isLast = isLast,
+                            isCompleted = item.isCompleted,
+                            onToggleCompletion = {
+                                viewModel.toggleFixedItemCompletion(selectedDate, item.title)
+                            }
                         )
                     }
                     is TaskViewModel.TimelineItem.UserTask -> {

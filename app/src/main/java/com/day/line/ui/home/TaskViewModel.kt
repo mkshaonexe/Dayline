@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -39,32 +40,37 @@ class TaskViewModel @Inject constructor(
             val title: String,
             val subtitle: String,
             val iconName: String,
-            val colorHex: Long
+            val colorHex: Long,
+            val isCompleted: Boolean = false
         ) : TimelineItem
 
         data class UserTask(val task: Task) : TimelineItem
     }
 
+    private val _completedFixedItems = MutableStateFlow<Set<String>>(emptySet())
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val timelineItems: StateFlow<List<TimelineItem>> = _selectedDate
         .flatMapLatest { date ->
-            repository.getTasksForDate(date)
+            repository.getTasksForDate(date).map { tasks -> date to tasks }
         }
-        .map { tasks ->
+        .combine(_completedFixedItems) { (date, tasks), completedFixed ->
             val fixedItems = listOf(
                 TimelineItem.Fixed(
                     time = "05:30",
                     title = "Wake up!",
                     subtitle = "A well-deserved break.",
                     iconName = "Notifications",
-                    colorHex = 0xFFFF8A80 // PastelRed
+                    colorHex = 0xFFFF8A80, // PastelRed
+                    isCompleted = completedFixed.contains("${date}_Wake up!")
                 ),
                 TimelineItem.Fixed(
                     time = "23:00",
                     title = "Wind Down",
                     subtitle = "Time to recharge.",
-                    iconName = "Bedtime", // Ensure we map this or use a default
-                    colorHex = 0xFF9575CD // DeepPurple200 (approx for sleep)
+                    iconName = "Bedtime",
+                    colorHex = 0xFF9575CD, // DeepPurple200
+                    isCompleted = completedFixed.contains("${date}_Wind Down")
                 )
             )
 
@@ -82,6 +88,15 @@ class TaskViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+
+    fun toggleFixedItemCompletion(date: String, title: String) {
+        val key = "${date}_$title"
+        _completedFixedItems.value = if (_completedFixedItems.value.contains(key)) {
+            _completedFixedItems.value - key
+        } else {
+            _completedFixedItems.value + key
+        }
+    }
     
     fun selectDate(date: String) {
         _selectedDate.value = date
