@@ -187,7 +187,7 @@ fun HomeScreen(
 
                         Box(
                             modifier = Modifier
-                                .size(56.dp) // Standard FAB size
+                                .size(48.dp) // Reduced FAB size
                                 // Outer Shadow
                                 .shadow(
                                     elevation = 12.dp, // Slightly higher elevation for FAB
@@ -216,7 +216,7 @@ fun HomeScreen(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Add Task",
                                 tint = Color.White, // White icon looks best on orange
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
