@@ -262,12 +262,15 @@ fun AddTaskDialog(
                         
                         Spacer(modifier = Modifier.width(12.dp))
 
-                        // Pencil Icon
+                        // Icon (Dynamic: Manual or Auto-predicted)
                         Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "Edit Name",
-                            tint = Color.LightGray,
-                            modifier = Modifier.size(20.dp)
+                            imageVector = TaskIconUtils.getIconByName(iconName),
+                            contentDescription = "Task Icon",
+                            tint = uiColor,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable { showIconPicker = true }
+                                .padding(4.dp)
                         )
 
                         Spacer(modifier = Modifier.width(12.dp))
