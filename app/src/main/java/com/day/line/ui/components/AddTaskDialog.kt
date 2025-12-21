@@ -114,7 +114,17 @@ fun AddTaskDialog(
     val dateFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy")
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
-    val focusManager = LocalFocusManager.current
+    // ML Kit Entity Extraction Client (Optional/Future: could be injected)
+    // For now, we rely on our robust keyword matcher which is very fast.
+    
+    LaunchedEffect(taskTitle) {
+        if (!isManualIcon && taskToEdit == null) {
+             val predicted = TaskIconUtils.predictIconName(taskTitle)
+             if (predicted != "Edit") {
+                 iconName = predicted
+             }
+        }
+    }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {

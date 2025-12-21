@@ -13,6 +13,7 @@ ksp = "2.0.21-1.0.27"
 navigationCompose = "2.8.0"
 hiltNavigationCompose = "1.2.0"
 room = "2.6.1"
+mlKitEntityExtraction = "16.0.0-beta5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,6 +38,7 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+google-mlkit-entity-extraction = { group = "com.google.mlkit", name = "entity-extraction", version.ref = "mlKitEntityExtraction" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
