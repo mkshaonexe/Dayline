@@ -124,7 +124,7 @@ fun DaylineScreen(
                             subtasks = subtasksList,
                             notes = task.notes.takeIf { it.isNotEmpty() },
                             
-                            icon = getIconByName(task.icon),
+                            icon = getTaskIcon(task), // Smart AI Icon
                             color = getTaskColor(task), // Dynamic deterministic color
                             isLast = isLast,
                             isCompleted = task.isCompleted,
@@ -214,4 +214,22 @@ private fun getTaskColor(task: Task): androidx.compose.ui.graphics.Color {
     // This ensures the same task always gets the same color, but different tasks get different colors.
     val index = kotlin.math.abs(task.title.hashCode()) % TaskPalette.size
     return TaskPalette[index]
+}
+
+private fun getTaskIcon(task: Task): androidx.compose.ui.graphics.vector.ImageVector {
+    val title = task.title.lowercase()
+    return when {
+        title.contains("code") || title.contains("dev") || title.contains("program") || title.contains("fix") -> Icons.Default.Code
+        title.contains("study") || title.contains("read") || title.contains("book") || title.contains("learn") || title.contains("homework") -> Icons.Default.Book
+        title.contains("gym") || title.contains("workout") || title.contains("run") || title.contains("walk") || title.contains("exercise") || title.contains("fit") -> Icons.Default.FitnessCenter
+        title.contains("music") || title.contains("listen") || title.contains("song") || title.contains("piano") || title.contains("guitar") -> Icons.Default.MusicNote
+        title.contains("sleep") || title.contains("nap") || title.contains("bed") || title.contains("rest") -> Icons.Default.Bedtime
+        title.contains("eat") || title.contains("lunch") || title.contains("dinner") || title.contains("breakfast") || title.contains("food") || title.contains("coffee") -> Icons.Default.LocalCafe
+        title.contains("work") || title.contains("job") || title.contains("meeting") || title.contains("call") || title.contains("meet") -> Icons.Default.Work
+        title.contains("write") || title.contains("journal") || title.contains("diary") || title.contains("note") -> Icons.Default.Create
+        title.contains("watch") || title.contains("movie") || title.contains("film") || title.contains("tv") || title.contains("video") -> Icons.Default.PlayArrow
+        title.contains("shop") || title.contains("buy") || title.contains("store") || title.contains("grocer") -> Icons.Default.ShoppingCart
+        title.contains("clean") || title.contains("house") || title.contains("chore") -> Icons.Default.Home
+        else -> getIconByName(task.icon)
+    }
 }
