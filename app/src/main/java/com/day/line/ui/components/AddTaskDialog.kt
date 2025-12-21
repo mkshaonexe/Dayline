@@ -38,33 +38,46 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun AddTaskDialog(
     selectedDate: String,
+    taskToEdit: Task? = null,
     onDismiss: () -> Unit,
     onSave: (Task) -> Unit
 ) {
-    var taskTitle by remember { mutableStateOf("") }
-    var isAllDay by remember { mutableStateOf(false) }
-    var notes by remember { mutableStateOf("") }
-    var showNoteInput by remember { mutableStateOf(false) }
+    var taskTitle by remember { mutableStateOf(taskToEdit?.title ?: "") }
+    var isAllDay by remember { mutableStateOf(taskToEdit?.isAllDay ?: false) }
+    var notes by remember { mutableStateOf(taskToEdit?.notes ?: "") }
+    var showNoteInput by remember { mutableStateOf(taskToEdit?.notes?.isNotEmpty() == true) }
     
-    // Parse the selected date
-    val parsedDate = try {
-        LocalDate.parse(selectedDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    // Parse initial date
+    val initialDate = try {
+        if (taskToEdit != null) {
+            LocalDate.parse(taskToEdit.date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        } else {
+            LocalDate.parse(selectedDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        }
     } catch (e: Exception) {
         LocalDate.now()
     }
     
-    var selectedYear by remember { mutableStateOf(parsedDate.year) }
-    var selectedMonth by remember { mutableStateOf(parsedDate.monthValue) }
-    var selectedDay by remember { mutableStateOf(parsedDate.dayOfMonth) }
+    var selectedYear by remember { mutableStateOf(initialDate.year) }
+    var selectedMonth by remember { mutableStateOf(initialDate.monthValue) }
+    var selectedDay by remember { mutableStateOf(initialDate.dayOfMonth) }
     
     // Time values
     val now = LocalTime.now()
     val minute = now.minute
     val roundedMinute = ((minute + 14) / 15) * 15
-    val baseTime = now.withMinute(0).plusMinutes(roundedMinute.toLong())
+    val defaultBaseTime = now.withMinute(0).plusMinutes(roundedMinute.toLong())
     
-    var startTime by remember { mutableStateOf(baseTime) }
-    var endTime by remember { mutableStateOf(baseTime.plusMinutes(15)) }
+    val initialStartTime = if (taskToEdit != null) {
+        try { LocalTime.parse(taskToEdit.startTime, DateTimeFormatter.ofPattern("HH:mm")) } catch (e: Exception) { defaultBaseTime }
+    } else defaultBaseTime
+    
+    val initialEndTime = if (taskToEdit != null) {
+        try { LocalTime.parse(taskToEdit.endTime, DateTimeFormatter.ofPattern("HH:mm")) } catch (e: Exception) { defaultBaseTime.plusMinutes(15) }
+    } else defaultBaseTime.plusMinutes(15)
+    
+    var startTime by remember { mutableStateOf(initialStartTime) }
+    var endTime by remember { mutableStateOf(initialEndTime) }
     
     var showDatePicker by remember { mutableStateOf(false) }
     var showEnhancedTimePicker by remember { mutableStateOf(false) }
@@ -115,7 +128,7 @@ fun AddTaskDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = buildAnnotatedString {
-                                append("New ")
+                                append(if (taskToEdit != null) "Edit " else "New ")
                                 withStyle(SpanStyle(color = DaylineOrange)) {
                                     append("Task")
                                 }
@@ -271,13 +284,15 @@ fun AddTaskDialog(
                     onClick = {
                         val finalTitle = if (taskTitle.isBlank()) "New Task" else taskTitle
                         val task = Task(
+                            id = taskToEdit?.id ?: 0, // Keep ID if editing
                             title = finalTitle,
                             date = Task.formatDate(selectedYear, selectedMonth, selectedDay),
                             startTime = Task.formatTime(startTime.hour, startTime.minute),
                             endTime = Task.formatTime(endTime.hour, endTime.minute),
                             isAllDay = isAllDay,
                             notes = notes,
-                            icon = "Work" // Default icon
+                            icon = taskToEdit?.icon ?: "Work", // Keep existing icon or default
+                            isCompleted = taskToEdit?.isCompleted ?: false // Keep completion status
                         )
                         onSave(task)
                         onDismiss()
@@ -286,13 +301,13 @@ fun AddTaskDialog(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF8A80), // Light Salmon/Red color from image
+                        containerColor = Color(0xFFFF8A80), 
                         contentColor = Color.Black
                     ),
-                    shape = RoundedCornerShape(4.dp) // Boxy shape
+                    shape = RoundedCornerShape(4.dp)
                 ) {
                     Text(
-                        text = "add task",
+                        text = if (taskToEdit != null) "save changes" else "add task",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp

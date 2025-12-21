@@ -5,24 +5,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.day.line.ui.components.CalendarStrip
 import com.day.line.ui.components.TimelineNode
 import com.day.line.ui.theme.*
+import com.day.line.data.Task
 
 @Composable
 fun DaylineScreen(
-    viewModel: TaskViewModel // Kept for structure, unused for static UI
+    viewModel: TaskViewModel
 ) {
-    // Note: Scaffold was removed here to let HomeScreen handle the main Scaffold/Navigation.
-    // Based on the reference code, this screen just provides the content.
-    
+    // State for task details bottom sheet
+    var selectedTask by remember { mutableStateOf<Task?>(null) }
+    var showEditTaskDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +83,8 @@ fun DaylineScreen(
                             isCompleted = item.isCompleted,
                             onToggleCompletion = {
                                 viewModel.toggleFixedItemCompletion(selectedDate, item.title)
-                            }
+                            },
+                            onClick = { /* No action for fixed items for now */ }
                         )
                     }
                     is TaskViewModel.TimelineItem.UserTask -> {
@@ -112,11 +113,63 @@ fun DaylineScreen(
                             isCompleted = task.isCompleted,
                             onToggleCompletion = {
                                 viewModel.updateTask(task.copy(isCompleted = !task.isCompleted))
+                            },
+                            onClick = {
+                                selectedTask = task
                             }
                         )
                     }
                 }
             }
+        }
+    }
+
+    // Task Details Bottom Sheet
+    selectedTask?.let { task ->
+        if (!showEditTaskDialog) {
+            com.day.line.ui.components.TaskDetailsBottomSheet(
+                task = task,
+                onDismiss = { selectedTask = null },
+                onDelete = {
+                    viewModel.deleteTask(task)
+                    selectedTask = null
+                },
+                onDuplicate = {
+                    val duplicate = task.copy(
+                        id = 0, // Reset ID for new entry
+                        title = "${task.title} (Copy)"
+                    )
+                    viewModel.addTask(duplicate)
+                    selectedTask = null
+                },
+                onEdit = {
+                    showEditTaskDialog = true
+                },
+                onToggleCompletion = {
+                    viewModel.updateTask(task.copy(isCompleted = !task.isCompleted))
+                    // Update selected task to reflect change immediately in UI
+                    selectedTask = task.copy(isCompleted = !task.isCompleted)
+                }
+            )
+        }
+    }
+
+    // Edit Task Dialog
+    selectedTask?.let { task ->
+        if (showEditTaskDialog) {
+            com.day.line.ui.components.AddTaskDialog(
+                selectedDate = task.date,
+                taskToEdit = task,
+                onDismiss = { 
+                    showEditTaskDialog = false 
+                    selectedTask = null
+                },
+                onSave = { updatedTask ->
+                    viewModel.updateTask(updatedTask)
+                    showEditTaskDialog = false
+                    selectedTask = null
+                }
+            )
         }
     }
 }

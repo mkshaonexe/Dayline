@@ -127,7 +127,9 @@ fun TimelineNode(
     color: Color,
     isLast: Boolean = false,
     isCompleted: Boolean = false,
-    onToggleCompletion: () -> Unit = {}
+
+    onToggleCompletion: () -> Unit = {},
+    onClick: () -> Unit = {}
 ) {
     // Base height for a standard node (icon + padding)
     // Base height for a standard node (icon + padding)
@@ -153,7 +155,9 @@ fun TimelineNode(
     }
 
     IntrinsicHeightRow(
-        modifier = Modifier.heightIn(min = dynamicHeight)
+        modifier = Modifier
+            .heightIn(min = dynamicHeight)
+            .clickable(onClick = onClick)
     ) {
         // Time Column
         Column(
