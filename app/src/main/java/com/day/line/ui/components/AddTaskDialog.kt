@@ -168,7 +168,7 @@ fun AddTaskDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
+            decorFitsSystemWindows = true
         )
     ) {
         Scaffold(
