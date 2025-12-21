@@ -1,28 +1,27 @@
 package com.day.line.ui.components
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.* // for fillMaxSize, padding, etc
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.day.line.data.Task
-import com.day.line.ui.theme.DaylineOrange
 import com.day.line.ui.util.TaskIconUtils
 import org.json.JSONArray
 import java.time.LocalDate
@@ -114,17 +112,6 @@ fun AddTaskDialog(
     val dateFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy")
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
-    // ML Kit Entity Extraction Client (Optional/Future: could be injected)
-    // For now, we rely on our robust keyword matcher which is very fast.
-    
-    LaunchedEffect(taskTitle) {
-        if (!isManualIcon && taskToEdit == null) {
-             val predicted = TaskIconUtils.predictIconName(taskTitle)
-             if (predicted != "Edit") {
-                 iconName = predicted
-             }
-        }
-    }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -160,9 +147,10 @@ fun AddTaskDialog(
         onDismiss()
     }
 
-    // Dynamic UI Color Logic
-    // Default to LightPastelGreen if no color is selected, otherwise use the selected color
+    // UI Colors
     val uiColor = selectedColor ?: com.day.line.ui.theme.LightPastelGreen
+    val dashedGreen = Color(0xFFC8E6C9)
+    val dashedRed = Color(0xFFFFCDD2)
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -173,335 +161,373 @@ fun AddTaskDialog(
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            containerColor = Color(0xFFF9F9F9), // Light background
+            containerColor = Color.White,
             contentWindowInsets = WindowInsets.statusBars,
-            floatingActionButton = {
-                // Bottom-right Save Button (Dynamic Color with Check)
-                FloatingActionButton(
-                    onClick = { saveTask() },
-                    containerColor = uiColor,
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Icon(Icons.Default.Check, "Save")
-                }
-            }
         ) { padding ->
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.Start
             ) {
-                // 1. Top Navigation Bar (Close & Top Save)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.Start
                 ) {
-                    // Left: Close (X)
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            Icons.Default.Close, 
-                            contentDescription = "Close", 
-                            tint = Color.Gray,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Right: Arrow Button (Save)
-                    IconButton(
-                        onClick = { saveTask() },
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    // 1. Top Navigation Bar
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                         // Approximating the "arrow in box" look or just a forward arrow
-                         // Using a simple arrow icon, customizable if needed
-                         Icon(
-                             Icons.AutoMirrored.Filled.ArrowForward,
-                             contentDescription = "Save",
-                             tint = Color(0xFF607D8B), // Slate-ish blue/grey like reference
-                             modifier = Modifier
-                                 .size(32.dp)
-                                 .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-                                 .padding(4.dp)
-                         )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 2. Header Title
-                Text(
-                    text = if (taskToEdit == null) "New task" else "Edit task",
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.Black,
-                        fontSize = 36.sp
-                    ),
-                    color = Color.Black
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // 3. Task Name Input
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clickable { showColorPicker = true }
-                            .padding(4.dp)
-                    ) {
-                        if (selectedColor != null) {
-                            Box(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .background(selectedColor!!, androidx.compose.foundation.shape.CircleShape)
-                                    .border(1.dp, Color.Gray, androidx.compose.foundation.shape.CircleShape)
+                        // Left: Close (X)
+                        IconButton(onClick = onDismiss) {
+                            Icon(
+                                Icons.Default.Close, 
+                                contentDescription = "Close", 
+                                tint = Color.Gray,
+                                modifier = Modifier.size(24.dp)
                             )
-                        } else {
-                            // Default rainbow wheel or similar icon for "pick color"
-                            Canvas(modifier = Modifier.size(24.dp)) {
-                                val colors = listOf(Color.Red, Color.Green, Color.Blue)
-                                drawCircle(
-                                    brush = androidx.compose.ui.graphics.Brush.sweepGradient(colors)
-                                )
-                            }
+                        }
+
+                        // Right: Circular Arrow (Reference style)
+                        IconButton(
+                            onClick = { /* Could be a reset or just another action? Reference has arrow in circle */ },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                             Box(
+                                 modifier = Modifier
+                                    .size(32.dp)
+                                    .border(1.dp, Color.LightGray, androidx.compose.foundation.shape.CircleShape)
+                                    .clickable { saveTask() }, // Using this as save/next for now
+                                 contentAlignment = Alignment.Center
+                             ) {
+                                 Icon(
+                                     Icons.AutoMirrored.Filled.ArrowForward,
+                                     contentDescription = "Next",
+                                     tint = Color.Gray,
+                                     modifier = Modifier.size(16.dp)
+                                 )
+                             }
                         }
                     }
-                    
-                    Spacer(modifier = Modifier.width(16.dp))
 
-                    Icon(
-                        imageVector = TaskIconUtils.getIconByName(iconName),
-                        contentDescription = "Icon",
-                        tint = uiColor,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clickable { showIconPicker = true }
-                            .padding(4.dp)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // 2. Header
+                    Text(
+                        text = if (taskToEdit == null) "New task" else "Edit task",
+                        style = MaterialTheme.typography.displaySmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                            fontSize = 32.sp
+                        ),
+                        color = Color(0xFF2C3E50) // Dark Blue/Grey like reference
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Box(modifier = Modifier.weight(1f)) {
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // 3. Task Name Input
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        // Color Picker (Gradient Circle)
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable { showColorPicker = true }
+                        ) {
+                            if (selectedColor != null) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(selectedColor!!, androidx.compose.foundation.shape.CircleShape)
+                                )
+                            } else {
+                                // Gradient for "Pick Color"
+                                Canvas(modifier = Modifier.size(32.dp)) {
+                                    val colors = listOf(Color(0xFF2196F3), Color(0xFFE91E63), Color(0xFFFF9800))
+                                    drawCircle(
+                                        brush = androidx.compose.ui.graphics.Brush.linearGradient(colors)
+                                    )
+                                }
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        // Pencil Icon
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Edit Name",
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(20.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        // Input Field
                         BasicTextField(
                             value = taskTitle,
                             onValueChange = { taskTitle = it },
-                            modifier = Modifier.focusRequester(focusRequester),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester),
                             textStyle = TextStyle(
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.Gray
                             ),
                             cursorBrush = SolidColor(uiColor),
                             decorationBox = { innerTextField ->
                                 Column {
-                                    if (taskTitle.isEmpty()) {
-                                        Text(
-                                            text = "task name",
-                                            style = TextStyle(
-                                                fontSize = 22.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.LightGray
+                                    Box {
+                                        if (taskTitle.isEmpty()) {
+                                            Text(
+                                                text = "task name",
+                                                style = TextStyle(
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = Color.LightGray
+                                                )
                                             )
-                                        )
-                                    } else {
+                                        }
                                         innerTextField()
                                     }
                                     Spacer(modifier = Modifier.height(8.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(2.dp)
-                                            .background(Color(0xFFFFCDD2))
-                                    )
+                                    // Dashed Green Line
+                                    DashedDivider(color = dashedGreen)
                                 }
                             }
                         )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                // 4. Date & Time
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Date
+                    // 4. Date & Time Row
                     Row(
-                        modifier = Modifier.clickable { showDatePicker = true },
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(24.dp) // Space between Date and Time
                     ) {
-                        Icon(
-                            Icons.Default.CalendarToday,
-                            contentDescription = "Date",
-                            tint = uiColor,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = selectedDateState.format(dateFormatter),
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp),
-                            color = Color.Black
-                        )
-                    }
-
-                    // Time
-                    Row(
-                        modifier = Modifier.clickable { showTimePicker = true },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Schedule,
-                            contentDescription = "Time",
-                            tint = Color.LightGray,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "${startTime.format(timeFormatter)} - ${endTime.format(timeFormatter)}",
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp),
-                            color = Color.Black
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // 5. Repeat (Centered)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "repeat",
-                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
-                        color = Color.Black
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        Icons.Default.Repeat,
-                        contentDescription = "Repeat",
-                        tint = uiColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // 6. Subtasks & Notes
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    // Left: Subtasks
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "add subtask",
-                            style = TextStyle(fontWeight = FontWeight.Black, fontSize = 16.sp),
-                            color = Color.Black
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // New Subtask Input (Always visible at top or bottom? Reference shows just '+' and line)
-                        // Implementing '+' then input line like reference
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        // Date
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { showDatePicker = true }
+                        ) {
                             Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Add",
-                                tint = uiColor,
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .clickable {
-                                        if (newSubtaskText.isNotBlank()) {
-                                            subtasks.add(newSubtaskText)
-                                            newSubtaskText = ""
-                                        }
-                                    }
+                                Icons.Default.CalendarToday,
+                                contentDescription = "Date",
+                                tint = Color(0xFF78909C), // Blue Grey
+                                modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            BasicTextField(
-                                value = newSubtaskText,
-                                onValueChange = { newSubtaskText = it },
-                                textStyle = TextStyle(fontSize = 14.sp, color = Color.Black),
-                                modifier = Modifier.weight(1f),
-                                decorationBox = { innerTextField ->
-                                    Column {
-                                        innerTextField()
-                                        Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = selectedDateState.format(dateFormatter),
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold, 
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF2C3E50)
+                                )
+                            )
+                        }
+
+                        // Time
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { showTimePicker = true }
+                        ) {
+                            Icon(
+                                Icons.Default.Schedule,
+                                contentDescription = "Time",
+                                tint = Color(0xFF78909C),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "${startTime.format(timeFormatter)} - ${endTime.format(timeFormatter)}",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold, 
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF2C3E50)
+                                )
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // 5. Repeat
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { /* Toggle Repeat Logic */ },
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "repeat",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Medium, 
+                                fontSize = 16.sp,
+                                color = Color(0xFF78909C)
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.Repeat,
+                            contentDescription = "Repeat",
+                            tint = Color(0xFF78909C),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(48.dp))
+
+                    // 6. Subtasks & Notes Columns
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(32.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        // --- Left: Subtasks ---
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "add subtask",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold, 
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF546E7A)
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Input Row
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = "Add Subtask",
+                                    tint = com.day.line.ui.theme.DaylineGreen, // Green like reference '+'
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                        .clickable {
+                                            if (newSubtaskText.isNotBlank()) {
+                                                subtasks.add(newSubtaskText)
+                                                newSubtaskText = ""
+                                            }
+                                        }
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                BasicTextField(
+                                    value = newSubtaskText,
+                                    onValueChange = { newSubtaskText = it },
+                                    textStyle = TextStyle(fontSize = 14.sp, color = Color.Black),
+                                    modifier = Modifier.weight(1f),
+                                    decorationBox = { innerTextField ->
+                                        Column {
+                                            if (newSubtaskText.isEmpty()) {
+                                                Text("Add subtask...", style = TextStyle(fontSize = 14.sp, color = Color.LightGray))
+                                            } else {
+                                                innerTextField()
+                                            }
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            DashedDivider(color = dashedRed)
+                                        }
+                                    }
+                                )
+                            }
+                            
+                            // Existing Subtasks
+                            if (subtasks.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                subtasks.forEachIndexed { index, subtask ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(vertical = 4.dp)
+                                    ) {
                                         Box(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(1.dp)
-                                                .background(Color(0xFFFFCDD2))
+                                                .size(6.dp)
+                                                .background(Color.Gray, androidx.compose.foundation.shape.CircleShape)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(subtask, style = TextStyle(fontSize = 14.sp, color = Color.DarkGray), modifier=Modifier.weight(1f))
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = "Remove",
+                                            tint=Color.LightGray,
+                                            modifier=Modifier.size(14.dp).clickable { subtasks.removeAt(index) }
                                         )
                                     }
                                 }
+                            }
+                        }
+
+                        // --- Right: Notes ---
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "add note",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold, 
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF546E7A)
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Notes Input with Multi-line Dashed Background
+                            BasicTextField(
+                                value = notes,
+                                onValueChange = { notes = it },
+                                textStyle = TextStyle(fontSize = 14.sp, color = Color.DarkGray, lineHeight = 24.sp),
+                                modifier = Modifier.fillMaxWidth(),
+                                decorationBox = { innerTextField ->
+                                    Box {
+                                        // Draw dashed lines for "notebook" feel
+                                        Column {
+                                            repeat(4) { 
+                                                Spacer(modifier = Modifier.height(23.dp)) // Line height matching text
+                                                DashedDivider(color = dashedRed)
+                                            }
+                                        }
+                                        innerTextField()
+                                    }
+                                }
                             )
                         }
-
-                        // List Existing
-                        if (subtasks.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            subtasks.forEachIndexed { index, subtask ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                ) {
-                                    Icon(Icons.Default.CheckBoxOutlineBlank, null, tint=Color.Gray, modifier=Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(subtask, style = TextStyle(fontSize = 14.sp), modifier=Modifier.weight(1f))
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = "Remove",
-                                        tint=Color.Red.copy(0.5f),
-                                        modifier=Modifier.size(16.dp).clickable { subtasks.removeAt(index) }
-                                    )
-                                }
-                            }
-                        }
                     }
+                    
+                    // Extra space at bottom
+                    Spacer(modifier = Modifier.height(100.dp))
+                }
 
-                    // Right: Notes
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "add note",
-                            style = TextStyle(fontWeight = FontWeight.Black, fontSize = 16.sp),
-                            color = Color.Black
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Ruled Lines Effect
-                        BasicTextField(
-                            value = notes,
-                            onValueChange = { notes = it },
-                            textStyle = TextStyle(fontSize = 14.sp, color = Color.DarkGray, lineHeight = 20.sp),
-                            modifier = Modifier.fillMaxWidth(),
-                            decorationBox = { innerTextField ->
-                                Box {
-                                    // Background Lines
-                                    Column {
-                                        repeat(4) { // Draw a few lines
-                                            Spacer(modifier = Modifier.height(19.dp)) // Approximate line height
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(1.dp)
-                                                    .background(Color(0xFFFFCDD2))
-                                            )
-                                        }
-                                    }
-                                    // Content
-                                    innerTextField()
-                                }
-                            }
+                // 7. Bottom Action Button (Green Checkmark)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(24.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .background(
+                                color = Color(0xFFC8E6C9), // Light Green Background
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .clickable { saveTask() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = "Save",
+                            tint = Color(0xFF2E7D32), // Darker Green Check
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
@@ -509,7 +535,7 @@ fun AddTaskDialog(
         }
     }
 
-    // Pickers (Unchanged logic, just ensure they show up)
+    // Pickers (Unchanged logic)
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = selectedDateState.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -551,7 +577,7 @@ fun AddTaskDialog(
                          endTime = endTime,
                          onStartTimeChange = { start ->
                              val duration = java.time.Duration.between(startTime, endTime).toMinutes()
-                             val newEndTime = start.plusMinutes(if (duration > 0) duration else 30) // Maintain duration
+                             val newEndTime = start.plusMinutes(if (duration > 0) duration else 30)
                              startTime = start
                              endTime = newEndTime
                          },
@@ -565,59 +591,6 @@ fun AddTaskDialog(
         }
     }
 
-    if (showIconPicker) {
-        Dialog(onDismissRequest = { showIconPicker = false }) {
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color.White,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Select Icon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
-                        columns = androidx.compose.foundation.lazy.grid.GridCells.Adaptive(minSize = 48.dp),
-                        modifier = Modifier.height(300.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(TaskIconUtils.AvailableIcons.size) { index ->
-                            val (name, icon) = TaskIconUtils.AvailableIcons[index]
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clickable {
-                                        iconName = name
-                                        isManualIcon = true
-                                        showIconPicker = false
-                                    }
-                                    .background(
-                                        if (iconName == name) uiColor.copy(alpha = 0.2f) else Color.Transparent,
-                                        RoundedCornerShape(8.dp)
-                                    )
-                                    .border(
-                                        1.dp,
-                                        if (iconName == name) uiColor else Color.LightGray,
-                                        RoundedCornerShape(8.dp)
-                                    )
-                            ) {
-                                Icon(icon, contentDescription = name, tint = if (iconName == name) uiColor else Color.Gray)
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    TextButton(
-                        onClick = { showIconPicker = false },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text("Cancel", color = uiColor)
-                    }
-                }
-            }
-        }
-    }
-    
     if (showColorPicker) {
         Dialog(onDismissRequest = { showColorPicker = false }) {
             Surface(
@@ -641,7 +614,6 @@ fun AddTaskDialog(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                         // null (default) option
                         item {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -696,5 +668,24 @@ fun AddTaskDialog(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DashedDivider(
+    color: Color = Color.LightGray,
+    thickness: androidx.compose.ui.unit.Dp = 1.dp,
+    dashWidth: Float = 10f,
+    dashGap: Float = 10f
+) {
+    Canvas(modifier = Modifier.fillMaxWidth().height(thickness)) {
+        val pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(dashWidth, dashGap), 0f)
+        drawLine(
+            color = color,
+            start = Offset(0f, size.height / 2),
+            end = Offset(size.width, size.height / 2),
+            strokeWidth = thickness.toPx(),
+            pathEffect = pathEffect
+        )
     }
 }
