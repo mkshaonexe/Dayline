@@ -14,6 +14,7 @@ import com.day.line.ui.components.CalendarStrip
 import com.day.line.ui.components.TimelineNode
 import com.day.line.ui.theme.*
 import com.day.line.data.Task
+import com.day.line.ui.util.TaskIconUtils
 
 @Composable
 fun DaylineScreen(
@@ -77,7 +78,7 @@ fun DaylineScreen(
                             time = item.time,
                             title = item.title,
                             subtitle = item.subtitle,
-                            icon = getIconByName(item.iconName),
+                            icon = TaskIconUtils.getIconByName(item.iconName),
                             color = Color(item.colorHex), // Convert Long to Color
                             isLast = isLast,
                             isCompleted = item.isCompleted,
@@ -124,7 +125,7 @@ fun DaylineScreen(
                             subtasks = subtasksList,
                             notes = task.notes.takeIf { it.isNotEmpty() },
                             
-                            icon = getTaskIcon(task), // Smart AI Icon
+                            icon = TaskIconUtils.getIconByName(task.icon),
                             color = getTaskColor(task), // Dynamic deterministic color
                             isLast = isLast,
                             isCompleted = task.isCompleted,
@@ -191,45 +192,11 @@ fun DaylineScreen(
     }
 }
 
-private fun getIconByName(name: String): androidx.compose.ui.graphics.vector.ImageVector {
-    return when (name) {
-        "Notifications" -> Icons.Default.Notifications
-        "List" -> Icons.Default.List
-        "Face" -> Icons.Default.Face
-        "PlayArrow" -> Icons.Default.PlayArrow
-        "Bedtime" -> Icons.Default.Bedtime // Ensure this icon exists or use fallback
-        "Work" -> Icons.Default.Work
-        "FitnessCenter" -> Icons.Default.FitnessCenter
-        "LocalCafe" -> Icons.Default.LocalCafe
-        "Create" -> Icons.Default.Create
-        "Code" -> Icons.Default.Code
-        "MusicNote" -> Icons.Default.MusicNote
-        "Book" -> Icons.Default.Book
-        else -> Icons.Default.Star // Default fallback
-    }
-}
+// getIconByName and getTaskIcon removed - moved to TaskIconUtils
 
 private fun getTaskColor(task: Task): androidx.compose.ui.graphics.Color {
     // Deterministic color based on task title hash
     // This ensures the same task always gets the same color, but different tasks get different colors.
     val index = kotlin.math.abs(task.title.hashCode()) % TaskPalette.size
     return TaskPalette[index]
-}
-
-private fun getTaskIcon(task: Task): androidx.compose.ui.graphics.vector.ImageVector {
-    val title = task.title.lowercase()
-    return when {
-        title.contains("code") || title.contains("dev") || title.contains("program") || title.contains("fix") -> Icons.Default.Code
-        title.contains("study") || title.contains("read") || title.contains("book") || title.contains("learn") || title.contains("homework") -> Icons.Default.Book
-        title.contains("gym") || title.contains("workout") || title.contains("run") || title.contains("walk") || title.contains("exercise") || title.contains("fit") -> Icons.Default.FitnessCenter
-        title.contains("music") || title.contains("listen") || title.contains("song") || title.contains("piano") || title.contains("guitar") -> Icons.Default.MusicNote
-        title.contains("sleep") || title.contains("nap") || title.contains("bed") || title.contains("rest") -> Icons.Default.Bedtime
-        title.contains("eat") || title.contains("lunch") || title.contains("dinner") || title.contains("breakfast") || title.contains("food") || title.contains("coffee") -> Icons.Default.LocalCafe
-        title.contains("work") || title.contains("job") || title.contains("meeting") || title.contains("call") || title.contains("meet") -> Icons.Default.Work
-        title.contains("write") || title.contains("journal") || title.contains("diary") || title.contains("note") -> Icons.Default.Create
-        title.contains("watch") || title.contains("movie") || title.contains("film") || title.contains("tv") || title.contains("video") -> Icons.Default.PlayArrow
-        title.contains("shop") || title.contains("buy") || title.contains("store") || title.contains("grocer") -> Icons.Default.ShoppingCart
-        title.contains("clean") || title.contains("house") || title.contains("chore") -> Icons.Default.Home
-        else -> getIconByName(task.icon)
-    }
 }

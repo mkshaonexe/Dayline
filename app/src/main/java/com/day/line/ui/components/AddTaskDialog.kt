@@ -1,6 +1,7 @@
 package com.day.line.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +26,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.day.line.data.Task
 import com.day.line.ui.theme.DaylineOrange
+import com.day.line.ui.util.TaskIconUtils
 import org.json.JSONArray
 import java.time.LocalDate
 import java.time.LocalTime
@@ -58,6 +60,21 @@ fun AddTaskDialog(
     }
     val subtasks = remember { mutableStateListOf<String>().apply { addAll(initialSubtasks) } }
     var newSubtaskText by remember { mutableStateOf("") }
+
+    // Icon State
+    var iconName by remember { mutableStateOf(taskToEdit?.icon ?: "Star") }
+    var isManualIcon by remember { mutableStateOf(taskToEdit != null) } // Assume manual if editing, or false if new
+    var showIconPicker by remember { mutableStateOf(false) }
+
+    // Real-time Icon Prediction
+    LaunchedEffect(taskTitle) {
+        if (!isManualIcon && taskTitle.isNotEmpty()) {
+            val predicted = TaskIconUtils.predictIconName(taskTitle)
+            if (predicted != "Star") {
+                iconName = predicted
+            }
+        }
+    }
     
     // Date & Time Logic
     val initialDate = remember {
@@ -109,7 +126,7 @@ fun AddTaskDialog(
             isAllDay = isAllDay,
             notes = notes,
             subtasks = subtasksJson,
-            icon = "Work",
+            icon = iconName,
             isCompleted = taskToEdit?.isCompleted ?: false
         )
         onSave(task)
@@ -481,8 +498,61 @@ fun AddTaskDialog(
                          },
                          onDismiss = { showTimePicker = false }
                      )
-                 }
-             }
-         }
+                }
+            }
+        }
+    }
+
+    if (showIconPicker) {
+        Dialog(onDismissRequest = { showIconPicker = false }) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Select Icon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
+                        columns = androidx.compose.foundation.lazy.grid.GridCells.Adaptive(minSize = 48.dp),
+                        modifier = Modifier.height(300.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(TaskIconUtils.AvailableIcons.size) { index ->
+                            val (name, icon) = TaskIconUtils.AvailableIcons[index]
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clickable {
+                                        iconName = name
+                                        isManualIcon = true
+                                        showIconPicker = false
+                                    }
+                                    .background(
+                                        if (iconName == name) DaylineOrange.copy(alpha = 0.2f) else Color.Transparent,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .border(
+                                        1.dp,
+                                        if (iconName == name) DaylineOrange else Color.LightGray,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                            ) {
+                                Icon(icon, contentDescription = name, tint = if (iconName == name) DaylineOrange else Color.Gray)
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(
+                        onClick = { showIconPicker = false },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Cancel", color = DaylineOrange)
+                    }
+                }
+            }
+        }
     }
 }
