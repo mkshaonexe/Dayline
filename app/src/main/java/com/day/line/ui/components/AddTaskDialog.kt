@@ -236,22 +236,22 @@ fun AddTaskDialog(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        // Color Picker (Gradient Circle)
+                        // Color Picker (Gradient Circle) - Smaller & Cuter
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(24.dp)
                                 .clickable { showColorPicker = true }
                         ) {
                             if (selectedColor != null) {
                                 Box(
                                     modifier = Modifier
-                                        .size(32.dp)
+                                        .size(24.dp)
                                         .background(selectedColor!!, androidx.compose.foundation.shape.CircleShape)
                                 )
                             } else {
                                 // Gradient for "Pick Color"
-                                Canvas(modifier = Modifier.size(32.dp)) {
+                                Canvas(modifier = Modifier.size(24.dp)) {
                                     val colors = listOf(Color(0xFF2196F3), Color(0xFFE91E63), Color(0xFFFF9800))
                                     drawCircle(
                                         brush = androidx.compose.ui.graphics.Brush.linearGradient(colors)
@@ -260,17 +260,17 @@ fun AddTaskDialog(
                             }
                         }
                         
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                        // Icon (Dynamic: Manual or Auto-predicted)
+                        // Icon (Dynamic: Manual or Auto-predicted) - Smaller & Cuter
                         Icon(
                             imageVector = TaskIconUtils.getIconByName(iconName),
                             contentDescription = "Task Icon",
                             tint = uiColor,
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(24.dp)
                                 .clickable { showIconPicker = true }
-                                .padding(4.dp)
+                                .padding(2.dp)
                         )
 
                         Spacer(modifier = Modifier.width(12.dp))
