@@ -48,14 +48,14 @@ fun CalendarStrip(
     onDateSelected: (String) -> Unit
 ) {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val currentDate = try {
+    val currentStateDate = try {
         LocalDate.parse(selectedDate, formatter)
     } catch (e: Exception) {
         LocalDate.of(2025, 12, 19)
     }
 
     // Show 3 days before and 3 days after the selected date (centered view)
-    val startDate = currentDate.minusDays(3)
+    val startDate = currentStateDate.minusDays(3)
     
     val weekDates = (0..6).map { startDate.plusDays(it.toLong()) }
     
@@ -68,25 +68,34 @@ fun CalendarStrip(
         modifier = Modifier
             .fillMaxWidth()
             .pointerInput(Unit) {
+                var initialDate: LocalDate = currentStateDate
+                var lastDayOffset = 0
+                
                 detectHorizontalDragGestures(
-                    onDragStart = { totalDrag = 0f },
-                    onDragEnd = { totalDrag = 0f }
+                    onDragStart = { 
+                        totalDrag = 0f 
+                        lastDayOffset = 0
+                        initialDate = currentStateDate
+                    },
+                    onDragEnd = { 
+                        totalDrag = 0f 
+                        lastDayOffset = 0
+                    }
                 ) { change, dragAmount ->
                     change.consume()
                     totalDrag += dragAmount
                     
-                    val threshold = 100f // Pixels to trigger change
+                    val threshold = 100f
+                    // Calculate how many days we have moved based on total drag
+                    // Swipe Right (>0) -> Previous Day (-1)
+                    // Swipe Left (<0) -> Next Day (+1)
+                    val currentDayOffset = -(totalDrag / threshold).toInt()
                     
-                    if (totalDrag > threshold) {
-                        // Swipe Right -> Previous Day
-                        onDateSelected(currentDate.minusDays(1).format(formatter))
+                    if (currentDayOffset != lastDayOffset) {
+                        val newDate = initialDate.plusDays(currentDayOffset.toLong())
+                        onDateSelected(newDate.format(formatter))
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        totalDrag -= threshold // Subtract threshold to allow continuous changes
-                    } else if (totalDrag < -threshold) {
-                        // Swipe Left -> Next Day
-                        onDateSelected(currentDate.plusDays(1).format(formatter))
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        totalDrag += threshold // Add threshold (since totalDrag is negative)
+                        lastDayOffset = currentDayOffset
                     }
                 }
             }
@@ -100,7 +109,7 @@ fun CalendarStrip(
             // Capitalize first letter logic is handled naturally by the formatter "MMMM yyyy" (e.g. December 2025)
             // But just in case, we use the default output which is Title Case for months in English.
             Text(
-                text = currentDate.format(monthYearFormatter), 
+                text = currentStateDate.format(monthYearFormatter), 
                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp), // Balanced Title Size
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -120,7 +129,7 @@ fun CalendarStrip(
             weekDates.forEach { date ->
                 val dayName = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
                 val dayOfMonth = date.dayOfMonth.toString()
-                val isSelected = date.isEqual(currentDate)
+                val isSelected = date.isEqual(currentStateDate)
 
                 DayItem(
                     day = dayName,
