@@ -133,7 +133,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(end = 16.dp, bottom = 70.dp) // Adjusted padding for smaller overlay FAB
+                        .padding(end = 24.dp, bottom = 96.dp) // Moved up and left from nav bar
                 ) {
                     // Radiant Gradient FAB with Liquid Glass Effect
                     androidx.compose.animation.AnimatedVisibility(

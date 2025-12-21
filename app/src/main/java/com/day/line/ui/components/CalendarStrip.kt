@@ -41,14 +41,10 @@ fun CalendarStrip(
         LocalDate.of(2025, 12, 19)
     }
 
-    // Calculate start of the week (Monday)
-    // If we want a scrolling calendar later, we'd need more logic. 
-    // For now, let's just show the week surrounding the selected date
-    // or specifically the current week. 
-    // Let's stick to "Week containing the selected date" logic for now.
-    val startOfWeek = currentDate.with(DayOfWeek.MONDAY)
+    // Show 3 days before and 3 days after the selected date (centered view)
+    val startDate = currentDate.minusDays(3)
     
-    val weekDates = (0..6).map { startOfWeek.plusDays(it.toLong()) }
+    val weekDates = (0..6).map { startDate.plusDays(it.toLong()) }
     
     val monthYearFormatter = DateTimeFormatter.ofPattern("MMMM yyyy")
 
