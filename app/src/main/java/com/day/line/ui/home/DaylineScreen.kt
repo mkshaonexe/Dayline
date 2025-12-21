@@ -215,7 +215,10 @@ fun DaylineScreen(
 // getIconByName and getTaskIcon removed - moved to TaskIconUtils
 
 private fun getTaskColor(task: Task): androidx.compose.ui.graphics.Color {
-    // Deterministic color based on task title hash
+    // Use manual color if set
+    task.color?.let { return Color(it) }
+    
+    // Fallback: Deterministic color based on task title hash
     // This ensures the same task always gets the same color, but different tasks get different colors.
     val index = kotlin.math.abs(task.title.hashCode()) % TaskPalette.size
     return TaskPalette[index]

@@ -18,7 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -78,6 +81,10 @@ fun AddTaskDialog(
         }
     }
     
+    // Color State
+    var selectedColor by remember { mutableStateOf(taskToEdit?.color?.let { Color(it) }) }
+    var showColorPicker by remember { mutableStateOf(false) }
+    
     // Date & Time Logic
     val initialDate = remember {
         try {
@@ -136,6 +143,7 @@ fun AddTaskDialog(
             notes = notes,
             subtasks = subtasksJson,
             icon = iconName,
+            color = selectedColor?.toArgb(),
             isCompleted = taskToEdit?.isCompleted ?: false
         )
         onSave(task)
@@ -227,10 +235,37 @@ fun AddTaskDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable { showColorPicker = true }
+                            .padding(4.dp)
+                    ) {
+                        if (selectedColor != null) {
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .background(selectedColor!!, androidx.compose.foundation.shape.CircleShape)
+                                    .border(1.dp, Color.Gray, androidx.compose.foundation.shape.CircleShape)
+                            )
+                        } else {
+                            // Default rainbow wheel or similar icon for "pick color"
+                            Canvas(modifier = Modifier.size(24.dp)) {
+                                val colors = listOf(Color.Red, Color.Green, Color.Blue)
+                                drawCircle(
+                                    brush = androidx.compose.ui.graphics.Brush.sweepGradient(colors)
+                                )
+                            }
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+
                     Icon(
                         imageVector = TaskIconUtils.getIconByName(iconName),
                         contentDescription = "Icon",
-                        tint = DaylineOrange,
+                        tint = selectedColor ?: DaylineOrange,
                         modifier = Modifier
                             .size(32.dp)
                             .clickable { showIconPicker = true }
@@ -544,22 +579,101 @@ fun AddTaskDialog(
                                         showIconPicker = false
                                     }
                                     .background(
-                                        if (iconName == name) DaylineOrange.copy(alpha = 0.2f) else Color.Transparent,
+                                        if (iconName == name) (selectedColor ?: DaylineOrange).copy(alpha = 0.2f) else Color.Transparent,
                                         RoundedCornerShape(8.dp)
                                     )
                                     .border(
                                         1.dp,
-                                        if (iconName == name) DaylineOrange else Color.LightGray,
+                                        if (iconName == name) (selectedColor ?: DaylineOrange) else Color.LightGray,
                                         RoundedCornerShape(8.dp)
                                     )
                             ) {
-                                Icon(icon, contentDescription = name, tint = if (iconName == name) DaylineOrange else Color.Gray)
+                                Icon(icon, contentDescription = name, tint = if (iconName == name) (selectedColor ?: DaylineOrange) else Color.Gray)
                             }
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     TextButton(
                         onClick = { showIconPicker = false },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Cancel", color = selectedColor ?: DaylineOrange)
+                    }
+                }
+            }
+        }
+    }
+    
+    if (showColorPicker) {
+        Dialog(onDismissRequest = { showColorPicker = false }) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Select Color", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    val colors = com.day.line.ui.theme.TaskPalette + listOf(
+                         com.day.line.ui.theme.DaylinePink,
+                         com.day.line.ui.theme.NeonPink
+                    )
+                    
+                    androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
+                        columns = androidx.compose.foundation.lazy.grid.GridCells.Adaptive(minSize = 48.dp),
+                        modifier = Modifier.height(200.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                         // null (default) option
+                        item {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clickable {
+                                        selectedColor = null
+                                        showColorPicker = false
+                                    }
+                                    .border(2.dp, if (selectedColor == null) DaylineOrange else Color.LightGray, androidx.compose.foundation.shape.CircleShape)
+                                    .padding(4.dp)
+                            ) {
+                                Canvas(modifier = Modifier.fillMaxSize()) {
+                                    val canvasWidth = size.width
+                                    val canvasHeight = size.height
+                                    drawLine(
+                                        start = Offset(0f, canvasHeight),
+                                        end = Offset(canvasWidth, 0f),
+                                        color = Color.Red,
+                                        strokeWidth = 5f
+                                    )
+                                }
+                            }
+                        }
+                        
+                        items(colors.size) { index ->
+                            val color = colors[index]
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clickable {
+                                        selectedColor = color
+                                        showColorPicker = false
+                                    }
+                                    .background(color, androidx.compose.foundation.shape.CircleShape)
+                                    .border(
+                                        2.dp, 
+                                        if (selectedColor == color) Color.Black else Color.Transparent, 
+                                        androidx.compose.foundation.shape.CircleShape
+                                    )
+                            ) {}
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(
+                        onClick = { showColorPicker = false },
                         modifier = Modifier.align(Alignment.End)
                     ) {
                         Text("Cancel", color = DaylineOrange)

@@ -14,6 +14,8 @@ data class Task(
     val title: String,
 
     val icon: String = "default", // Icon name (e.g., "Notifications", "List", "Face", "PlayArrow")
+    
+    val color: Int? = null, // Manual color override (ARGB)
 
     
     // Date in format: yyyy-MM-dd (e.g., "2025-12-19")
