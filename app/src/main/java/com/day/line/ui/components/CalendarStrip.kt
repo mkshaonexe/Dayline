@@ -74,21 +74,7 @@ fun CalendarStrip(
                 letterSpacing = 0.5.sp 
             )
             
-            // Restore Icons
-            Row {
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Calendar",
-                    tint = PastelRed,
-                    modifier = Modifier.size(24.dp).padding(end = 12.dp)
-                )
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = PastelRed,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+            // Icons removed as per user request
         }
         
         // Days Row
