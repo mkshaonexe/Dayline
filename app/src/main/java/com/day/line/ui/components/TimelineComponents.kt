@@ -123,6 +123,8 @@ fun TimelineNode(
     durationMinutes: Long? = null,
     title: String,
     subtitle: String? = null,
+    subtasks: List<String> = emptyList(),
+    notes: String? = null,
     icon: ImageVector,
     color: Color,
     isLast: Boolean = false,
@@ -330,6 +332,40 @@ fun TimelineNode(
                         text = subtitle,
                         style = MaterialTheme.typography.bodyMedium.copy(color = TextLight)
                     )
+                }
+            }
+
+            // Notes
+            if (!notes.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = notes,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextLight,
+                    maxLines = 2
+                )
+            }
+
+            // Subtasks
+            if (subtasks.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                subtasks.forEach { subtask ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically, 
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(color.copy(alpha = 0.5f), CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = subtask,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextDark.copy(alpha = 0.8f)
+                        )
+                    }
                 }
             }
         }
