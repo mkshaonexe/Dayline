@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.day.line.data.Task
-import com.day.line.ui.theme.DaylineOrange
+import com.day.line.ui.theme.DaylinePink
 import com.day.line.ui.theme.TextDark
 import com.day.line.ui.theme.TextLight
 
@@ -68,13 +68,13 @@ fun TaskDetailsBottomSheet(
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(Color.White)
-                        .border(1.dp, DaylineOrange, CircleShape),
+                        .border(1.dp, DaylinePink, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = getIconByName(task.icon),
                         contentDescription = null,
-                        tint = DaylineOrange,
+                        tint = DaylinePink,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -111,7 +111,7 @@ fun TaskDetailsBottomSheet(
             if (task.notes.isNotEmpty()) {
                 Text(
                     text = "Notes",
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylineOrange),
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylinePink),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
@@ -132,7 +132,7 @@ fun TaskDetailsBottomSheet(
                 if (subtasks.isNotEmpty()) {
                      Text(
                         text = "Subtasks",
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylineOrange),
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylinePink),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     subtasks.forEach { subtask ->
@@ -156,7 +156,7 @@ fun TaskDetailsBottomSheet(
                 ActionButton(
                     icon = Icons.Default.Delete,
                     label = "Delete",
-                    color = DaylineOrange,
+                    color = DaylinePink,
                     modifier = Modifier.weight(1f),
                     onClick = onDelete
                 )
@@ -164,7 +164,7 @@ fun TaskDetailsBottomSheet(
                 ActionButton(
                     icon = Icons.Default.ContentCopy,
                     label = "Duplicate",
-                    color = DaylineOrange, // Using DaylineOrange for consistency
+                    color = DaylinePink, // Using DaylinePink for consistency
                     modifier = Modifier.weight(1f),
                     onClick = onDuplicate
                 )
@@ -172,7 +172,7 @@ fun TaskDetailsBottomSheet(
                 ActionButton(
                     icon = if (task.isCompleted) Icons.Default.Close else Icons.Default.Check, // Show 'Close' (Incomplete) if completed
                     label = if (task.isCompleted) "Incomplete" else "Complete",
-                    color = DaylineOrange,
+                    color = DaylinePink,
                     modifier = Modifier.weight(1f),
                     onClick = onToggleCompletion
                 )
@@ -195,7 +195,7 @@ fun TaskDetailsBottomSheet(
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Task",
-                    tint = DaylineOrange,
+                    tint = DaylinePink,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -203,7 +203,7 @@ fun TaskDetailsBottomSheet(
                     text = "Edit Task",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DaylineOrange
+                    color = DaylinePink
                 )
             }
         }
