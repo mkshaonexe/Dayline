@@ -193,10 +193,12 @@ fun TimelineNode(
                 
                 // 1. Base Gradient (The "Liquid")
                 // Mix the node color with a bit of gradient to give it depth
+                val displayColor = if (isCompleted) Color(0xFF4CAF50) else color // Success Green or Token Color
+
                 val baseGradient = androidx.compose.ui.graphics.Brush.linearGradient(
                     colors = listOf(
-                        color,
-                        color.copy(alpha = 0.8f)
+                        displayColor,
+                        displayColor.copy(alpha = 0.8f)
                     ),
                     start = Offset(0f, 0f),
                     end = Offset(100f, 100f)
@@ -241,8 +243,8 @@ fun TimelineNode(
                         .shadow(
                             elevation = 8.dp,
                             shape = RoundedCornerShape(20.dp),
-                            spotColor = color.copy(alpha = 0.5f), 
-                            ambientColor = color.copy(alpha = 0.2f)
+                            spotColor = displayColor.copy(alpha = 0.5f), 
+                            ambientColor = displayColor.copy(alpha = 0.2f)
                         )
                         .clip(RoundedCornerShape(20.dp))
                         .background(brush = baseGradient)
