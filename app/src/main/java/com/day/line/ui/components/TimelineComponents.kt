@@ -278,7 +278,7 @@ fun TimelineNode(
                         color = TimelineLineColor,
                         start = Offset(center.x, 0f),
                         end = Offset(center.x, size.height),
-                        strokeWidth = 4f,
+                        strokeWidth = 6f, // Increased from 4f for better visibility
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
                     )
                 }
