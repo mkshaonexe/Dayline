@@ -26,10 +26,12 @@ class TaskViewModel @Inject constructor(
     
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     
-    // Current selected date (default: Dec 19, 2025)
+    // Current selected date (default: Today)
     private val _selectedDate = MutableStateFlow(
-        LocalDate.of(2025, 12, 19).format(dateFormatter)
+        LocalDate.now().format(dateFormatter)
     )
+
+
     val selectedDate: StateFlow<String> = _selectedDate.asStateFlow()
     
     // Tasks for the selected date
@@ -141,6 +143,6 @@ class TaskViewModel @Inject constructor(
     }
     
     fun getTodayDate(): String {
-        return LocalDate.of(2025, 12, 19).format(dateFormatter)
+        return LocalDate.now().format(dateFormatter)
     }
 }
