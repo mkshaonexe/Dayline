@@ -1,6 +1,7 @@
 package com.day.line.ui.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -26,21 +27,28 @@ fun DaylineScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(bottom = 80.dp) // Add padding to avoid overlap with floating bottom bar
+            .background(Color.White) // Default background
     ) {
         val selectedDate by viewModel.selectedDate.collectAsState()
-        CalendarStrip(
-            selectedDate = selectedDate,
-            onDateSelected = { viewModel.selectDate(it) }
-        )
+        
+        // Calendar Section with Grey Background
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(PastelGrey)
+        ) {
+            CalendarStrip(
+                selectedDate = selectedDate,
+                onDateSelected = { viewModel.selectDate(it) }
+            )
+        }
 
         // Visual Section Separator
         Column(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Color.LightGray.copy(alpha = 0.5f)
             )
-            Spacer(modifier = Modifier.height(16.dp))
         }
         
         val timelineItems by viewModel.timelineItems.collectAsState()
@@ -49,10 +57,15 @@ fun DaylineScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
+                .background(Color.White) // Explicit white background for tasks
         ) {
+            // Spacer at top of list
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
             items(timelineItems.size) { index ->
                 val item = timelineItems[index]
                 val isLast = index == timelineItems.lastIndex
+
 
                 when (item) {
                     is TaskViewModel.TimelineItem.Fixed -> {
