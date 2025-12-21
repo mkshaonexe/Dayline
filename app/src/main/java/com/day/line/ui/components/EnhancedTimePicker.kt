@@ -206,6 +206,27 @@ fun EnhancedTimePicker(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // OK Button
+            Button(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = DaylineOrange,
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Text(
+                    text = "OK",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 
