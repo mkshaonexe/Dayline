@@ -28,6 +28,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnhancedTimePicker(
     startTime: LocalTime,
@@ -39,7 +40,11 @@ fun EnhancedTimePicker(
     var durationMinutes by remember(startTime, endTime) {
         mutableLongStateOf(ChronoUnit.MINUTES.between(startTime, endTime))
     }
-
+    
+    // Time Picker State
+    var showTimePicker by remember { mutableStateOf(false) }
+    var pickingStartTime by remember { mutableStateOf(true) }
+    
     // Helper to format time
     val timeFormatter = DateTimeFormatter.ofPattern("hh:mm a")
 
@@ -89,7 +94,11 @@ fun EnhancedTimePicker(
                 TimeInputBox(
                     time = startTime,
                     label = "Start",
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        pickingStartTime = true
+                        showTimePicker = true
+                    }
                 )
 
                 Icon(
@@ -103,7 +112,11 @@ fun EnhancedTimePicker(
                 TimeInputBox(
                     time = endTime,
                     label = "End",
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        pickingStartTime = false
+                        showTimePicker = true
+                    }
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -195,19 +208,57 @@ fun EnhancedTimePicker(
             }
         }
     }
+
+    // Time Picker Dialog
+    if (showTimePicker) {
+        val initialTime = if (pickingStartTime) startTime else endTime
+        val timePickerState = rememberTimePickerState(
+            initialHour = initialTime.hour,
+            initialMinute = initialTime.minute
+        )
+
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                        if (pickingStartTime) {
+                            onStartTimeChange(newTime)
+                        } else {
+                            onEndTimeChange(newTime)
+                        }
+                        showTimePicker = false
+                    }
+                ) {
+                    Text("OK", color = DaylineOrange)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text("Cancel")
+                }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
+    }
 }
 
 @Composable
 fun TimeInputBox(
     time: LocalTime,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     val formatter = DateTimeFormatter.ofPattern("hh:mm a")
     Surface(
         modifier = modifier
             .height(48.dp)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp)),
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surface
     ) {
