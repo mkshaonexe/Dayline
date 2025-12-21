@@ -81,12 +81,12 @@ fun CalendarStrip(
                         // Swipe Right -> Previous Day
                         onDateSelected(currentDate.minusDays(1).format(formatter))
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        totalDrag = 0f // Reset to require another full swipe distance for next change
+                        totalDrag -= threshold // Subtract threshold to allow continuous changes
                     } else if (totalDrag < -threshold) {
                         // Swipe Left -> Next Day
                         onDateSelected(currentDate.plusDays(1).format(formatter))
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        totalDrag = 0f
+                        totalDrag += threshold // Add threshold (since totalDrag is negative)
                     }
                 }
             }
