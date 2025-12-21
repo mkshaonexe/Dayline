@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,7 +44,6 @@ fun AddTaskDialog(
     var isAllDay by remember { mutableStateOf(taskToEdit?.isAllDay ?: false) }
     
     // Subtasks State
-    // Parse existing subtasks from JSON string
     val initialSubtasks = remember(taskToEdit) {
         try {
             if (!taskToEdit?.subtasks.isNullOrEmpty()) {
@@ -90,7 +90,32 @@ fun AddTaskDialog(
 
     val focusManager = LocalFocusManager.current
 
-    // Dialog Container
+    // Helper to save task
+    fun saveTask() {
+        val finalTitle = if (taskTitle.isBlank()) "New Task" else taskTitle
+        
+        val subtasksJson = try {
+            val jsonArray = JSONArray()
+            subtasks.forEach { jsonArray.put(it) }
+            jsonArray.toString()
+        } catch (e: Exception) { "[]" }
+
+        val task = Task(
+            id = taskToEdit?.id ?: 0,
+            title = finalTitle,
+            date = selectedDateState.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+            startTime = startTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+            endTime = endTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+            isAllDay = isAllDay,
+            notes = notes,
+            subtasks = subtasksJson,
+            icon = "Work",
+            isCompleted = taskToEdit?.isCompleted ?: false
+        )
+        onSave(task)
+        onDismiss()
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -100,38 +125,15 @@ fun AddTaskDialog(
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            containerColor = Color(0xFFF9F9F9), // Light modern background
-            contentWindowInsets = WindowInsets.statusBars, // Handle status bar overlap
+            containerColor = Color(0xFFF9F9F9), // Light background
+            contentWindowInsets = WindowInsets.statusBars,
             floatingActionButton = {
-                // Done Button (Floating)
+                // Bottom-right Save Button (Orange with Check) - Kept from reference
                 FloatingActionButton(
-                    onClick = {
-                        val finalTitle = if (taskTitle.isBlank()) "New Task" else taskTitle
-                        
-                        // Serialize subtasks to JSON
-                        val subtasksJson = try {
-                            val jsonArray = JSONArray()
-                            subtasks.forEach { jsonArray.put(it) }
-                            jsonArray.toString()
-                        } catch (e: Exception) { "[]" }
-
-                        val task = Task(
-                            id = taskToEdit?.id ?: 0,
-                            title = finalTitle,
-                            date = selectedDateState.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                            startTime = startTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-                            endTime = endTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-                            isAllDay = isAllDay,
-                            notes = notes,
-                            subtasks = subtasksJson,
-                            icon = "Work", // Default or selector
-                            isCompleted = taskToEdit?.isCompleted ?: false
-                        )
-                        onSave(task)
-                        onDismiss()
-                    },
+                    onClick = { saveTask() },
                     containerColor = DaylineOrange,
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Icon(Icons.Default.Check, "Save")
                 }
@@ -141,41 +143,69 @@ fun AddTaskDialog(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 24.dp, vertical = 24.dp)
+                    .padding(24.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.Start
             ) {
-                // 1. Header
+                // 1. Top Navigation Bar (Close & Top Save)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = if (taskToEdit == null) "New task" else "Edit task",
-                        style = MaterialTheme.typography.displaySmall.copy(
-                            fontWeight = FontWeight.Black,
-                            fontSize = 32.sp
-                        ),
-                        color = Color.Black
-                    )
+                    // Left: Close (X)
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray)
+                        Icon(
+                            Icons.Default.Close, 
+                            contentDescription = "Close", 
+                            tint = Color.Gray,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
+                    // Right: Arrow Button (Save)
+                    IconButton(
+                        onClick = { saveTask() },
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
+                    ) {
+                         // Approximating the "arrow in box" look or just a forward arrow
+                         // Using a simple arrow icon, customizable if needed
+                         Icon(
+                             Icons.AutoMirrored.Filled.ArrowForward,
+                             contentDescription = "Save",
+                             tint = Color(0xFF607D8B), // Slate-ish blue/grey like reference
+                             modifier = Modifier
+                                 .size(32.dp)
+                                 .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                 .padding(4.dp)
+                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // 2. Task Name Input
+                // 2. Header Title
+                Text(
+                    text = if (taskToEdit == null) "New task" else "Edit task",
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        fontWeight = FontWeight.Black,
+                        fontSize = 36.sp
+                    ),
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // 3. Task Name Input
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Edit, // Or a custom clipboard icon
+                        imageVector = Icons.Default.Edit,
                         contentDescription = null,
-                        tint = Color.Gray, // Muted icon color
-                        modifier = Modifier.size(28.dp)
+                        tint = Color.Gray,
+                        modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Box(modifier = Modifier.weight(1f)) {
@@ -183,7 +213,7 @@ fun AddTaskDialog(
                             value = taskTitle,
                             onValueChange = { taskTitle = it },
                             textStyle = TextStyle(
-                                fontSize = 20.sp,
+                                fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black
                             ),
@@ -194,7 +224,7 @@ fun AddTaskDialog(
                                         Text(
                                             text = "task name",
                                             style = TextStyle(
-                                                fontSize = 20.sp,
+                                                fontSize = 22.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color.LightGray
                                             )
@@ -203,12 +233,11 @@ fun AddTaskDialog(
                                         innerTextField()
                                     }
                                     Spacer(modifier = Modifier.height(8.dp))
-                                    // Underline
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(2.dp)
-                                            .background(Color(0xFFFFCDD2)) // Light red/pink underline
+                                            .background(Color(0xFFFFCDD2))
                                     )
                                 }
                             }
@@ -218,7 +247,7 @@ fun AddTaskDialog(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 3. Date & Time Row
+                // 4. Date & Time
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -232,13 +261,13 @@ fun AddTaskDialog(
                         Icon(
                             Icons.Default.CalendarToday,
                             contentDescription = "Date",
-                            tint = DaylineOrange, // Orange Accent
-                            modifier = Modifier.size(20.dp)
+                            tint = DaylineOrange,
+                            modifier = Modifier.size(24.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = selectedDateState.format(dateFormatter),
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp),
+                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp),
                             color = Color.Black
                         )
                     }
@@ -251,13 +280,13 @@ fun AddTaskDialog(
                         Icon(
                             Icons.Default.Schedule,
                             contentDescription = "Time",
-                            tint = Color.LightGray, // As per reference (lighter blue/grey)
-                            modifier = Modifier.size(20.dp)
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(24.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "${startTime.format(timeFormatter)} - ${endTime.format(timeFormatter)}",
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp),
+                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp),
                             color = Color.Black
                         )
                     }
@@ -265,7 +294,7 @@ fun AddTaskDialog(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 4. Repeat
+                // 5. Repeat (Centered)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
@@ -273,10 +302,10 @@ fun AddTaskDialog(
                 ) {
                     Text(
                         text = "repeat",
-                        style = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 16.sp),
+                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
                         color = Color.Black
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         Icons.Default.Repeat,
                         contentDescription = "Repeat",
@@ -287,59 +316,30 @@ fun AddTaskDialog(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // 5. Subtasks & Notes (Split View)
+                // 6. Subtasks & Notes
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(24.dp),
                     verticalAlignment = Alignment.Top
                 ) {
-                    // Left Column: add subtask
+                    // Left: Subtasks
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "add subtask",
-                            style = TextStyle(fontWeight = FontWeight.Black, fontSize = 18.sp),
+                            style = TextStyle(fontWeight = FontWeight.Black, fontSize = 16.sp),
                             color = Color.Black
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        // Existing Subtasks
-                        subtasks.forEachIndexed { index, subtask ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.CheckBoxOutlineBlank,
-                                    contentDescription = null,
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = subtask,
-                                    modifier = Modifier.weight(1f),
-                                    style = TextStyle(fontSize = 14.sp)
-                                )
-                                // Delete subtask
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "Remove",
-                                    tint = Color.Red.copy(alpha=0.5f),
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .clickable { subtasks.removeAt(index) }
-                                )
-                            }
-                        }
-
-                        // Add New Subtask Input
+                        // New Subtask Input (Always visible at top or bottom? Reference shows just '+' and line)
+                        // Implementing '+' then input line like reference
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = "Add",
                                 tint = DaylineOrange,
                                 modifier = Modifier
-                                    .size(18.dp)
+                                    .size(20.dp)
                                     .clickable {
                                         if (newSubtaskText.isNotBlank()) {
                                             subtasks.add(newSubtaskText)
@@ -352,60 +352,75 @@ fun AddTaskDialog(
                                 value = newSubtaskText,
                                 onValueChange = { newSubtaskText = it },
                                 textStyle = TextStyle(fontSize = 14.sp, color = Color.Black),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(IntrinsicSize.Min),
+                                modifier = Modifier.weight(1f),
                                 decorationBox = { innerTextField ->
-                                    Box {
-                                        if (newSubtaskText.isEmpty()) {
-                                             Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(1.dp)
-                                                    .align(Alignment.CenterStart)
-                                                    .background(Color(0xFFFFCDD2))
-                                            )
-                                        }
+                                    Column {
                                         innerTextField()
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(1.dp)
+                                                .background(Color(0xFFFFCDD2))
+                                        )
                                     }
                                 }
                             )
                         }
+
+                        // List Existing
+                        if (subtasks.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            subtasks.forEachIndexed { index, subtask ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Icon(Icons.Default.CheckBoxOutlineBlank, null, tint=Color.Gray, modifier=Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(subtask, style = TextStyle(fontSize = 14.sp), modifier=Modifier.weight(1f))
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Remove",
+                                        tint=Color.Red.copy(0.5f),
+                                        modifier=Modifier.size(16.dp).clickable { subtasks.removeAt(index) }
+                                    )
+                                }
+                            }
+                        }
                     }
 
-                    // Right Column: add note
+                    // Right: Notes
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "add note",
-                            style = TextStyle(fontWeight = FontWeight.Black, fontSize = 18.sp),
+                            style = TextStyle(fontWeight = FontWeight.Black, fontSize = 16.sp),
                             color = Color.Black
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        // Note Input Area
+                        // Ruled Lines Effect
                         BasicTextField(
                             value = notes,
                             onValueChange = { notes = it },
-                            textStyle = TextStyle(fontSize = 14.sp, color = Color.DarkGray),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 100.dp), // Ensure visible height
+                            textStyle = TextStyle(fontSize = 14.sp, color = Color.DarkGray, lineHeight = 20.sp),
+                            modifier = Modifier.fillMaxWidth(),
                             decorationBox = { innerTextField ->
-                                Column {
-                                    if (notes.isEmpty()) {
-                                        // Lines visualization
-                                        repeat(3) {
+                                Box {
+                                    // Background Lines
+                                    Column {
+                                        repeat(4) { // Draw a few lines
+                                            Spacer(modifier = Modifier.height(19.dp)) // Approximate line height
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .height(1.dp)
                                                     .background(Color(0xFFFFCDD2))
                                             )
-                                            Spacer(modifier = Modifier.height(19.dp)) // Line height spacing
                                         }
-                                    } else {
-                                        innerTextField()
                                     }
+                                    // Content
+                                    innerTextField()
                                 }
                             }
                         )
@@ -414,8 +429,8 @@ fun AddTaskDialog(
             }
         }
     }
-    
-    // ... DatePicker and EnhancedTimePicker logic (unchanged) ...
+
+    // Pickers (Unchanged logic, just ensure they show up)
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = selectedDateState.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -442,7 +457,7 @@ fun AddTaskDialog(
     if (showTimePicker) {
          Dialog(
              onDismissRequest = { showTimePicker = false },
-             properties = DialogProperties(usePlatformDefaultWidth = false) // Full width for the overlay
+             properties = DialogProperties(usePlatformDefaultWidth = false)
          ) {
              Box(
                  modifier = Modifier
@@ -451,7 +466,6 @@ fun AddTaskDialog(
                      .clickable { showTimePicker = false },
                  contentAlignment = Alignment.Center
              ) {
-                 // Prevent click on the picker from closing the dialog
                  Box(modifier = Modifier.clickable(enabled = false) {}) {
                      EnhancedTimePicker(
                          startTime = startTime,
