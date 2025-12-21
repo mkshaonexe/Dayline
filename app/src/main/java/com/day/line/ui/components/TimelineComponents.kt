@@ -120,6 +120,7 @@ fun TimelineNode(
     time: String,
     endTime: String? = null,
     duration: String? = null,
+    durationMinutes: Long? = null,
     title: String,
     subtitle: String? = null,
     icon: ImageVector,
@@ -128,7 +129,32 @@ fun TimelineNode(
     isCompleted: Boolean = false,
     onToggleCompletion: () -> Unit = {}
 ) {
-    IntrinsicHeightRow {
+    // Base height for a standard node (icon + padding)
+    // Base height for a standard node (icon + padding)
+    val baseHeight = 80.dp 
+    // Calculate dynamic height: base + (minutes * scale)
+    // Scale: 1.5dp per minute seems reasonable. 60m = 90dp extra.
+    val dynamicHeight = if (durationMinutes != null) {
+        val minutesHeight = durationMinutes * 1.5
+        (baseHeight.value + minutesHeight).dp
+    } else {
+        baseHeight
+    }
+    
+    // Calculate node (pill) height based on duration
+    // Keep it circular (56dp) for short tasks (<= 15 min), stretch for longer ones
+    val baseNodeHeight = 56.dp
+    val nodeHeight = if (durationMinutes != null && durationMinutes > 15) {
+        val extraMinutes = durationMinutes - 15
+        // Scale the node slightly less than the row so we still have connector lines
+        (baseNodeHeight.value + (extraMinutes * 1.2)).dp
+    } else {
+        baseNodeHeight
+    }
+
+    IntrinsicHeightRow(
+        modifier = Modifier.heightIn(min = dynamicHeight)
+    ) {
         // Time Column
         Column(
             modifier = Modifier
@@ -145,13 +171,16 @@ fun TimelineNode(
         // Line and Node Column
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(48.dp)
+            modifier = Modifier
+                .width(48.dp)
+                .fillMaxHeight()
         ) {
             // Node Icon
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(56.dp) // Slightly larger container for the squircle effect
+                    .width(56.dp)
+                    .height(nodeHeight) // Dynamic height
                     .padding(vertical = 4.dp)
             ) {
                 // Liquid Glass Effect

@@ -92,6 +92,18 @@ fun DaylineScreen(
                             time = task.startTime,
                             endTime = task.endTime,
                             duration = task.getDuration(),
+                            durationMinutes = try {
+                                val parseTime = { timeStr: String ->
+                                    try {
+                                        java.time.LocalTime.parse(timeStr)
+                                    } catch (e: Exception) {
+                                        java.time.LocalTime.parse(timeStr, java.time.format.DateTimeFormatter.ofPattern("h:mm a", java.util.Locale.US))
+                                    }
+                                }
+                                val start = parseTime(task.startTime)
+                                val end = parseTime(task.endTime)
+                                java.time.Duration.between(start, end).toMinutes()
+                            } catch (e: Exception) { null },
                             title = task.title,
                             subtitle = task.notes.takeIf { it.isNotEmpty() },
                             icon = getIconByName(task.icon),
