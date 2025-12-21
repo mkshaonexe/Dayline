@@ -77,8 +77,13 @@ class TaskViewModel @Inject constructor(
             )
 
             val userItems = tasks.map { TimelineItem.UserTask(it) }
+            val userTitles = tasks.map { it.title }.toSet()
+
+            val filteredFixedItems = fixedItems.filter { fixed ->
+                !userTitles.contains(fixed.title)
+            }
             
-            (fixedItems + userItems).sortedBy { item ->
+            (filteredFixedItems + userItems).sortedBy { item ->
                 when (item) {
                     is TimelineItem.Fixed -> item.time
                     is TimelineItem.UserTask -> item.task.startTime

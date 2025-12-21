@@ -15,6 +15,8 @@ import com.day.line.ui.components.TimelineNode
 import com.day.line.ui.theme.*
 import com.day.line.data.Task
 import com.day.line.ui.util.TaskIconUtils
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun DaylineScreen(
@@ -85,7 +87,21 @@ fun DaylineScreen(
                             onToggleCompletion = {
                                 viewModel.toggleFixedItemCompletion(selectedDate, item.title)
                             },
-                            onClick = { /* No action for fixed items for now */ }
+                            onClick = { 
+                                // Create a temporary task object for editing
+                                val tempTask = Task(
+                                    id = 0, // New task
+                                    title = item.title,
+                                    date = selectedDate,
+                                    startTime = item.time,
+                                    endTime = java.time.LocalTime.parse(item.time).plusMinutes(30).format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")),
+                                    isAllDay = false,
+                                    notes = item.subtitle,
+                                    icon = item.iconName,
+                                    isCompleted = item.isCompleted
+                                )
+                                selectedTask = tempTask
+                            }
                         )
                     }
                     is TaskViewModel.TimelineItem.UserTask -> {
@@ -183,7 +199,11 @@ fun DaylineScreen(
                     selectedTask = null
                 },
                 onSave = { updatedTask ->
-                    viewModel.updateTask(updatedTask)
+                    if (updatedTask.id == 0L) {
+                        viewModel.addTask(updatedTask)
+                    } else {
+                        viewModel.updateTask(updatedTask)
+                    }
                     showEditTaskDialog = false
                     selectedTask = null
                 }
