@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 // Brand Colors
 val DaylineOrange = Color(0xFFFF8A00) // Refined Sunset Orange
+val DaylineGreen = Color(0xFF4CAF50)  // Standard Green
 val NeonOrange = Color(0xFFFF9E40)    // Vibrancy kept but harmonized
 val DaylinePink = Color(0xFFF48FB1)   // Light Pink
 val NeonPink = Color(0xFFF8BBD0)      // Lighter Pink
