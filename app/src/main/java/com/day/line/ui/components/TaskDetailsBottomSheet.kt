@@ -28,6 +28,7 @@ import com.day.line.ui.theme.TextLight
 @Composable
 fun TaskDetailsBottomSheet(
     task: Task,
+    color: Color = DaylinePink, // Default fallback
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
     onDuplicate: () -> Unit,
@@ -68,13 +69,13 @@ fun TaskDetailsBottomSheet(
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(Color.White)
-                        .border(1.dp, DaylinePink, CircleShape),
+                        .border(1.dp, color, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = getIconByName(task.icon),
+                        imageVector = com.day.line.ui.util.TaskIconUtils.getIconByName(task.icon),
                         contentDescription = null,
-                        tint = DaylinePink,
+                        tint = color,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -111,7 +112,7 @@ fun TaskDetailsBottomSheet(
             if (task.notes.isNotEmpty()) {
                 Text(
                     text = "Notes",
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylinePink),
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = color),
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
@@ -132,7 +133,7 @@ fun TaskDetailsBottomSheet(
                 if (subtasks.isNotEmpty()) {
                      Text(
                         text = "Subtasks",
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = DaylinePink),
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = color),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     subtasks.forEach { subtask ->
@@ -156,7 +157,7 @@ fun TaskDetailsBottomSheet(
                 ActionButton(
                     icon = Icons.Default.Delete,
                     label = "Delete",
-                    color = DaylinePink,
+                    color = color,
                     modifier = Modifier.weight(1f),
                     onClick = onDelete
                 )
@@ -164,7 +165,7 @@ fun TaskDetailsBottomSheet(
                 ActionButton(
                     icon = Icons.Default.ContentCopy,
                     label = "Duplicate",
-                    color = DaylinePink, // Using DaylinePink for consistency
+                    color = color, // Using color for consistency
                     modifier = Modifier.weight(1f),
                     onClick = onDuplicate
                 )
@@ -172,7 +173,7 @@ fun TaskDetailsBottomSheet(
                 ActionButton(
                     icon = if (task.isCompleted) Icons.Default.Close else Icons.Default.Check, // Show 'Close' (Incomplete) if completed
                     label = if (task.isCompleted) "Incomplete" else "Complete",
-                    color = DaylinePink,
+                    color = color,
                     modifier = Modifier.weight(1f),
                     onClick = onToggleCompletion
                 )
@@ -195,7 +196,7 @@ fun TaskDetailsBottomSheet(
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Task",
-                    tint = DaylinePink,
+                    tint = color,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -203,7 +204,7 @@ fun TaskDetailsBottomSheet(
                     text = "Edit Task",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DaylinePink
+                    color = color
                 )
             }
         }

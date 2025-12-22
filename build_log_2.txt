@@ -36,9 +36,10 @@
 > Task :app:writeDebugSigningConfigVersions UP-TO-DATE
 
 > Task :app:compileDebugKotlin FAILED
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:657:29 None of the following candidates is applicable:
-fun Box(modifier: Modifier = ..., contentAlignment: Alignment = ..., propagateMinConstraints: Boolean = ..., content: @Composable() ComposableFunction1<BoxScope, Unit>): Unit
-fun Box(modifier: Modifier): Unit
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/TimelineComponents.kt:193:22 Unresolved reference 'zIndex'.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/TimelineComponents.kt:317:25 Unresolved reference 'clipRect'.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/home/DaylineScreen.kt:108:48 Unresolved reference 'time'.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/home/DaylineScreen.kt:112:89 Unresolved reference 'time'.
 
 FAILURE: Build failed with an exception.
 
@@ -53,5 +54,5 @@ Execution failed for task ':app:compileDebugKotlin'.
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 2s
+BUILD FAILED in 1s
 31 actionable tasks: 1 executed, 30 up-to-date

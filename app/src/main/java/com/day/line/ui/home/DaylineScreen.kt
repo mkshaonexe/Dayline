@@ -202,6 +202,7 @@ fun DaylineScreen(
         if (!showEditTaskDialog) {
             com.day.line.ui.components.TaskDetailsBottomSheet(
                 task = task,
+                color = getTaskColor(task), // Pass dynamic color
                 onDismiss = { selectedTask = null },
                 onDelete = {
                     viewModel.deleteTask(task)

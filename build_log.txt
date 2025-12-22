@@ -36,21 +36,10 @@
 > Task :app:writeDebugSigningConfigVersions UP-TO-DATE
 
 > Task :app:compileDebugKotlin FAILED
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:252:29 Unresolved reference 'Canvas'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:252:69 Unresolved reference 'drawCircle'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:254:33 Unresolved reference 'drawCircle'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:640:33 Unresolved reference 'Canvas'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:640:75 Unresolved reference 'drawLine'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:641:55 Function invocation 'size(...)' expected.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:641:60 Function invocation 'width(...)' expected.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:642:56 Function invocation 'size(...)' expected.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:642:61 Function invocation 'height(...)' expected.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:643:37 Unresolved reference 'drawLine'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:644:49 Unresolved reference 'Offset'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:645:47 Unresolved reference 'Offset'.
-e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/AddTaskDialog.kt:655:29 None of the following candidates is applicable:
-fun Box(modifier: Modifier = ..., contentAlignment: Alignment = ..., propagateMinConstraints: Boolean = ..., content: @Composable() ComposableFunction1<BoxScope, Unit>): Unit
-fun Box(modifier: Modifier): Unit
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/TimelineComponents.kt:193:22 Unresolved reference 'zIndex'.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/TimelineComponents.kt:318:64 Unresolved reference 'clipRect'.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/home/DaylineScreen.kt:108:48 Unresolved reference 'time'.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/home/DaylineScreen.kt:112:89 Unresolved reference 'time'.
 
 FAILURE: Build failed with an exception.
 
