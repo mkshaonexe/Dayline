@@ -1,0 +1,146 @@
+﻿> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:injectCrashlyticsMappingFileIdDebug UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:l8DexDesugarLibDebug UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+
+> Task :app:compileDebugKotlin FAILED
+./gradlew : e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/
+main/java/com/day/line/ui/components/TaskDetailsBottomSheet.kt:13
+1:32 Unresolved reference 'remember'.
+At line:1 char:1
++ ./gradlew assembleDebug > build_log_2.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (e: 
+file:///E:/C...nce 'remember'.    :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:152:47 Cannot 
+infer type for this parameter. Please specify it explicitly.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:152:54 Cannot 
+infer type for this parameter. Please specify it explicitly.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:153:48 
+Function invocation 'first()' expected.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:154:55 
+Unresolved reference 'second'.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:155:25 
+@Composable invocations can only happen from the context of a 
+@Composable function
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:162:38 Cannot 
+infer type for this parameter. Please specify it explicitly.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:162:59 
+Argument type mismatch: actual type is 'kotlin.Pair<A, B>', but 
+'V' was expected.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:162:64 Cannot 
+infer type for this parameter. Please specify it explicitly.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:162:64 
+Unresolved reference. None of the following candidates is 
+applicable because of a receiver type mismatch:
+fun <A, B> A.to(that: B): Pair<A, B>
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:166:50 
+Overload resolution ambiguity between candidates:
+fun <T> Iterable<T>.forEach(action: (T) -> Unit): Unit
+fun <K, V> Map<out K, V>.forEach(action: (Map.Entry<K, V>) -> 
+Unit): Unit
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:166:60 Cannot 
+infer type for this parameter. Please specify it explicitly.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:166:60 
+Function 'component1()' is ambiguous for this expression: 
+fun <T> Array<out T>.component1(): T
+fun BooleanArray.component1(): Boolean
+fun ByteArray.component1(): Byte
+fun CharArray.component1(): Char
+fun DoubleArray.component1(): Double
+fun FloatArray.component1(): Float
+fun IntArray.component1(): Int
+fun LongArray.component1(): Long
+fun ShortArray.component1(): Short
+fun <T> List<T>.component1(): T
+fun <K, V> Map.Entry<K, V>.component1(): K
+fun UByteArray.component1(): UByte
+fun UIntArray.component1(): UInt
+fun ULongArray.component1(): ULong
+fun UShortArray.component1(): UShort.
+e: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/co
+m/day/line/ui/components/TaskDetailsBottomSheet.kt:166:60 
+Function 'component2()' is ambiguous for this expression: 
+fun <T> Array<out T>.component2(): T
+fun BooleanArray.component2(): Boolean
+fun ByteArray.component2(): Byte
+fun CharArray.component2(): Char
+fun DoubleArray.component2(): Double
+fun FloatArray.component2(): Float
+fun IntArray.component2(): Int
+fun LongArray.component2(): Long
+fun ShortArray.component2(): Short
+fun <T> List<T>.component2(): T
+fun <K, V> Map.Entry<K, V>.component2(): V
+fun UByteArray.component2(): UByte
+fun UIntArray.component2(): UInt
+fun ULongArray.component2(): ULong
+fun UShortArray.component2(): UShort.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compile
+rRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkA
+ction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 3s
+35 actionable tasks: 1 executed, 34 up-to-date

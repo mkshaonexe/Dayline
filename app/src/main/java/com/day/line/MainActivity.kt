@@ -89,7 +89,17 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 } else {
-                    HomeScreen()
+                    val isFirstRun by settingsRepository.isFirstRun.collectAsState(initial = true)
+
+                    if (isFirstRun) {
+                        com.day.line.ui.onboarding.OnboardingScreen(
+                            onFinishOnboarding = {
+                                settingsRepository.setFirstRunCompleted()
+                            }
+                        )
+                    } else {
+                        HomeScreen()
+                    }
                     
                     if (showOptionalDialog && updateState is com.day.line.data.update.UpdateManager.UpdateState.OptionalUpdate) {
                         val optional = updateState as com.day.line.data.update.UpdateManager.UpdateState.OptionalUpdate
