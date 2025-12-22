@@ -10,6 +10,8 @@ data class AppVersion(
     @SerialName("version_name") val versionName: String,
     @SerialName("changelog") val changelog: String? = null,
     @SerialName("is_critical") val forceUpdate: Boolean = false,
+    @SerialName("min_supported_version") val minSupportedVersion: Int = 0,
+    @SerialName("release_date") val releaseDate: String? = null,
     @SerialName("download_url") val downloadUrl: String? = null,
     @SerialName("created_at") val createdAt: String? = null
 )

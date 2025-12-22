@@ -28,19 +28,32 @@ class UpdateWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val update = updateManager.checkForUpdate()
+        val updateState = updateManager.checkUpdateState()
         
-        if (update != null) {
-            showUpdateNotification(
-                title = "Update Available: ${update.versionName}",
-                message = update.changelog ?: "New features and improvements available."
-            )
+        when (updateState) {
+            is UpdateManager.UpdateState.ForcedUpdate -> {
+                showUpdateNotification(
+                    title = "Dayline app stop working ask for the update",
+                    message = "Update required to continue using the app. Fix this issue otherwise it will not work.",
+                    isForced = true
+                )
+            }
+            is UpdateManager.UpdateState.OptionalUpdate -> {
+                showUpdateNotification(
+                    title = "Update Available: ${updateState.version.versionName}",
+                    message = updateState.version.changelog ?: "New features and improvements available.",
+                    isForced = false
+                )
+            }
+            is UpdateManager.UpdateState.NoUpdate -> {
+                // Do nothing
+            }
         }
         
         return Result.success()
     }
 
-    private fun showUpdateNotification(title: String, message: String) {
+    private fun showUpdateNotification(title: String, message: String, isForced: Boolean) {
         val channelId = "update_channel"
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

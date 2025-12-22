@@ -475,27 +475,33 @@ fun UpdateDialog(
 ) {
     androidx.compose.material3.AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "Update Available") },
+        title = { Text(text = "Update Available: ${version.versionName}") },
         text = {
             Column {
-                Text("Version ${version.versionName} is available.")
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Changelog: ${version.changelog ?: "New features and improvements available."}")
+                Text(version.changelog ?: "New improvements available.")
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("You can download the update directly or visit our Telegram channel.")
             }
         },
         confirmButton = {
             androidx.compose.material3.Button(
                 onClick = onUpdateViaPlayStore,
-                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = DaylineOrange)
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = DaylineOrange)
             ) {
-                Text("Play Store")
+                Text("Download Update")
             }
         },
         dismissButton = {
-             androidx.compose.material3.OutlinedButton(
-                onClick = onUpdateViaTelegram
-            ) {
-                Text("Telegram")
+            Row {
+                androidx.compose.material3.OutlinedButton(
+                    onClick = onUpdateViaTelegram
+                ) {
+                    Text("Telegram")
+                }
+                Spacer(modifier = Modifier.size(8.dp))
+                androidx.compose.material3.TextButton(onClick = onDismiss) {
+                    Text("Later")
+                }
             }
         }
     )

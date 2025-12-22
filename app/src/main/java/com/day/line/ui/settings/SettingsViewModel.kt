@@ -52,11 +52,18 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _updateStatus.value = UpdateStatus.Checking
             try {
-                val version = updateManager.checkForUpdate()
-                if (version != null) {
-                    _updateStatus.value = UpdateStatus.Available(version)
-                } else {
-                    _updateStatus.value = UpdateStatus.UpToDate
+                val state = updateManager.checkUpdateState()
+                
+                when (state) {
+                    is UpdateManager.UpdateState.ForcedUpdate -> {
+                        _updateStatus.value = UpdateStatus.Available(state.version)
+                    }
+                    is UpdateManager.UpdateState.OptionalUpdate -> {
+                        _updateStatus.value = UpdateStatus.Available(state.version)
+                    }
+                    is UpdateManager.UpdateState.NoUpdate -> {
+                        _updateStatus.value = UpdateStatus.UpToDate
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -28,6 +28,9 @@ class MainActivity : ComponentActivity() {
     @javax.inject.Inject
     lateinit var settingsRepository: com.day.line.data.SettingsRepository
 
+    @javax.inject.Inject
+    lateinit var updateManager: com.day.line.data.update.UpdateManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,15 +39,21 @@ class MainActivity : ComponentActivity() {
             val themeColorName by settingsRepository.themeColor.collectAsState(initial = "Orange")
             val accentColor = ThemeColor.fromName(themeColorName).color
             
-            // Debug: Get Firebase Installation ID
+            // Check Update Status
+            var updateState by androidx.compose.runtime.remember { 
+                androidx.compose.runtime.mutableStateOf<com.day.line.data.update.UpdateManager.UpdateState>(com.day.line.data.update.UpdateManager.UpdateState.NoUpdate) 
+            }
+            
             LaunchedEffect(Unit) {
-               FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
+                 val status = updateManager.checkUpdateState()
+                 if (status is com.day.line.data.update.UpdateManager.UpdateState.ForcedUpdate) {
+                     updateState = status
+                 }
+                 
+                 // Firebase ID log
+                 FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
                    if (task.isSuccessful) {
-                       val token = task.result
-                       Log.d("DaylineID", "Firebase Install ID: $token")
-                       // Toast.makeText(applicationContext, "FID: $token", Toast.LENGTH_LONG).show() 
-                   } else {
-                       Log.e("DaylineID", "Unable to get Installation ID")
+                       Log.d("DaylineID", "FID: ${task.result}")
                    }
                }
             }
@@ -53,9 +62,7 @@ class MainActivity : ComponentActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 val permissionLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestPermission()
-                ) { isGranted ->
-                    // Handle permission result if needed
-                }
+                ) { }
                 
                 LaunchedEffect(Unit) {
                     permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -63,7 +70,23 @@ class MainActivity : ComponentActivity() {
             }
 
             DaylineTheme(darkTheme = isDarkTheme, accentColor = accentColor) {
-                HomeScreen()
+                if (updateState is com.day.line.data.update.UpdateManager.UpdateState.ForcedUpdate) {
+                    val forced = updateState as com.day.line.data.update.UpdateManager.UpdateState.ForcedUpdate
+                    com.day.line.ui.update.ForceUpdateScreen(
+                        downloadUrl = forced.version.downloadUrl,
+                        onContactSupport = {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+                                data = android.net.Uri.parse("mailto:")
+                                putExtra(android.content.Intent.EXTRA_EMAIL, arrayOf("mkshaonnew31@gmail.com"))
+                                putExtra(android.content.Intent.EXTRA_SUBJECT, "Dayline app stop working ask for the update")
+                                putExtra(android.content.Intent.EXTRA_TEXT, "The app has stopped working because it requires an update. Please help me update.")
+                            }
+                            startActivity(intent)
+                        }
+                    )
+                } else {
+                    HomeScreen()
+                }
             }
         }
     }
