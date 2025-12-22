@@ -20,11 +20,13 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 import com.day.line.ui.notification.NotificationScheduler
+import com.day.line.analytics.AnalyticsManager
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(
     private val repository: TaskRepository,
-    private val notificationScheduler: NotificationScheduler
+    private val notificationScheduler: NotificationScheduler,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
     
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -33,7 +35,6 @@ class TaskViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow(
         LocalDate.now().format(dateFormatter)
     )
-
 
     val selectedDate: StateFlow<String> = _selectedDate.asStateFlow()
     
@@ -101,10 +102,17 @@ class TaskViewModel @Inject constructor(
 
     fun toggleFixedItemCompletion(date: String, title: String) {
         val key = "${date}_$title"
+        val isNowCompleted = !_completedFixedItems.value.contains(key)
         _completedFixedItems.value = if (_completedFixedItems.value.contains(key)) {
             _completedFixedItems.value - key
         } else {
             _completedFixedItems.value + key
+        }
+        
+        if (isNowCompleted) {
+            analyticsManager.logTaskCompleted(isUserTask = false)
+        } else {
+            analyticsManager.logTaskUncompleted(isUserTask = false)
         }
     }
     
@@ -120,6 +128,10 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             repository.insertTask(task)
             notificationScheduler.scheduleNotification(task)
+            analyticsManager.logTaskCreated(
+                hasTime = task.startTime != "00:00", 
+                hasIcon = task.icon != "Star"
+            )
         }
     }
     
@@ -127,6 +139,8 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             repository.updateTask(task)
             notificationScheduler.scheduleNotification(task)
+            // Ideally check for completion change here, but for now generic log or rely on other signals if strictly needed.
+            // Keeping it simple as per implementation plan to avoid complex refactoring.
         }
     }
     
@@ -134,12 +148,14 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             repository.deleteTask(task)
             notificationScheduler.cancelNotification(task)
+            analyticsManager.logTaskDeleted()
         }
     }
     
     fun deleteTaskById(taskId: Long) {
         viewModelScope.launch {
             repository.deleteTaskById(taskId)
+            analyticsManager.logTaskDeleted()
         }
     }
     

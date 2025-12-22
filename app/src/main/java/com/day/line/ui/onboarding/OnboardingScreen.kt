@@ -51,6 +51,16 @@ fun OnboardingScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
+    
+    // Analytics
+    LaunchedEffect(Unit) {
+        val bundle = android.os.Bundle().apply {
+            putString(com.google.firebase.analytics.FirebaseAnalytics.Param.SCREEN_NAME, "Onboarding")
+            putString(com.google.firebase.analytics.FirebaseAnalytics.Param.SCREEN_CLASS, "OnboardingScreen")
+        }
+        com.google.firebase.ktx.Firebase.analytics.logEvent(com.google.firebase.analytics.FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
+    }
+
     var userName by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 

@@ -12,7 +12,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val userProfileDao: UserProfileDao
+    private val userProfileDao: UserProfileDao,
+    private val analyticsManager: com.day.line.analytics.AnalyticsManager
 ) : ViewModel() {
 
     fun completeOnboarding(userName: String) {
@@ -26,6 +27,9 @@ class OnboardingViewModel @Inject constructor(
             val currentProfile = userProfileDao.getUserProfileSync()
             val newProfile = currentProfile?.copy(name = userName) ?: UserProfile(name = userName)
             userProfileDao.insertOrUpdateProfile(newProfile)
+            
+            // Log Analytics
+            analyticsManager.logOnboardingCompleted(userName.length)
         }
     }
 }

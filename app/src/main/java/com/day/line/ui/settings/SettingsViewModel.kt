@@ -23,7 +23,8 @@ sealed class UpdateStatus {
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val updateManager: UpdateManager
+    private val updateManager: UpdateManager,
+    private val analyticsManager: com.day.line.analytics.AnalyticsManager
 ) : ViewModel() {
 
     val isDarkTheme: StateFlow<Boolean> = settingsRepository.isDarkTheme
@@ -39,12 +40,14 @@ class SettingsViewModel @Inject constructor(
     fun toggleTheme(isDark: Boolean) {
         viewModelScope.launch {
             settingsRepository.setDarkTheme(isDark)
+            analyticsManager.logThemeChanged(isDark)
         }
     }
     
     fun setThemeColor(colorName: String) {
         viewModelScope.launch {
             settingsRepository.setThemeColor(colorName)
+            analyticsManager.logColorChanged(colorName)
         }
     }
 
