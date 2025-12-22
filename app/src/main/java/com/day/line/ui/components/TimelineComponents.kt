@@ -126,7 +126,7 @@ fun TimelineNode(
     durationMinutes: Long? = null,
     title: String,
     subtitle: String? = null,
-    subtasks: List<String> = emptyList(),
+    subtasks: List<SubtaskUiModel> = emptyList(),
     notes: String? = null,
     icon: ImageVector,
     color: Color,
@@ -401,16 +401,20 @@ fun TimelineNode(
                         verticalAlignment = Alignment.CenterVertically, 
                         modifier = Modifier.padding(bottom = 2.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .background(color.copy(alpha = 0.5f), CircleShape)
+                        // Show checkbox icon based on completion status
+                        Icon(
+                            imageVector = if (subtask.isCompleted) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank,
+                            contentDescription = null,
+                            tint = if (subtask.isCompleted) color else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            modifier = Modifier.size(16.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = subtask,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            text = subtask.text,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                textDecoration = if (subtask.isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null,
+                                color = if (subtask.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                            )
                         )
                     }
                 }

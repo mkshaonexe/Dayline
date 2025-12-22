@@ -159,11 +159,22 @@ fun DaylineScreen(
                     }
                     is TaskViewModel.TimelineItem.UserTask -> {
                         val task = item.task
-                        // Parse subtasks
-                        val subtasksList = try {
-                            if (task.subtasks.isNotEmpty()) {
+                        // Parse subtasks - now properly handles JSON objects
+                        val subtasksList: List<com.day.line.ui.components.SubtaskUiModel> = try {
+                            if (task.subtasks.isNotEmpty() && task.subtasks != "[]") {
                                 val jsonArray = org.json.JSONArray(task.subtasks)
-                                List(jsonArray.length()) { jsonArray.getString(it) }
+                                List(jsonArray.length()) { index ->
+                                    val item = jsonArray.get(index)
+                                    if (item is org.json.JSONObject) {
+                                        com.day.line.ui.components.SubtaskUiModel(
+                                            text = item.getString("text"),
+                                            isCompleted = item.optBoolean("isCompleted", false)
+                                        )
+                                    } else {
+                                        // Backward compatibility for plain strings
+                                        com.day.line.ui.components.SubtaskUiModel(item.toString(), false)
+                                    }
+                                }
                             } else emptyList()
                         } catch (e: Exception) { emptyList() }
 
@@ -224,6 +235,11 @@ fun DaylineScreen(
                     viewModel.updateTask(task.copy(isCompleted = !task.isCompleted))
                     // Update selected task to reflect change immediately in UI
                     selectedTask = task.copy(isCompleted = !task.isCompleted)
+                },
+                onSubtaskChange = { newSubtasksJson ->
+                    val updatedTask = task.copy(subtasks = newSubtasksJson)
+                    viewModel.updateTask(updatedTask)
+                    selectedTask = updatedTask
                 }
             )
         }
