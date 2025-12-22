@@ -113,6 +113,7 @@ fun AddTaskDialog(
     val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
     val focusRequester = remember { FocusRequester() }
+    val subtaskFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
         if (taskToEdit == null) {
@@ -407,7 +408,8 @@ fun AddTaskDialog(
                                     fontWeight = FontWeight.Bold, 
                                     fontSize = 14.sp,
                                     color = Color(0xFF546E7A)
-                                )
+                                ),
+                                modifier = Modifier.clickable { subtaskFocusRequester.requestFocus() }
                             )
                             Spacer(modifier = Modifier.height(16.dp))
 
@@ -431,12 +433,16 @@ fun AddTaskDialog(
                                     value = newSubtaskText,
                                     onValueChange = { newSubtaskText = it },
                                     textStyle = TextStyle(fontSize = 14.sp, color = Color.Black),
-                                    modifier = Modifier.weight(1f),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .focusRequester(subtaskFocusRequester),
+                                    cursorBrush = SolidColor(uiColor),
                                     decorationBox = { innerTextField ->
                                         Column {
-                                            if (newSubtaskText.isEmpty()) {
-                                                Text("Add subtask...", style = TextStyle(fontSize = 14.sp, color = Color.LightGray))
-                                            } else {
+                                            Box {
+                                                if (newSubtaskText.isEmpty()) {
+                                                    Text("Add subtask...", style = TextStyle(fontSize = 14.sp, color = Color.LightGray))
+                                                }
                                                 innerTextField()
                                             }
                                             Spacer(modifier = Modifier.height(4.dp))
@@ -490,6 +496,7 @@ fun AddTaskDialog(
                                 onValueChange = { notes = it },
                                 textStyle = TextStyle(fontSize = 14.sp, color = Color.DarkGray, lineHeight = 24.sp),
                                 modifier = Modifier.fillMaxWidth(),
+                                cursorBrush = SolidColor(uiColor),
                                 decorationBox = { innerTextField ->
                                     Box {
                                         // Draw dashed lines for "notebook" feel

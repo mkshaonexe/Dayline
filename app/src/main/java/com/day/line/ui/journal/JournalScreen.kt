@@ -1,6 +1,7 @@
 package com.day.line.ui.journal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -23,17 +25,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.day.line.data.JournalEntry
 import com.day.line.ui.theme.DaylineOrange
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
-fun JournalScreen() {
+fun JournalScreen(
+    viewModel: JournalViewModel = hiltViewModel()
+) {
+    val entries by viewModel.journalEntries.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedEntry by remember { mutableStateOf<JournalEntry?>(null) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,7 +64,7 @@ fun JournalScreen() {
                 top = 24.dp,
                 start = 24.dp,
                 end = 24.dp,
-                bottom = 120.dp // Added extra padding for floating nav bar
+                bottom = 120.dp
             ),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
@@ -72,7 +91,11 @@ fun JournalScreen() {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp), // Slightly adjusted height to look more like a button/banner
+                        .height(100.dp)
+                        .clickable { 
+                            selectedEntry = null
+                            showDialog = true 
+                        },
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = DaylineOrange),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
@@ -114,17 +137,59 @@ fun JournalScreen() {
             }
 
             // Entries List
-            items(5) {
-                JournalEntryItem()
+            if (entries.isEmpty()) {
+                item {
+                    Text(
+                        text = "No entries yet. Start writing!",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 16.sp
+                    )
+                }
+            } else {
+                items(entries) { entry ->
+                    JournalEntryItem(
+                        entry = entry,
+                        onClick = {
+                            selectedEntry = entry
+                            showDialog = true
+                        }
+                    )
+                }
             }
+        }
+
+        if (showDialog) {
+            JournalEntryDialog(
+                entryStr = selectedEntry,
+                onDismiss = { showDialog = false },
+                onSave = { title, content ->
+                    if (selectedEntry != null) {
+                        viewModel.updateEntry(selectedEntry!!.copy(
+                            title = title,
+                            content = content,
+                            timestamp = System.currentTimeMillis()
+                        ))
+                    } else {
+                        viewModel.addEntry(title, content)
+                    }
+                },
+                onDelete = { entry ->
+                    viewModel.deleteEntry(entry)
+                }
+            )
         }
     }
 }
 
 @Composable
-fun JournalEntryItem() {
+fun JournalEntryItem(
+    entry: JournalEntry,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -152,15 +217,24 @@ fun JournalEntryItem() {
             
             Column {
                 Text(
-                    text = "Reflections on Clarity",
+                    text = entry.title,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "Today was a good day...",
-                    fontSize = 14.sp,
+                    text = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(entry.timestamp)),
+                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = entry.content,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

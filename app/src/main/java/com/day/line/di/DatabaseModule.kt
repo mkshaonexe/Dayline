@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.day.line.data.TaskDao
 import com.day.line.data.TaskDatabase
 import com.day.line.data.UserProfileDao
+import com.day.line.data.JournalDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,5 +41,11 @@ object DatabaseModule {
     @Singleton
     fun provideUserProfileDao(database: TaskDatabase): UserProfileDao {
         return database.userProfileDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideJournalDao(database: TaskDatabase): JournalDao {
+        return database.journalDao()
     }
 }
