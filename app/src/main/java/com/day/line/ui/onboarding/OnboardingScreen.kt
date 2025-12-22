@@ -274,7 +274,10 @@ fun MisoIntroPage(
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = DaylineOrange,
-                cursorColor = DaylineOrange
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                cursorColor = DaylineOrange,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
             ),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Words,
