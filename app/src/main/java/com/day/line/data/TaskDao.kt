@@ -20,6 +20,9 @@ interface TaskDao {
 
     @Query("SELECT DISTINCT date FROM tasks WHERE isCompleted = 1 ORDER BY date DESC")
     fun getDatesWithCompletedTasks(): Flow<List<String>>
+
+    @Query("SELECT date, COUNT(*) as count FROM tasks WHERE date >= :sinceDate GROUP BY date ORDER BY date ASC")
+    fun getTaskCountsByDate(sinceDate: String): Flow<List<DailyTaskCount>>
     
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     suspend fun getTaskById(taskId: Long): Task?

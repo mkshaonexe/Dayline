@@ -27,6 +27,10 @@ class TaskRepository @Inject constructor(
     fun getDatesWithCompletedTasks(): Flow<List<String>> {
         return taskDao.getDatesWithCompletedTasks()
     }
+
+    fun getTaskCountsByDate(sinceDate: String): Flow<List<DailyTaskCount>> {
+        return taskDao.getTaskCountsByDate(sinceDate)
+    }
     
     suspend fun getTaskById(taskId: Long): Task? {
         return taskDao.getTaskById(taskId)

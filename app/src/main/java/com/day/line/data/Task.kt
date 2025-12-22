@@ -92,3 +92,8 @@ data class Task(
         }
     }
 }
+
+data class DailyTaskCount(
+    val date: String,
+    val count: Int
+)

@@ -14,11 +14,14 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+import com.day.line.data.DailyTaskCount
+
 data class ProfileUiState(
     val streak: Int = 0,
     val completionRate: Int = 0,
     val tasksCreatedToday: Int = 0,
-    val completedTasksToday: Int = 0
+    val completedTasksToday: Int = 0,
+    val activityData: List<DailyTaskCount> = emptyList()
 )
 
 @HiltViewModel
@@ -35,30 +38,48 @@ class ProfileViewModel @Inject constructor(
 
     private fun loadStats() {
         viewModelScope.launch {
-            val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val today = LocalDate.now()
+            val todayStr = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val sevenDaysAgoStr = today.minusDays(6).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
             combine(
-                taskRepository.getTaskCountForDate(today),
-                taskRepository.getCompletedTaskCountForDate(today),
-                taskRepository.getDatesWithCompletedTasks()
-            ) { totalTasks, completedTasks, completedDates ->
+                taskRepository.getTaskCountForDate(todayStr),
+                taskRepository.getCompletedTaskCountForDate(todayStr),
+                taskRepository.getDatesWithCompletedTasks(),
+                taskRepository.getTaskCountsByDate(sevenDaysAgoStr)
+            ) { totalTasks, completedTasks, completedDates, activityData ->
+                
+                // Format completion rate
                 val completionRate = if (totalTasks > 0) {
                     (completedTasks.toFloat() / totalTasks * 100).toInt()
                 } else {
                     0
                 }
                 
+                // Calculate streak
                 val streak = calculateStreak(completedDates)
+                
+                // Normalize activity data (fill in missing days with 0)
+                val fullWeekData = getPast7Days(today).map { dateStr ->
+                    activityData.find { it.date == dateStr } ?: DailyTaskCount(dateStr, 0)
+                }
                 
                 ProfileUiState(
                     streak = streak,
                     completionRate = completionRate,
                     tasksCreatedToday = totalTasks,
-                    completedTasksToday = completedTasks
+                    completedTasksToday = completedTasks,
+                    activityData = fullWeekData
                 )
             }.collect { newState ->
                 _uiState.value = newState
             }
+        }
+    }
+
+    private fun getPast7Days(today: LocalDate): List<String> {
+        return (0..6).map { i ->
+            today.minusDays((6 - i).toLong()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
     }
 
