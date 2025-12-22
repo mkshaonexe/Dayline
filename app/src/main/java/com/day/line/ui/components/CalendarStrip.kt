@@ -137,6 +137,7 @@ fun CalendarStrip(
                     isSelected = isSelected,
                     onClick = {
                         onDateSelected(date.format(formatter))
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     }
                 )
             }

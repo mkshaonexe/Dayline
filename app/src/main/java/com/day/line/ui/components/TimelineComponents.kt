@@ -139,6 +139,8 @@ fun TimelineNode(
     onToggleCompletion: () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+
     // Base height for a standard node (icon + padding)
     val baseHeight = 80.dp 
     // Calculate dynamic height: base + (minutes * scale)
@@ -194,6 +196,10 @@ fun TimelineNode(
                     .height(nodeHeight) // Dynamic height
                     .padding(vertical = 4.dp)
                     .zIndex(1f) // Ensure icon is on top of line
+                    .clickable {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onToggleCompletion()
+                    }
             ) {
                 // Liquid Glass Effect
                 

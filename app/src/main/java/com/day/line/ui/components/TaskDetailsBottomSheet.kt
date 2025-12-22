@@ -39,6 +39,8 @@ fun TaskDetailsBottomSheet(
     onToggleCompletion: () -> Unit,
     onSubtaskChange: (String) -> Unit
 ) {
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -158,6 +160,7 @@ fun TaskDetailsBottomSheet(
                              modifier = Modifier
                                  .fillMaxWidth()
                                  .clickable {
+                                     haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                      // Toggle logic
                                      val newSubtasks = subtasks.toMutableList()
                                      newSubtasks[index] = subtaskItem.copy(isCompleted = !isCompleted)
