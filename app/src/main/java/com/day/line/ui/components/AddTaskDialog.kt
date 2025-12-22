@@ -178,56 +178,56 @@ fun AddTaskDialog(
                 ) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 1. Top Navigation Bar
+                    // 1. Modern Header
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 24.dp), // Add spacing below header
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Left: Close (X)
-                        IconButton(onClick = onDismiss) {
+                        // Left: Close (Cross)
+                        IconButton(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(Color.Transparent, androidx.compose.foundation.shape.CircleShape)
+                        ) {
                             Icon(
                                 Icons.Default.Close, 
                                 contentDescription = "Close", 
-                                tint = Color.Gray,
+                                tint = Color.Black.copy(alpha = 0.7f),
                                 modifier = Modifier.size(24.dp)
                             )
                         }
 
-                        // Right: Circular Arrow (Reference style)
-                        IconButton(
-                            onClick = { /* Could be a reset or just another action? Reference has arrow in circle */ },
-                            modifier = Modifier.size(40.dp)
+                        // Center: Title
+                        Text(
+                            text = if (taskToEdit == null) "Add Task" else "Edit Task",
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            ),
+                            color = Color.Black.copy(alpha = 0.8f)
+                        )
+
+                        // Right: Add Button (Pill shaped)
+                        Button(
+                            onClick = { saveTask() },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = uiColor,
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(20.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.height(36.dp)
                         ) {
-                             Box(
-                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .border(1.dp, Color.LightGray, androidx.compose.foundation.shape.CircleShape)
-                                    .clickable { saveTask() }, // Using this as save/next for now
-                                 contentAlignment = Alignment.Center
-                             ) {
-                                 Icon(
-                                     Icons.AutoMirrored.Filled.ArrowForward,
-                                     contentDescription = "Next",
-                                     tint = Color.Gray,
-                                     modifier = Modifier.size(16.dp)
-                                 )
-                             }
+                            Text(
+                                text = if (taskToEdit == null) "Add" else "Save",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                            )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // 2. Header
-                    Text(
-                        text = if (taskToEdit == null) "New task" else "Edit task",
-                        style = MaterialTheme.typography.displaySmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                            fontSize = 32.sp
-                        ),
-                        color = Color(0xFF2C3E50) // Dark Blue/Grey like reference
-                    )
 
                     Spacer(modifier = Modifier.height(32.dp))
 
@@ -507,32 +507,7 @@ fun AddTaskDialog(
                     }
                     
                     // Extra space at bottom
-                    Spacer(modifier = Modifier.height(100.dp))
-                }
-
-                // 7. Bottom Action Button (Green Checkmark)
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(24.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .background(
-                                color = Color(0xFFC8E6C9), // Light Green Background
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clickable { saveTask() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Default.Check,
-                            contentDescription = "Save",
-                            tint = Color(0xFF2E7D32), // Darker Green Check
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
