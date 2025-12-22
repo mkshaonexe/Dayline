@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.zIndex
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -130,10 +132,12 @@ fun TimelineNode(
     isLast: Boolean = false,
     isCompleted: Boolean = false,
 
+    nextColor: Color? = null,
+    progress: Float = 0f, // 0f to 1f, representing how much of this segment is "active/past"
+    
     onToggleCompletion: () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
-    // Base height for a standard node (icon + padding)
     // Base height for a standard node (icon + padding)
     val baseHeight = 80.dp 
     // Calculate dynamic height: base + (minutes * scale)
@@ -188,6 +192,7 @@ fun TimelineNode(
                     .width(56.dp)
                     .height(nodeHeight) // Dynamic height
                     .padding(vertical = 4.dp)
+                    .zIndex(1f) // Ensure icon is on top of line
             ) {
                 // Liquid Glass Effect
                 
@@ -269,20 +274,61 @@ fun TimelineNode(
                 )
             }
 
-            // Vertical Dashed Line
+            // Connecting Line (Gradient + Progress)
             if (!isLast) {
+                val lineColorStart = color
+                val lineColorEnd = nextColor ?: color
+
                 Canvas(
                     modifier = Modifier
                         .weight(1f) // Fill remaining height
-                        .width(2.dp)
+                        .width(4.dp) // Slightly wider for gradient visibility
                 ) {
+                    val lineStart = Offset(center.x, -20f) // Start slightly inside the icon (overlap)
+                    val lineEnd = Offset(center.x, size.height + 20f) // End slightly inside next icon
+
+                    // 1. Draw Background (Future/Incomplete part)
+                    // Faint, dashed, or semi-transparent version of the gradient
                     drawLine(
-                        color = TimelineLineColor,
-                        start = Offset(center.x, 0f),
-                        end = Offset(center.x, size.height),
-                        strokeWidth = 6f, // Increased from 4f for better visibility
+                        brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                            colors = listOf(lineColorStart.copy(alpha = 0.3f), lineColorEnd.copy(alpha = 0.3f))
+                        ),
+                        start = lineStart,
+                        end = lineEnd,
+                        strokeWidth = 6f,
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
                     )
+
+                    // 2. Draw Foreground (Past/Completed part)
+                    // Solid gradient, clipped to progress
+                    if (progress > 0f) {
+                        val progressHeight = size.height * progress
+                        // We need to clip the drawing to the progress height
+                        // Since we can't easily "clip" a line in specific rect without clipRect,
+                        // we can validly draw a line from start to (start + progress * length).
+                        // Note: size.height is the Canvas height. 
+                        // Our line conceptually goes from 0 to size.height (ignoring the overlap for calculation simplicity or adjusting it).
+                        
+                        val fillEndY = size.height * progress
+
+                        // Gradient for the filled part should technically match the segment of the full gradient.
+                        // But for simplicity, using the same gradient start-to-end looks fine 
+                        // as long as we clip or draw the partial line.
+                        
+                        // Let's use clipRect to ensure strict fill
+                        drawContext.canvas.save()
+                        drawContext.canvas.clipRect(Rect(0f, 0f, size.width, fillEndY))
+                        
+                        drawLine(
+                            brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                                colors = listOf(lineColorStart, lineColorEnd)
+                            ),
+                            start = lineStart,
+                            end = lineEnd,
+                            strokeWidth = 6f
+                        )
+                        drawContext.canvas.restore()
+                    }
                 }
             } else {
                  Spacer(modifier = Modifier.weight(1f))
