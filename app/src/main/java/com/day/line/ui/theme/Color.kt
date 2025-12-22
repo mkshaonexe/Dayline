@@ -18,6 +18,7 @@ val GlassBorderLight = Color(0x40FFFFFF) // Subtle border for glass
 val GlassBorderDark = Color(0x1FFFFFFF)  // Subtle border for dark glass
 
 // Backgrounds
+val OffWhite = Color(0xFFF9F9F9)    // Clean, modern off-white
 val CreamBackground = Color(0xFFF7F2E8) // Warmer, premium cream
 val DeepSpaceBlack = Color(0xFF0A0A0A)  // Richer, deeper black for OLED
 val DarkSurface = Color(0xFF141414)     // Slightly lighter black
