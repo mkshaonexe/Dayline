@@ -654,6 +654,73 @@ fun AddTaskDialog(
             }
         }
     }
+    if (showIconPicker) {
+        Dialog(onDismissRequest = { showIconPicker = false }) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .heightIn(max = 400.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        "Select Icon",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    val allIcons = com.day.line.ui.util.TaskIconUtils.AvailableIcons
+                    
+                    androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
+                        columns = androidx.compose.foundation.lazy.grid.GridCells.Adaptive(minSize = 48.dp),
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(allIcons.size) { index ->
+                            val (name, icon) = allIcons[index]
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clickable {
+                                        iconName = name
+                                        isManualIcon = true // Force lock to manual icon
+                                        showIconPicker = false
+                                    }
+                                    .background(
+                                        if (iconName == name) uiColor.copy(alpha = 0.2f) else Color.Transparent,
+                                        androidx.compose.foundation.shape.CircleShape
+                                    )
+                                    .border(
+                                        1.dp,
+                                        if (iconName == name) uiColor else Color.LightGray.copy(alpha = 0.5f),
+                                        androidx.compose.foundation.shape.CircleShape
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = name,
+                                    tint = if (iconName == name) uiColor else Color.Gray
+                                )
+                            }
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TextButton(
+                        onClick = { showIconPicker = false },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Cancel", color = uiColor)
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
