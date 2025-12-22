@@ -1,0 +1,78 @@
+﻿> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:injectCrashlyticsMappingFileIdDebug UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:l8DexDesugarLibDebug UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/TaskDetailsBottomSheet.kt:262:33 'val Icons.Filled.List: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.List.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/components/TimelineComponents.kt:360:22 Condition is always 'true'.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:77:38 'val Icons.Filled.TrendingUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.TrendingUp.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:78:40 'val Icons.Filled.TrendingDown: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.TrendingDown.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:83:38 'val Icons.Filled.Assignment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Assignment.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:85:37 'val Icons.Filled.FactCheck: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.FactCheck.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:86:32 'val Icons.Filled.Rule: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Rule.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:102:32 'val Icons.Filled.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Send.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:103:32 'val Icons.Filled.Chat: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Chat.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:105:35 'val Icons.Filled.Message: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Message.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:107:35 'val Icons.Filled.Comment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Comment.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:115:36 'val Icons.Filled.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeUp.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:125:36 'val Icons.Filled.MenuBook: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.MenuBook.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:126:40 'val Icons.Filled.LibraryBooks: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.LibraryBooks.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:166:39 'val Icons.Filled.ReceiptLong: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ReceiptLong.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:172:37 'val Icons.Filled.ShowChart: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ShowChart.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:185:33 'val Icons.Filled.Label: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Label.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:215:41 'val Icons.Filled.DirectionsRun: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.DirectionsRun.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:216:42 'val Icons.Filled.DirectionsWalk: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.DirectionsWalk.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:217:42 'val Icons.Filled.DirectionsBike: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.DirectionsBike.
+w: file:///E:/Cursor%20Play%20ground/Dayline/app/src/main/java/com/day/line/ui/util/TaskIconUtils.kt:249:31 'val Icons.Filled.DirectionsRun: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.DirectionsRun.
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:hiltAggregateDepsDebug
+> Task :app:hiltJavaCompileDebug
+> Task :app:processDebugJavaRes
+> Task :app:transformDebugClassesWithAsm
+> Task :app:mergeDebugJavaResource
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 33s
+45 actionable tasks: 12 executed, 33 up-to-date

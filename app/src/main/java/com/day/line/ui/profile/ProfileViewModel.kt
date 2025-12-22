@@ -3,6 +3,7 @@ package com.day.line.ui.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.day.line.data.TaskRepository
+import com.day.line.data.UserProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,18 +16,27 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 import com.day.line.data.DailyTaskCount
+import java.util.Locale
+
+data class GraphPoint(
+    val label: String,
+    val value: Int
+)
 
 data class ProfileUiState(
+    val userName: String = "John Doe",
+    val profileImageUri: String? = null,
     val streak: Int = 0,
     val completionRate: Int = 0,
     val tasksCreatedToday: Int = 0,
     val completedTasksToday: Int = 0,
-    val activityData: List<DailyTaskCount> = emptyList()
+    val activityData: List<GraphPoint> = emptyList()
 )
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -38,41 +48,58 @@ class ProfileViewModel @Inject constructor(
 
     private fun loadStats() {
         viewModelScope.launch {
-            val today = LocalDate.now()
-            val todayStr = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            val sevenDaysAgoStr = today.minusDays(6).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            try {
+                val today = LocalDate.now()
+                val todayStr = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                val sevenDaysAgoStr = today.minusDays(6).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-            combine(
-                taskRepository.getTaskCountForDate(todayStr),
-                taskRepository.getCompletedTaskCountForDate(todayStr),
-                taskRepository.getDatesWithCompletedTasks(),
-                taskRepository.getTaskCountsByDate(sevenDaysAgoStr)
-            ) { totalTasks, completedTasks, completedDates, activityData ->
-                
-                // Format completion rate
-                val completionRate = if (totalTasks > 0) {
-                    (completedTasks.toFloat() / totalTasks * 100).toInt()
-                } else {
-                    0
+                combine(
+                    userProfileRepository.getUserProfile(),
+                    taskRepository.getTaskCountForDate(todayStr),
+                    taskRepository.getCompletedTaskCountForDate(todayStr),
+                    taskRepository.getDatesWithCompletedTasks(),
+                    taskRepository.getTaskCountsByDate(sevenDaysAgoStr)
+                ) { userProfile, totalTasks, completedTasks, completedDates, activityData ->
+                    
+                    // Format completion rate
+                    val completionRate = if (totalTasks > 0) {
+                        (completedTasks.toFloat() / totalTasks * 100).toInt()
+                    } else {
+                        0
+                    }
+                    
+                    // Calculate streak
+                    val streak = calculateStreak(completedDates)
+                    
+                    // Normalize activity data and map to GraphPoint
+                    val fullWeekData = getPast7Days(today).map { dateStr ->
+                        val count = activityData.find { it.date == dateStr }?.count ?: 0
+                        
+                        // Parse date for label
+                        val label = try {
+                            val date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                            date.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault()))
+                        } catch (e: Exception) {
+                            dateStr.take(3)
+                        }
+                        
+                        GraphPoint(label, count)
+                    }
+                    
+                    ProfileUiState(
+                        userName = userProfile?.name ?: "John Doe",
+                        profileImageUri = userProfile?.profileImageUri,
+                        streak = streak,
+                        completionRate = completionRate,
+                        tasksCreatedToday = totalTasks,
+                        completedTasksToday = completedTasks,
+                        activityData = fullWeekData
+                    )
+                }.collect { newState ->
+                    _uiState.value = newState
                 }
-                
-                // Calculate streak
-                val streak = calculateStreak(completedDates)
-                
-                // Normalize activity data (fill in missing days with 0)
-                val fullWeekData = getPast7Days(today).map { dateStr ->
-                    activityData.find { it.date == dateStr } ?: DailyTaskCount(dateStr, 0)
-                }
-                
-                ProfileUiState(
-                    streak = streak,
-                    completionRate = completionRate,
-                    tasksCreatedToday = totalTasks,
-                    completedTasksToday = completedTasks,
-                    activityData = fullWeekData
-                )
-            }.collect { newState ->
-                _uiState.value = newState
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -92,14 +119,13 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 null
             }
-        }.sortedDescending() // Ensure sorted, though query does it too
+        }.sortedDescending()
 
         if (dates.isEmpty()) return 0
 
         val today = LocalDate.now()
         val yesterday = today.minusDays(1)
         
-        // Check if streak is active (completed today or yesterday)
         val firstDate = dates.first()
         if (!firstDate.isEqual(today) && !firstDate.isEqual(yesterday)) {
             return 0
@@ -114,14 +140,22 @@ class ProfileViewModel @Inject constructor(
                 currentStreak++
                 previousDate = date
             } else if (date.isEqual(previousDate)) {
-                // Duplicate date, ignore
                 continue
             } else {
-                // Streak broken
                 break
             }
         }
         
         return currentStreak
+    }
+    
+    fun updateProfile(name: String, imageUri: String?) {
+        viewModelScope.launch {
+            try {
+                userProfileRepository.updateProfile(name, imageUri)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }

@@ -93,6 +93,9 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.perf)
     
+    // Coil
+    implementation(libs.coil.compose)
+    
     // Navigation
     implementation(libs.androidx.navigation.compose)
     
