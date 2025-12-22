@@ -1,26 +1,17 @@
 package com.day.line.ui.profile
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +25,8 @@ import java.util.Locale
 fun ActivityGraph(
     data: List<DailyTaskCount>,
     modifier: Modifier = Modifier,
-    barColor: Color = DaylineOrange
+    lineColor: Color = DaylineOrange,
+    axisColor: Color = Color.Gray
 ) {
     if (data.isEmpty()) return
 
@@ -43,17 +35,68 @@ fun ActivityGraph(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 10.sp
     )
-    val maxCount = remember(data) { data.maxOfOrNull { it.count }?.coerceAtLeast(1) ?: 1 }
+    val maxCount = remember(data) { 
+        (data.maxOfOrNull { it.count }?.coerceAtLeast(4) ?: 4).toFloat() 
+    }
 
-    Canvas(modifier = modifier.padding(16.dp)) {
+    val surfaceColor = MaterialTheme.colorScheme.surface
+
+    Canvas(modifier = modifier.padding(start = 32.dp, end = 16.dp, bottom = 24.dp, top = 16.dp)) {
         val width = size.width
         val height = size.height
-        val barWidth = 24.dp.toPx()
-        val spacing = (width - (data.size * barWidth)) / (data.size + 1)
-        val maxBarHeight = height - 30.dp.toPx() // Leave space for labels
+        
+        // --- Y-Axis Labels (0, Max/2, Max) ---
+        val yLabels = listOf(0, (maxCount / 2).toInt(), maxCount.toInt())
+        yLabels.forEach { labelValue ->
+            val normalizedY = 1f - (labelValue / maxCount)
+            val yPos = normalizedY * height
+            
+            drawText(
+                textMeasurer = textMeasurer,
+                text = labelValue.toString(),
+                style = labelTextStyle,
+                topLeft = Offset(x = -24.dp.toPx(), y = yPos - 6.sp.toPx()) // Align to left of graph
+            )
+        }
+
+        // Draw Axes Lines
+        drawLine(
+            color = axisColor.copy(alpha = 0.5f),
+            start = Offset(0f, 0f),
+            end = Offset(0f, height),
+            strokeWidth = 2f
+        )
+        drawLine(
+            color = axisColor.copy(alpha = 0.5f),
+            start = Offset(0f, height),
+            end = Offset(width, height),
+            strokeWidth = 2f
+        )
+
+        // --- Plot Points & Line ---
+        if (data.size < 2) return@Canvas 
+
+        val spacing = width / (data.size - 1)
+        val path = Path()
+        val points = mutableListOf<Offset>()
 
         data.forEachIndexed { index, item ->
-            // Parse date to get short day name
+            // X Calculate
+            val x = index * spacing
+            
+            // Y Calculate
+            val normalizedCount = item.count / maxCount
+            val y = height - (normalizedCount * height)
+            
+            points.add(Offset(x, y))
+
+            if (index == 0) {
+                path.moveTo(x, y)
+            } else {
+                path.lineTo(x, y)
+            }
+
+            // X-Axis Label (Day Name)
             val date = try {
                 LocalDate.parse(item.date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             } catch (e: Exception) {
@@ -61,29 +104,38 @@ fun ActivityGraph(
             }
             val dayName = date.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault()))
 
-            val x = spacing + (index * (barWidth + spacing))
-            
-            // Calculate bar height relative to max
-            val barHeight = (item.count.toFloat() / maxCount) * maxBarHeight
-            val barTop = maxBarHeight - barHeight
-
-            // Draw Bar
-            drawRoundRect(
-                color = if (item.count > 0) barColor else barColor.copy(alpha = 0.3f),
-                topLeft = Offset(x, barTop + 10.dp.toPx()), // Add some top padding
-                size = Size(barWidth, barHeight.coerceAtLeast(4.dp.toPx())), // Min height for visibility
-                cornerRadius = CornerRadius(4.dp.toPx())
-            )
-
-            // Draw Label
             drawText(
                 textMeasurer = textMeasurer,
                 text = dayName,
                 style = labelTextStyle,
                 topLeft = Offset(
-                    x + (barWidth / 2) - (textMeasurer.measure(dayName, labelTextStyle).size.width / 2),
-                    height - 15.dp.toPx()
+                    x = x - (textMeasurer.measure(dayName, labelTextStyle).size.width / 2),
+                    y = height + 8.dp.toPx()
                 )
+            )
+        }
+
+        // Draw Path (Line)
+        drawPath(
+            path = path,
+            color = lineColor,
+            style = Stroke(
+                width = 3.dp.toPx(),
+                cap = StrokeCap.Round
+            )
+        )
+
+        // Draw Points (Dots)
+        points.forEach { point ->
+            drawCircle(
+                color = surfaceColor, // Inner hole
+                radius = 5.dp.toPx(),
+                center = point
+            )
+            drawCircle(
+                color = lineColor, // Outer ring
+                radius = 4.dp.toPx(),
+                center = point
             )
         }
     }
