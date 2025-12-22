@@ -75,9 +75,9 @@ fun LiquidBottomNavigation(
     val liquidGlassBase = if (isDark) {
         Brush.linearGradient(
             colors = listOf(
-                Color(0xFF3A3D42).copy(alpha = 0.30f),
-                Color(0xFF2A2D32).copy(alpha = 0.20f),
-                Color(0xFF3A3D42).copy(alpha = 0.25f)
+                Color(0xFF2A2D32).copy(alpha = 0.90f),
+                Color(0xFF1F2226).copy(alpha = 0.95f),
+                Color(0xFF2A2D32).copy(alpha = 0.90f)
             ),
             start = Offset(0f, 0f),
             end = Offset(1000f, 60f)
