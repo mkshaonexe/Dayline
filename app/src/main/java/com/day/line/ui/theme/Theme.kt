@@ -77,7 +77,10 @@ fun DaylineTheme(
         }
     }
 
-    CompositionLocalProvider(LocalThemeColor provides accentColor) {
+    CompositionLocalProvider(
+        LocalThemeColor provides accentColor,
+        LocalDarkTheme provides darkTheme
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
@@ -85,3 +88,5 @@ fun DaylineTheme(
         )
     }
 }
+
+val LocalDarkTheme = androidx.compose.runtime.staticCompositionLocalOf { false }

@@ -69,15 +69,15 @@ fun LiquidBottomNavigation(
     onItemClick: (BottomNavItem) -> Unit
 ) {
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it != -1 } ?: 0
-    val isDark = isSystemInDarkTheme()
+    val isDark = com.day.line.ui.theme.LocalDarkTheme.current
 
     // Apple Liquid Glass: Frosted translucent base
     val liquidGlassBase = if (isDark) {
         Brush.linearGradient(
             colors = listOf(
-                Color(0xFF2A2D32).copy(alpha = 0.90f),
-                Color(0xFF1F2226).copy(alpha = 0.95f),
-                Color(0xFF2A2D32).copy(alpha = 0.90f)
+                com.day.line.ui.theme.GlassBlack.copy(alpha = 0.90f),
+                com.day.line.ui.theme.GlassBlack.copy(alpha = 0.95f),
+                com.day.line.ui.theme.GlassBlack.copy(alpha = 0.90f)
             ),
             start = Offset(0f, 0f),
             end = Offset(1000f, 60f)
@@ -94,10 +94,10 @@ fun LiquidBottomNavigation(
         )
     }
 
-    // Top highlight for 3D glass effect
+    // Top highlight for 3D glass effect - Reduced in Dark Mode for subtlety
     val topHighlight = Brush.verticalGradient(
         colors = listOf(
-            if (isDark) Color.White.copy(alpha = 0.12f) else Color.White.copy(alpha = 0.8f),
+            if (isDark) Color.White.copy(alpha = 0.05f) else Color.White.copy(alpha = 0.8f),
             Color.Transparent
         ),
         startY = 0f,
@@ -108,20 +108,20 @@ fun LiquidBottomNavigation(
     val innerShadow = Brush.verticalGradient(
         colors = listOf(
             Color.Transparent,
-            if (isDark) Color.Black.copy(alpha = 0.15f) else Color.Black.copy(alpha = 0.05f)
+            if (isDark) Color.Black.copy(alpha = 0.3f) else Color.Black.copy(alpha = 0.05f)
         ),
         startY = 40f,
         endY = 60f
     )
 
-    // Border: Subtle glass rim with refraction
+    // Border: Subtle glass rim with refraction - Toned down in Dark Mode
     val glassBorder = Brush.linearGradient(
         colors = if (isDark) listOf(
-            Color.White.copy(alpha = 0.30f),
-            Color(0xFF80DEEA).copy(alpha = 0.15f), // Subtle cyan refraction
-            Color.White.copy(alpha = 0.10f),
-            Color(0xFFCE93D8).copy(alpha = 0.12f), // Subtle purple refraction
-            Color.White.copy(alpha = 0.25f)
+            Color.White.copy(alpha = 0.15f),
+            Color(0xFF80DEEA).copy(alpha = 0.05f), // Very subtle cyan refraction
+            Color.White.copy(alpha = 0.05f),
+            Color(0xFFCE93D8).copy(alpha = 0.05f), // Very subtle purple refraction
+            Color.White.copy(alpha = 0.10f)
         ) else listOf(
             Color.White.copy(alpha = 0.9f),
             Color(0xFF80DEEA).copy(alpha = 0.25f),
@@ -133,9 +133,9 @@ fun LiquidBottomNavigation(
         end = Offset(1000f, 60f)
     )
 
-    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.12f)
+    val shadowColor = if (isDark) Color.Black.copy(alpha = 0.6f) else Color.Black.copy(alpha = 0.12f)
     val unselectedIconColor = if (isDark) {
-        Color.White.copy(alpha = 0.5f)
+        Color.White.copy(alpha = 0.4f)
     } else {
         Color(0xFF4A4A4A).copy(alpha = 0.6f)
     }
@@ -203,8 +203,8 @@ fun LiquidBottomNavigation(
                 val selectedGradient = if (isDark) {
                     Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFF4A4D52).copy(alpha = 0.9f),
-                            Color(0xFF3A3D42).copy(alpha = 0.8f)
+                            Color.White.copy(alpha = 0.15f), // Subtler white overlay
+                            Color.White.copy(alpha = 0.05f)
                         )
                     )
                 } else {
