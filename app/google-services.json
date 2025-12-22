@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "823732452198",
+    "project_id": "daylineapp-baf23",
+    "storage_bucket": "daylineapp-baf23.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823732452198:android:37ee33de4f3d8b2b1ba6a7",
+        "android_client_info": {
+          "package_name": "com.day.line"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDfqmDb9aNwoDFOtl5FUoH92_GrVZ7ygI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
