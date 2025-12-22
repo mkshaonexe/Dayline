@@ -39,16 +39,19 @@ class MainActivity : ComponentActivity() {
             val isDarkTheme by settingsRepository.isDarkTheme.collectAsState(initial = isSystemInDarkTheme())
             val themeColorName by settingsRepository.themeColor.collectAsState(initial = "Orange")
             val accentColor = ThemeColor.fromName(themeColorName).color
+            val context = androidx.compose.ui.platform.LocalContext.current
             
             // Check Update Status
             var updateState by androidx.compose.runtime.remember { 
                 androidx.compose.runtime.mutableStateOf<com.day.line.data.update.UpdateManager.UpdateState>(com.day.line.data.update.UpdateManager.UpdateState.NoUpdate) 
             }
+            var showOptionalDialog by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
             
             LaunchedEffect(Unit) {
                  val status = updateManager.checkUpdateState()
-                 if (status is com.day.line.data.update.UpdateManager.UpdateState.ForcedUpdate) {
-                     updateState = status
+                 updateState = status
+                 if (status is com.day.line.data.update.UpdateManager.UpdateState.OptionalUpdate) {
+                     showOptionalDialog = true
                  }
                  
                  // Firebase ID log
@@ -87,6 +90,23 @@ class MainActivity : ComponentActivity() {
                     )
                 } else {
                     HomeScreen()
+                    
+                    if (showOptionalDialog && updateState is com.day.line.data.update.UpdateManager.UpdateState.OptionalUpdate) {
+                        val optional = updateState as com.day.line.data.update.UpdateManager.UpdateState.OptionalUpdate
+                        com.day.line.ui.settings.UpdateDialog(
+                            version = optional.version,
+                            onDismiss = { showOptionalDialog = false },
+                            onUpdateViaPlayStore = { 
+                                val url = optional.version.downloadUrl ?: "https://play.google.com/store/apps/details?id=${packageName}"
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                                try { startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
+                            },
+                            onUpdateViaTelegram = {
+                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/appdayline"))
+                                try { startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
+                            }
+                        )
+                    }
                 }
             }
         }

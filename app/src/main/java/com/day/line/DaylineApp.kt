@@ -32,7 +32,12 @@ class DaylineApp : Application(), Configuration.Provider {
     }
 
     private fun scheduleUpdateCheck() {
+        val constraints = androidx.work.Constraints.Builder()
+            .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+            .build()
+            
         val updateWorkRequest = PeriodicWorkRequestBuilder<UpdateWorker>(6, TimeUnit.HOURS)
+            .setConstraints(constraints)
             .build()
             
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
