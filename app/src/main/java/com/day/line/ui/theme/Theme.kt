@@ -13,6 +13,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+
 private fun getDarkColorScheme(accentColor: Color) = darkColorScheme(
     primary = accentColor,
     secondary = Secondary,
@@ -41,7 +45,7 @@ private fun getLightColorScheme(accentColor: Color) = lightColorScheme(
     onTertiary = Color.White,
     onBackground = TextBlack,
     onSurface = TextBlack,
-    surfaceVariant = Color(0xFFF0F0F0),
+    surfaceVariant = PastelGrey,
     onSurfaceVariant = TextGrey,
     outline = GlassBorderLight,
     outlineVariant = GlassBorderLight.copy(alpha = 0.5f)
@@ -61,6 +65,16 @@ fun DaylineTheme(
         }
         darkTheme -> getDarkColorScheme(accentColor)
         else -> getLightColorScheme(accentColor)
+    }
+
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            // If we are in dark theme (app setting), we want light icons (so isAppearanceLightStatusBars = false)
+            // If we are in light theme, we want dark icons (so isAppearanceLightStatusBars = true)
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     CompositionLocalProvider(LocalThemeColor provides accentColor) {

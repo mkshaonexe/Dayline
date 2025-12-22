@@ -47,7 +47,7 @@ fun DaylineScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(if (isSystemInDarkTheme()) MaterialTheme.colorScheme.surface else PastelGrey)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             // Apply status bar padding to the content inside the grey box
             // so the grey background extends behind the status bar
