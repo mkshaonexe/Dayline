@@ -33,7 +33,7 @@ class UpdateWorker @AssistedInject constructor(
         if (update != null) {
             showUpdateNotification(
                 title = "Update Available: ${update.versionName}",
-                message = update.changelog
+                message = update.changelog ?: "New features and improvements available."
             )
         }
         

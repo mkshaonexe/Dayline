@@ -5,10 +5,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AppVersion(
-    @SerialName("id") val id: Long,
+    @SerialName("id") val id: String,
     @SerialName("version_code") val versionCode: Int,
     @SerialName("version_name") val versionName: String,
-    @SerialName("changelog") val changelog: String,
-    @SerialName("force_update") val forceUpdate: Boolean,
-    @SerialName("created_at") val createdAt: String
+    @SerialName("changelog") val changelog: String? = null,
+    @SerialName("is_critical") val forceUpdate: Boolean = false,
+    @SerialName("download_url") val downloadUrl: String? = null,
+    @SerialName("created_at") val createdAt: String? = null
 )

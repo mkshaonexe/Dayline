@@ -107,9 +107,8 @@ fun SettingsScreen(
             version = version,
             onDismiss = { viewModel.clearUpdateStatus() },
             onUpdateViaPlayStore = { 
-                // Placeholder for Play Store intent or download link if applicable
-                // For now, maybe just open the telegram or a generic link
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}"))
+                val url = version.downloadUrl ?: "https://play.google.com/store/apps/details?id=${context.packageName}"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
             },
             onUpdateViaTelegram = {
@@ -481,7 +480,7 @@ fun UpdateDialog(
             Column {
                 Text("Version ${version.versionName} is available.")
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Changelog: ${version.changelog}")
+                Text("Changelog: ${version.changelog ?: "New features and improvements available."}")
             }
         },
         confirmButton = {
