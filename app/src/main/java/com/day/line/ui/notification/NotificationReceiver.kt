@@ -25,6 +25,7 @@ class NotificationReceiver : BroadcastReceiver() {
              
              val notification = NotificationCompat.Builder(context, "task_reminders")
                  .setSmallIcon(R.mipmap.ic_launcher_round)
+                 .setLargeIcon(android.graphics.BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
                  .setContentTitle(title)
                  .setContentText(message)
                  .setPriority(NotificationCompat.PRIORITY_HIGH)

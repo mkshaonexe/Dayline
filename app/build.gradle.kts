@@ -92,6 +92,8 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.perf)
+    implementation(libs.firebase.inappmessaging.display)
+
     
     // Coil
     implementation(libs.coil.compose)

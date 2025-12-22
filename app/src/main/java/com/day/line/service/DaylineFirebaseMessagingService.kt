@@ -43,6 +43,7 @@ class DaylineFirebaseMessagingService : FirebaseMessagingService() {
         val channelId = "dayline_notifications"
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
+            .setLargeIcon(android.graphics.BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
             .setContentTitle(title)
             .setContentText(messageBody)
             .setAutoCancel(true)
