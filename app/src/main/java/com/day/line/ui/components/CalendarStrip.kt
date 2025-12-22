@@ -157,8 +157,8 @@ fun DayItem(
     ) {
         Text(
             text = day,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), // Smaller, cleaner day name
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp), 
+            color = MaterialTheme.colorScheme.onSurfaceVariant, // Removed alpha for better visibility
             fontWeight = FontWeight.Normal
         )
         Box(
