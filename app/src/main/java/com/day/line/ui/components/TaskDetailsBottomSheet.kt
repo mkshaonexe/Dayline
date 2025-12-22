@@ -8,8 +8,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +36,8 @@ fun TaskDetailsBottomSheet(
     onDelete: () -> Unit,
     onDuplicate: () -> Unit,
     onEdit: () -> Unit,
-    onToggleCompletion: () -> Unit
+    onToggleCompletion: () -> Unit,
+    onSubtaskChange: (String) -> Unit
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -125,22 +129,65 @@ fun TaskDetailsBottomSheet(
 
             // Subtasks Section
             if (task.subtasks.isNotEmpty() && task.subtasks != "[]") {
-                val subtasks = try {
-                     val jsonArray = org.json.JSONArray(task.subtasks)
-                     List(jsonArray.length()) { jsonArray.getString(it) }
-                } catch (e: Exception) { emptyList() }
-                
+                val subtasks: List<SubtaskUiModel> = remember(task.subtasks) {
+                     try {
+                         val jsonArray = org.json.JSONArray(task.subtasks)
+                         List(jsonArray.length()) { index ->
+                             val item = jsonArray.get(index)
+                             if (item is org.json.JSONObject) {
+                                  SubtaskUiModel(item.getString("text"), item.optBoolean("isCompleted", false))
+                             } else {
+                                  // Backward compatibility for plain strings
+                                  SubtaskUiModel(item.toString(), false)
+                             }
+                         }
+                     } catch (e: Exception) { emptyList<SubtaskUiModel>() }
+                }
+
                 if (subtasks.isNotEmpty()) {
                      Text(
                         text = "Subtasks",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold, color = color),
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    subtasks.forEach { subtask ->
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 4.dp)) {
-                            Icon(Icons.Default.CheckBoxOutlineBlank, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = subtask, style = MaterialTheme.typography.bodyMedium, color = TextDark)
+                    subtasks.forEachIndexed { index, subtaskItem ->
+                        val text = subtaskItem.text
+                        val isCompleted = subtaskItem.isCompleted
+                        Row(
+                             verticalAlignment = Alignment.CenterVertically, 
+                             modifier = Modifier
+                                 .fillMaxWidth()
+                                 .clickable {
+                                     // Toggle logic
+                                     val newSubtasks = subtasks.toMutableList()
+                                     newSubtasks[index] = subtaskItem.copy(isCompleted = !isCompleted)
+                                     
+                                     // Serialize back to JSON
+                                     val jsonArray = org.json.JSONArray()
+                                     newSubtasks.forEach { item ->
+                                         val obj = org.json.JSONObject()
+                                         obj.put("text", item.text)
+                                         obj.put("isCompleted", item.isCompleted)
+                                         jsonArray.put(obj)
+                                     }
+                                     onSubtaskChange(jsonArray.toString())
+                                 }
+                                 .padding(vertical = 6.dp)
+                        ) {
+                             Icon(
+                                 if (isCompleted) Icons.Default.CheckBox else Icons.Default.CheckBoxOutlineBlank, 
+                                 contentDescription = null, 
+                                 tint = if (isCompleted) color else Color.Gray, 
+                                 modifier = Modifier.size(20.dp)
+                             )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = text, 
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    textDecoration = if (isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null,
+                                    color = if (isCompleted) Color.Gray else TextDark
+                                )
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
