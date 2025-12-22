@@ -10,70 +10,75 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.day.line.data.DailyTaskCount
 import com.day.line.ui.theme.DaylineOrange
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun ActivityGraph(
-    data: List<DailyTaskCount>,
+    data: List<GraphPoint>,
     modifier: Modifier = Modifier,
     lineColor: Color = DaylineOrange,
-    axisColor: Color = Color.Gray
+    pointColor: Color = DaylineOrange,
+    axisColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     if (data.isEmpty()) return
 
     val textMeasurer = rememberTextMeasurer()
     val labelTextStyle = MaterialTheme.typography.bodySmall.copy(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        fontSize = 10.sp
+        fontSize = 11.sp
     )
+    
+    // Calculate max value with some padding at top
     val maxCount = remember(data) { 
-        (data.maxOfOrNull { it.count }?.coerceAtLeast(4) ?: 4).toFloat() 
+        val max = data.maxOfOrNull { it.value } ?: 0
+        if (max == 0) 4f else (max * 1.2f).coerceAtLeast(4f)
     }
-
+    
     val surfaceColor = MaterialTheme.colorScheme.surface
-
-    Canvas(modifier = modifier.padding(start = 32.dp, end = 16.dp, bottom = 24.dp, top = 16.dp)) {
+    
+    Canvas(modifier = modifier.padding(start = 40.dp, end = 16.dp, bottom = 24.dp, top = 16.dp)) {
         val width = size.width
         val height = size.height
         
-        // --- Y-Axis Labels (0, Max/2, Max) ---
-        val yLabels = listOf(0, (maxCount / 2).toInt(), maxCount.toInt())
-        yLabels.forEach { labelValue ->
-            val normalizedY = 1f - (labelValue / maxCount)
-            val yPos = normalizedY * height
+        // --- Y-Axis Labels & Grid Lines ---
+        val steps = 4
+        val stepValue = maxCount / steps
+        
+        for (i in 0..steps) {
+            val value = (stepValue * i).toInt()
+            val yRatio = i.toFloat() / steps
+            val yPos = height - (yRatio * height)
+            
+            // Grid line
+            drawLine(
+                color = axisColor.copy(alpha = 0.1f),
+                start = Offset(0f, yPos),
+                end = Offset(width, yPos),
+                strokeWidth = 1.dp.toPx()
+            )
+            
+            // Label
+            val textLayoutResult = textMeasurer.measure(
+                text = value.toString(),
+                style = labelTextStyle
+            )
             
             drawText(
-                textMeasurer = textMeasurer,
-                text = labelValue.toString(),
-                style = labelTextStyle,
-                topLeft = Offset(x = -24.dp.toPx(), y = yPos - 6.sp.toPx()) // Align to left of graph
+                textLayoutResult = textLayoutResult,
+                topLeft = Offset(
+                    x = -textLayoutResult.size.width.toFloat() - 8.dp.toPx(),
+                    y = yPos - (textLayoutResult.size.height / 2)
+                )
             )
         }
 
-        // Draw Axes Lines
-        drawLine(
-            color = axisColor.copy(alpha = 0.5f),
-            start = Offset(0f, 0f),
-            end = Offset(0f, height),
-            strokeWidth = 2f
-        )
-        drawLine(
-            color = axisColor.copy(alpha = 0.5f),
-            start = Offset(0f, height),
-            end = Offset(width, height),
-            strokeWidth = 2f
-        )
-
-        // --- Plot Points & Line ---
+        // --- X-Axis & Data ---
         if (data.size < 2) return@Canvas 
 
         val spacing = width / (data.size - 1)
@@ -85,8 +90,8 @@ fun ActivityGraph(
             val x = index * spacing
             
             // Y Calculate
-            val normalizedCount = item.count / maxCount
-            val y = height - (normalizedCount * height)
+            val ratio = item.value / maxCount
+            val y = height - (ratio * height)
             
             points.add(Offset(x, y))
 
@@ -96,44 +101,41 @@ fun ActivityGraph(
                 path.lineTo(x, y)
             }
 
-            // X-Axis Label (Day Name)
-            val date = try {
-                LocalDate.parse(item.date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            } catch (e: Exception) {
-                LocalDate.now()
-            }
-            val dayName = date.format(DateTimeFormatter.ofPattern("EEE", Locale.getDefault()))
-
+            // X-Axis Label
+            val dayName = item.label
+            val textLayoutResult = textMeasurer.measure(dayName, labelTextStyle)
+            
             drawText(
-                textMeasurer = textMeasurer,
-                text = dayName,
-                style = labelTextStyle,
+                textLayoutResult = textLayoutResult,
                 topLeft = Offset(
-                    x = x - (textMeasurer.measure(dayName, labelTextStyle).size.width / 2),
+                    x = x - (textLayoutResult.size.width / 2),
                     y = height + 8.dp.toPx()
                 )
             )
         }
 
-        // Draw Path (Line)
+        // Draw Line
         drawPath(
             path = path,
             color = lineColor,
             style = Stroke(
                 width = 3.dp.toPx(),
-                cap = StrokeCap.Round
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
             )
         )
 
-        // Draw Points (Dots)
+        // Draw Solid Points
         points.forEach { point ->
+            // White background for point to clear line
             drawCircle(
-                color = surfaceColor, // Inner hole
-                radius = 5.dp.toPx(),
+                color = surfaceColor,
+                radius = 6.dp.toPx(),
                 center = point
             )
+            // Example "Ring" style or "Solid"? Let's do solid for clarity
             drawCircle(
-                color = lineColor, // Outer ring
+                color = pointColor,
                 radius = 4.dp.toPx(),
                 center = point
             )
