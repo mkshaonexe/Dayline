@@ -444,7 +444,10 @@ fun TimelineNode(
                         color = if (isCompleted) Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline, // Green border if completed
                         shape = CircleShape
                     )
-                    .clickable { onToggleCompletion() },
+                    .clickable { 
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onToggleCompletion() 
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 if (isCompleted) {

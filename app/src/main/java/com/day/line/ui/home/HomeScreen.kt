@@ -71,6 +71,8 @@ fun HomeScreen(
     var showAddTaskDialog by remember { mutableStateOf(false) }
     var isBottomBarVisible by remember { mutableStateOf(true) }
     val selectedDate by viewModel.selectedDate.collectAsState()
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+
     
     // Analytics
     LaunchedEffect(currentRoute) {
@@ -222,7 +224,10 @@ fun HomeScreen(
                                     drawRect(brush = topHighlight)
                                     drawRect(brush = bottomShadow)
                                 }
-                                .clickable { showAddTaskDialog = true },
+                                .clickable {
+                                    haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress) 
+                                    showAddTaskDialog = true 
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
