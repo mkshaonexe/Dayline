@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.day.line.ui.home.HomeScreen
 import com.day.line.ui.theme.DaylineTheme
+import com.day.line.ui.theme.ThemeColor
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,6 +28,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val isDarkTheme by settingsRepository.isDarkTheme.collectAsState(initial = isSystemInDarkTheme())
+            val themeColorName by settingsRepository.themeColor.collectAsState(initial = "Orange")
+            val accentColor = ThemeColor.fromName(themeColorName).color
             
             // Request Notification Permission on Android 13+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -41,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            DaylineTheme(darkTheme = isDarkTheme) {
+            DaylineTheme(darkTheme = isDarkTheme, accentColor = accentColor) {
                 HomeScreen()
             }
         }

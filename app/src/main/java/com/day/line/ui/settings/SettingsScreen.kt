@@ -2,6 +2,7 @@ package com.day.line.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
@@ -63,8 +66,10 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+    val themeColor by viewModel.themeColor.collectAsState()
     val updateStatus by viewModel.updateStatus.collectAsState()
     val context = LocalContext.current
+    var showColorPicker by remember { mutableStateOf(false) }
     
     // Manage Permissions (Notification & Alarms)
     // Note: For simplicity, we are checking current status. Real-time updates might require observing lifecycle or composition updates.
@@ -150,6 +155,18 @@ fun SettingsScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
+        SettingsSection("Theme") {
+            SettingsItemWithColorPreview(
+                icon = Icons.Default.Palette,
+                title = "Accent Color",
+                subtitle = themeColor,
+                currentColor = com.day.line.ui.theme.ThemeColor.fromName(themeColor).color,
+                onClick = { showColorPicker = true }
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
         SettingsSection("Permissions") {
             // Notification Permission
             SettingsActionItem(
@@ -227,6 +244,17 @@ fun SettingsScreen(
                 }
             )
         }
+    }
+    
+    // Color Picker Dialog
+    if (showColorPicker) {
+        ColorPickerDialog(
+            currentColor = themeColor,
+            onDismiss = { showColorPicker = false },
+            onColorSelected = { colorName ->
+                viewModel.setThemeColor(colorName)
+            }
+        )
     }
 }
 
@@ -472,4 +500,68 @@ fun UpdateDialog(
             }
         }
     )
+}
+
+
+@Composable
+fun SettingsItemWithColorPreview(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    currentColor: Color,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = currentColor,
+                modifier = Modifier.size(24.dp)
+            )
+            
+            Spacer(modifier = Modifier.size(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(currentColor)
+            )
+            
+            Spacer(modifier = Modifier.size(8.dp))
+            
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }

@@ -9,11 +9,12 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Primary,
+private fun getDarkColorScheme(accentColor: Color) = darkColorScheme(
+    primary = accentColor,
     secondary = Secondary,
     tertiary = Tertiary,
     background = BackgroundDark,
@@ -29,8 +30,8 @@ private val DarkColorScheme = darkColorScheme(
     outlineVariant = GlassBorderDark.copy(alpha = 0.3f)
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Primary,
+private fun getLightColorScheme(accentColor: Color) = lightColorScheme(
+    primary = accentColor,
     secondary = Secondary,
     tertiary = Tertiary,
     background = OffWhite,
@@ -49,6 +50,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun DaylineTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    accentColor: Color = Color(0xFFFF8A00), // Default Orange
     dynamicColor: Boolean = false, // Disable dynamic color to enforce brand consistency
     content: @Composable () -> Unit
 ) {
@@ -57,13 +59,15 @@ fun DaylineTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> getDarkColorScheme(accentColor)
+        else -> getLightColorScheme(accentColor)
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalThemeColor provides accentColor) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

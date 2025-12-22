@@ -27,6 +27,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     val isDarkTheme: StateFlow<Boolean> = settingsRepository.isDarkTheme
+    val themeColor: StateFlow<String> = settingsRepository.themeColor
 
     private val _updateStatus = MutableStateFlow<UpdateStatus>(UpdateStatus.Idle)
     val updateStatus: StateFlow<UpdateStatus> = _updateStatus.asStateFlow()
@@ -38,6 +39,12 @@ class SettingsViewModel @Inject constructor(
     fun toggleTheme(isDark: Boolean) {
         viewModelScope.launch {
             settingsRepository.setDarkTheme(isDark)
+        }
+    }
+    
+    fun setThemeColor(colorName: String) {
+        viewModelScope.launch {
+            settingsRepository.setThemeColor(colorName)
         }
     }
 
