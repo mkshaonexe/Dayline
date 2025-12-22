@@ -2,6 +2,7 @@ package com.day.line.ui.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -38,7 +39,7 @@ fun DaylineScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White) // Default background
+            .background(MaterialTheme.colorScheme.background) // Theme background
     ) {
         val selectedDate by viewModel.selectedDate.collectAsState()
         
@@ -46,7 +47,7 @@ fun DaylineScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(PastelGrey)
+                .background(if (isSystemInDarkTheme()) DarkSurface else PastelGrey)
         ) {
             // Apply status bar padding to the content inside the grey box
             // so the grey background extends behind the status bar
@@ -72,7 +73,7 @@ fun DaylineScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .background(Color.White), // Explicit white background for tasks
+                .background(MaterialTheme.colorScheme.background), // Theme background for tasks
             contentPadding = PaddingValues(bottom = 100.dp) // Space for FAB/Nav + Nav Bar
         ) {
             // Spacer at top of list

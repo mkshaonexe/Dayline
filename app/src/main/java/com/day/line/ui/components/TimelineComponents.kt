@@ -2,6 +2,7 @@ package com.day.line.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyRow
@@ -55,7 +56,7 @@ fun CalendarStrip() {
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp
                 ),
-                color = TextDark
+                color = MaterialTheme.colorScheme.onBackground
             )
             Row {
                 Icon(
@@ -86,7 +87,7 @@ fun CalendarStrip() {
                 ) {
                     Text(
                         text = day,
-                        color = if (date == selectedDay) PastelRed else TextLight,
+                        color = if (date == selectedDay) PastelRed else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -99,7 +100,7 @@ fun CalendarStrip() {
                     ) {
                         Text(
                             text = date,
-                            color = if (date == selectedDay) Color.White else TextDark,
+                            color = if (date == selectedDay) Color.White else MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
@@ -174,7 +175,7 @@ fun TimelineNode(
         ) {
             Text(
                 text = time,
-                style = MaterialTheme.typography.bodySmall.copy(color = TextLight, fontSize = 12.sp)
+                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             )
         }
 
@@ -269,7 +270,7 @@ fun TimelineNode(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = Color.Black.copy(alpha = 0.75f), 
+                    tint = if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.9f) else Color.Black.copy(alpha = 0.75f), 
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -365,7 +366,7 @@ fun TimelineNode(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = if (isCompleted) TextLight else TextDark, // Grey out if completed
+                    color = if (isCompleted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onBackground, // Grey out if completed
                     textDecoration = if (isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null // Strike through
                 )
             )
@@ -376,7 +377,7 @@ fun TimelineNode(
                      // Zzz icon or similar if needed, text for now
                      Text(
                         text = subtitle,
-                        style = MaterialTheme.typography.bodyMedium.copy(color = TextLight)
+                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                     )
                 }
             }
@@ -387,7 +388,7 @@ fun TimelineNode(
                 Text(
                     text = notes,
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextLight,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2
                 )
             }
@@ -409,7 +410,7 @@ fun TimelineNode(
                         Text(
                             text = subtask,
                             style = MaterialTheme.typography.bodySmall,
-                            color = TextDark.copy(alpha = 0.8f)
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                         )
                     }
                 }
@@ -426,10 +427,10 @@ fun TimelineNode(
                 modifier = Modifier
                     .size(28.dp) // Increased from 24dp for better visibility
                     .clip(CircleShape)
-                    .background(if (isCompleted) Color(0xFF4CAF50) else Color.White) // Green if completed
+                    .background(if (isCompleted) Color(0xFF4CAF50) else MaterialTheme.colorScheme.surface) // Green if completed
                     .border(
                         width = 2.5.dp, // Thicker border for better visibility
-                        color = if (isCompleted) Color(0xFF4CAF50) else Color.Gray.copy(alpha = 0.5f), // Green border if completed
+                        color = if (isCompleted) Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline, // Green border if completed
                         shape = CircleShape
                     )
                     .clickable { onToggleCompletion() },
