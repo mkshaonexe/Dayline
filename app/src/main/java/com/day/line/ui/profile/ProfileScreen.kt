@@ -29,9 +29,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.day.line.ui.theme.DaylineOrange
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,9 +85,9 @@ fun ProfileScreen() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem(value = "12", label = "Streak")
-            StatItem(value = "85%", label = "Completion")
-            StatItem(value = "42", label = "Tasks")
+            StatItem(value = uiState.streak.toString(), label = "Streak")
+            StatItem(value = "${uiState.completionRate}%", label = "Completion")
+            StatItem(value = uiState.tasksCreatedToday.toString(), label = "Tasks")
         }
         
         Spacer(modifier = Modifier.height(32.dp))
