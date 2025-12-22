@@ -11,6 +11,15 @@ interface TaskDao {
     
     @Query("SELECT * FROM tasks ORDER BY date DESC, startTime ASC")
     fun getAllTasks(): Flow<List<Task>>
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE date = :date")
+    fun getTaskCountForDate(date: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE date = :date AND isCompleted = 1")
+    fun getCompletedTaskCountForDate(date: String): Flow<Int>
+
+    @Query("SELECT DISTINCT date FROM tasks WHERE isCompleted = 1 ORDER BY date DESC")
+    fun getDatesWithCompletedTasks(): Flow<List<String>>
     
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     suspend fun getTaskById(taskId: Long): Task?
