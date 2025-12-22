@@ -166,7 +166,7 @@ fun DayItem(
                 .padding(top = 8.dp)
                 .size(40.dp) // Balanced circle size
                 .background(
-                    if (isSelected) DaylinePink else Color.Transparent, 
+                    if (isSelected) DaylineOrange else Color.Transparent, 
                     CircleShape
                 )
                 .then(

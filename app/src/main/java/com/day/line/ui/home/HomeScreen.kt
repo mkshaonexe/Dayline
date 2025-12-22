@@ -154,14 +154,14 @@ fun HomeScreen(
                         enter = scaleIn(animationSpec = tween(600)) + fadeIn(animationSpec = tween(600)),
                         exit = scaleOut(animationSpec = tween(600)) + fadeOut(animationSpec = tween(600))
                     ) {
-                        val fabColor = DaylinePink
+                        val fabColor = com.day.line.ui.theme.DaylineOrange
                         
                         // Liquid Glass Gradients
                         // 1. Base Gradient
                         val baseGradient = androidx.compose.ui.graphics.Brush.linearGradient(
                             colors = listOf(
-                                com.day.line.ui.theme.NeonPink,
-                                com.day.line.ui.theme.DaylinePink
+                                com.day.line.ui.theme.NeonOrange,
+                                com.day.line.ui.theme.DaylineOrange
                             ),
                             start = Offset(0f, 0f),
                             end = Offset(100f, 100f)
