@@ -16,9 +16,12 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -188,11 +191,12 @@ fun SettingsScreen(
         Spacer(modifier = Modifier.height(24.dp))
         
         SettingsSection("About") {
-            SettingsItem(
+            SettingsItemWithReloadButton(
                 icon = Icons.Default.Info,
                 title = "Version ${com.day.line.BuildConfig.VERSION_NAME}",
                 subtitle = "Check for updates",
-                onClick = { viewModel.checkForUpdate() }
+                isLoading = updateStatus is UpdateStatus.Checking,
+                onReloadClick = { viewModel.checkForUpdate() }
             )
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -366,6 +370,71 @@ fun SettingsActionItem(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+fun SettingsItemWithReloadButton(
+    icon: ImageVector,
+    title: String,
+    subtitle: String? = null,
+    isLoading: Boolean = false,
+    onReloadClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = DaylineOrange,
+                modifier = Modifier.size(24.dp)
+            )
+            
+            Spacer(modifier = Modifier.size(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = DaylineOrange,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                IconButton(onClick = onReloadClick) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Check for updates",
+                        tint = DaylineOrange,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         }
     }
 }
