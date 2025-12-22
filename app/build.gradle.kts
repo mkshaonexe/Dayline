@@ -4,6 +4,20 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.perf)
+}
+
+import java.util.Properties
+import java.io.FileInputStream
+
+// Load local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
@@ -18,6 +32,10 @@ android {
         versionName = "0.5.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Secrets
+        buildConfigField("String", "SUPABASE_URL", "\"${localProperties.getProperty("SUPABASE_URL") ?: ""}\"")
+        buildConfigField("String", "SUPABASE_KEY", "\"${localProperties.getProperty("SUPABASE_KEY") ?: ""}\"")
     }
 
     buildTypes {
@@ -38,6 +56,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -53,6 +72,24 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.google.mlkit.entity.extraction)
+    
+    // Supabase
+    implementation(libs.supabase.postgrest)
+    implementation(libs.supabase.realtime)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.core)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.work.compiler)
+    
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.perf)
     
     // Navigation
     implementation(libs.androidx.navigation.compose)
