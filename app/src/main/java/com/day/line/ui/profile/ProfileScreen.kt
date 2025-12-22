@@ -85,9 +85,9 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem(value = uiState.streak.toString(), label = "Streak")
-            StatItem(value = "${uiState.completionRate}%", label = "Completion")
             StatItem(value = uiState.tasksCreatedToday.toString(), label = "Tasks")
+            StatItem(value = uiState.completedTasksToday.toString(), label = "Done")
+            StatItem(value = "${uiState.completionRate}%", label = "Completion")
         }
         
         Spacer(modifier = Modifier.height(32.dp))

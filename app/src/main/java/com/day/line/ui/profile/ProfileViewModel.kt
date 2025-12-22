@@ -17,7 +17,8 @@ import javax.inject.Inject
 data class ProfileUiState(
     val streak: Int = 0,
     val completionRate: Int = 0,
-    val tasksCreatedToday: Int = 0
+    val tasksCreatedToday: Int = 0,
+    val completedTasksToday: Int = 0
 )
 
 @HiltViewModel
@@ -52,7 +53,8 @@ class ProfileViewModel @Inject constructor(
                 ProfileUiState(
                     streak = streak,
                     completionRate = completionRate,
-                    tasksCreatedToday = totalTasks
+                    tasksCreatedToday = totalTasks,
+                    completedTasksToday = completedTasks
                 )
             }.collect { newState ->
                 _uiState.value = newState
