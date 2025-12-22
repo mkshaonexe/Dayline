@@ -56,7 +56,7 @@ fun CalendarStrip() {
                     fontWeight = FontWeight.Bold,
                     fontSize = 28.sp
                 ),
-                color = MaterialTheme.colorScheme.onBackground
+                color = if (isSystemInDarkTheme()) Color.White else TextDark
             )
             Row {
                 Icon(
@@ -87,7 +87,7 @@ fun CalendarStrip() {
                 ) {
                     Text(
                         text = day,
-                        color = if (date == selectedDay) PastelRed else MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (date == selectedDay) PastelRed else if (isSystemInDarkTheme()) Color.White.copy(alpha = 0.7f) else TextLight,
                         fontSize = 12.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -100,7 +100,7 @@ fun CalendarStrip() {
                     ) {
                         Text(
                             text = date,
-                            color = if (date == selectedDay) Color.White else MaterialTheme.colorScheme.onSurface,
+                            color = if (date == selectedDay) Color.White else if (isSystemInDarkTheme()) Color.White else TextDark,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
