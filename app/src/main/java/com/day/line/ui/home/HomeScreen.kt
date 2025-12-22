@@ -1,7 +1,10 @@
 package com.day.line.ui.home
 
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -68,6 +71,15 @@ fun HomeScreen(
     var showAddTaskDialog by remember { mutableStateOf(false) }
     var isBottomBarVisible by remember { mutableStateOf(true) }
     val selectedDate by viewModel.selectedDate.collectAsState()
+    
+    // Analytics
+    LaunchedEffect(currentRoute) {
+        val bundle = android.os.Bundle().apply {
+            putString(com.google.firebase.analytics.FirebaseAnalytics.Param.SCREEN_NAME, currentRoute)
+            putString(com.google.firebase.analytics.FirebaseAnalytics.Param.SCREEN_CLASS, "HomeScreen")
+        }
+        com.google.firebase.ktx.Firebase.analytics.logEvent(com.google.firebase.analytics.FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
+    }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
