@@ -210,6 +210,18 @@ fun SettingsScreen(
                     try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
                 }
             )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            SettingsItem(
+                icon = Icons.Default.Info,
+                title = "Privacy Policy",
+                subtitle = "View our privacy policy",
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/YOUR_USERNAME/Dayline/blob/main/PRIVACY_POLICY.md"))
+                    try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
+                }
+            )
         }
     }
 }
