@@ -25,6 +25,15 @@ fun DaylineScreen(
     // State for task details bottom sheet
     var selectedTask by remember { mutableStateOf<Task?>(null) }
     var showEditTaskDialog by remember { mutableStateOf(false) }
+    
+    // Current Time State (Updated every minute)
+    var currentTime by remember { mutableStateOf(LocalTime.now()) }
+    LaunchedEffect(Unit) {
+        while(true) {
+            currentTime = LocalTime.now()
+            kotlinx.coroutines.delay(30000L) // Update every 30 seconds
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -72,7 +81,48 @@ fun DaylineScreen(
             items(timelineItems.size) { index ->
                 val item = timelineItems[index]
                 val isLast = index == timelineItems.lastIndex
+                val nextItem = timelineItems.getOrNull(index + 1)
 
+                // Shared Time Parsing Helper
+                fun parseTime(timeStr: String): LocalTime {
+                    return try {
+                        LocalTime.parse(timeStr)
+                    } catch (e: Exception) {
+                        try {
+                             LocalTime.parse(timeStr, java.time.format.DateTimeFormatter.ofPattern("h:mm a", java.util.Locale.US))
+                        } catch (e2: Exception) {
+                             LocalTime.of(0, 0) // Fallback
+                        }
+                    }
+                }
+
+                // Determine Next Color for Gradient
+                val nextColor = nextItem?.let {
+                    when (it) {
+                        is TaskViewModel.TimelineItem.Fixed -> Color(it.colorHex)
+                        is TaskViewModel.TimelineItem.UserTask -> getTaskColor(it.task)
+                    }
+                }
+
+                // Helper to get time safely
+                fun getItemTime(tItem: TaskViewModel.TimelineItem): LocalTime {
+                     return when(tItem) {
+                         is TaskViewModel.TimelineItem.Fixed -> parseTime(tItem.time)
+                         is TaskViewModel.TimelineItem.UserTask -> parseTime(tItem.task.startTime)
+                     }
+                }
+
+                // Calculate Progress
+                val startTime = getItemTime(item)
+                val endTime = when (item) {
+                    is TaskViewModel.TimelineItem.UserTask -> parseTime(item.task.endTime)
+                    // For fixed items, use next item start time as "end" of the segment (gap), or default 30m if last
+                    is TaskViewModel.TimelineItem.Fixed -> {
+                        nextItem?.let { getItemTime(it) } ?: startTime.plusMinutes(30)
+                    }
+                }
+
+                val progress = calculateProgress(currentTime, startTime, endTime)
 
                 when (item) {
                     is TaskViewModel.TimelineItem.Fixed -> {
@@ -84,6 +134,8 @@ fun DaylineScreen(
                             color = Color(item.colorHex), // Convert Long to Color
                             isLast = isLast,
                             isCompleted = item.isCompleted,
+                            nextColor = nextColor,
+                            progress = progress,
                             onToggleCompletion = {
                                 viewModel.toggleFixedItemCompletion(selectedDate, item.title)
                             },
@@ -119,25 +171,10 @@ fun DaylineScreen(
                             endTime = task.endTime,
                             duration = task.getDuration(),
                             durationMinutes = try {
-                                val parseTime = { timeStr: String ->
-                                    try {
-                                        java.time.LocalTime.parse(timeStr)
-                                    } catch (e: Exception) {
-                                        java.time.LocalTime.parse(timeStr, java.time.format.DateTimeFormatter.ofPattern("h:mm a", java.util.Locale.US))
-                                    }
-                                }
-                                val start = parseTime(task.startTime)
-                                val end = parseTime(task.endTime)
-                                java.time.Duration.between(start, end).toMinutes()
+                                java.time.Duration.between(parseTime(task.startTime), parseTime(task.endTime)).toMinutes()
                             } catch (e: Exception) { null },
                             title = task.title,
-                            subtitle = null, // Subtitle is now used for duration if needed, but here we pass duration separately if TimelineNode supports it, or we rely on TimelineNode logic. Wait, TimelineNode signature changed.
-                            // I need to match the NEW signature of TimelineNode I just wrote?
-                            // No, I called TimelineNode directly in the replaced code above but the code I'm replacing here calls "TimelineNode" (the generic one) or "TaskTimelineNode"?
-                            // The original code called TimelineNode. 
-                            // My previous step updated TimelineNode signature to accept subtasks/notes.
-                            // So I should pass them here.
-                            
+                            subtitle = null,  
                             subtasks = subtasksList,
                             notes = task.notes.takeIf { it.isNotEmpty() },
                             
@@ -145,6 +182,8 @@ fun DaylineScreen(
                             color = getTaskColor(task), // Dynamic deterministic color
                             isLast = isLast,
                             isCompleted = task.isCompleted,
+                            nextColor = nextColor,
+                            progress = progress,
                             onToggleCompletion = {
                                 viewModel.updateTask(task.copy(isCompleted = !task.isCompleted))
                             },
@@ -210,6 +249,31 @@ fun DaylineScreen(
             )
         }
     }
+}
+
+fun calculateProgress(current: LocalTime, start: LocalTime, end: LocalTime): Float {
+    val currentMinutes = current.hour * 60 + current.minute
+    val startMinutes = start.hour * 60 + start.minute
+    var endMinutes = end.hour * 60 + end.minute
+
+    // Handle overnight tasks (end time is smaller than start time)
+    if (endMinutes < startMinutes) {
+        endMinutes += 24 * 60
+    }
+    
+    var effectiveCurrent = currentMinutes
+    // If we are in "next day" territory relative to start
+    if (effectiveCurrent < startMinutes && effectiveCurrent + 24*60 <= endMinutes + (24*60)) { // rough heuristic
+         effectiveCurrent += 24 * 60
+    }
+    
+    if (effectiveCurrent < startMinutes) return 0f
+    if (effectiveCurrent >= endMinutes) return 1f
+    
+    val totalDuration = endMinutes - startMinutes
+    if (totalDuration == 0) return 1f // Zero duration task is instantly done
+    
+    return (effectiveCurrent - startMinutes).toFloat() / totalDuration
 }
 
 // getIconByName and getTaskIcon removed - moved to TaskIconUtils
