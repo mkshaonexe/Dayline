@@ -16,6 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
+
+import androidx.compose.material.icons.filled.ImportantDevices
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
@@ -70,6 +73,7 @@ fun SettingsScreen(
     val updateStatus by viewModel.updateStatus.collectAsState()
     val context = LocalContext.current
     var showColorPicker by remember { mutableStateOf(false) }
+    var showFeedbackDialog by remember { mutableStateOf(false) }
     
     // Manage Permissions (Notification & Alarms)
     // Note: For simplicity, we are checking current status. Real-time updates might require observing lifecycle or composition updates.
@@ -154,13 +158,12 @@ fun SettingsScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        SettingsSection("Theme") {
-            SettingsItemWithColorPreview(
-                icon = Icons.Default.Palette,
-                title = "Accent Color",
-                subtitle = themeColor,
-                currentColor = com.day.line.ui.theme.ThemeColor.fromName(themeColor).color,
-                onClick = { showColorPicker = true }
+        SettingsSection("Early Access") {
+            SettingsItem(
+                icon = Icons.Default.ImportantDevices,
+                title = "Instal from Play Store",
+                subtitle = "Join our Beta Program",
+                onClick = { showFeedbackDialog = true }
             )
         }
         
@@ -254,6 +257,11 @@ fun SettingsScreen(
                 viewModel.setThemeColor(colorName)
             }
         )
+    }
+
+    // Feedback Dialog
+    if (showFeedbackDialog) {
+        FeedbackDialog(onDismiss = { showFeedbackDialog = false })
     }
 }
 
@@ -567,6 +575,62 @@ fun SettingsItemWithColorPreview(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+fun FeedbackDialog(
+    onDismiss: () -> Unit
+) {
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onDismiss,
+        properties = androidx.compose.ui.window.DialogProperties(
+            usePlatformDefaultWidth = false // Full screen
+        )
+    ) {
+        androidx.compose.material3.Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                // Top Bar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    Text(
+                        text = "Early Access Feedback",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                // WebView
+                androidx.compose.ui.viewinterop.AndroidView(
+                    factory = { context ->
+                        android.webkit.WebView(context).apply {
+                            settings.javaScriptEnabled = true
+                            settings.domStorageEnabled = true
+                            settings.loadWithOverviewMode = true
+                            settings.useWideViewPort = true
+                            webViewClient = android.webkit.WebViewClient()
+                            loadUrl("https://docs.google.com/forms/d/e/1FAIpQLSeTXwKnATK_XMpsBtrWH1h-FBwRxJrt63MeRAZBw61qL2w7Gg/viewform?embedded=true")
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }

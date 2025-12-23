@@ -44,6 +44,9 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.day.line.ui.components.AddTaskDialog
@@ -83,6 +86,15 @@ fun HomeScreen(
         com.google.firebase.ktx.Firebase.analytics.logEvent(com.google.firebase.analytics.FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
     }
 
+    // Auto-hide logic
+    var lastInteractionTime by remember { androidx.compose.runtime.mutableLongStateOf(System.currentTimeMillis()) }
+    
+    LaunchedEffect(lastInteractionTime) {
+        isBottomBarVisible = true
+        kotlinx.coroutines.delay(5000)
+        isBottomBarVisible = false
+    }
+
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
@@ -92,6 +104,8 @@ fun HomeScreen(
                 } else if (available.y > 5f) {
                     isBottomBarVisible = true
                 }
+                // Reset timer on scroll
+                lastInteractionTime = System.currentTimeMillis()
                 return Offset.Zero
             }
         }
@@ -109,6 +123,16 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .nestedScroll(nestedScrollConnection)
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Initial) // Capture before others
+                            if (event.changes.any { it.changedToDown() }) {
+                                lastInteractionTime = System.currentTimeMillis()
+                            }
+                        }
+                    }
+                }
         ) {
             Crossfade(targetState = currentRoute, label = "NavigationCrossfade") { route ->
                 when (route) {

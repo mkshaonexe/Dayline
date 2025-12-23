@@ -43,6 +43,8 @@ import com.day.line.ui.theme.GlassWhite
 import com.day.line.ui.theme.NeonOrange
 import com.day.line.ui.theme.SoftTeal
 import kotlinx.coroutines.launch
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun OnboardingScreen(
