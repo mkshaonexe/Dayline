@@ -20,6 +20,7 @@ sealed class UpdateStatus {
     object Error : UpdateStatus()
 }
 
+
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
@@ -55,7 +56,20 @@ class SettingsViewModel @Inject constructor(
     fun markEarlyAccessClicked() {
         viewModelScope.launch {
             settingsRepository.setEarlyAccessClicked()
+            analyticsManager.logEarlyAccessClicked()
         }
+    }
+
+    fun logFeedbackOpened() {
+        analyticsManager.logFeedbackOpened()
+    }
+
+    fun logCommunityLinkOpen(platform: String) {
+        analyticsManager.logCommunityLinkOpen(platform)
+    }
+
+    fun logScreenView(screenName: String) {
+        analyticsManager.logScreenView(screenName)
     }
 
     fun checkForUpdate() {

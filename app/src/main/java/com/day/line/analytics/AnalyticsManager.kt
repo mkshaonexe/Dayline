@@ -80,4 +80,32 @@ class AnalyticsManager @Inject constructor() {
         }
         logEvent("theme_color_changed", bundle)
     }
+
+    // New Interaction Events
+    fun logTutorialClicked() {
+        logEvent("tutorial_clicked")
+    }
+
+    fun logEarlyAccessClicked() {
+        logEvent("early_access_clicked")
+    }
+
+    fun logCommunityLinkOpen(platform: String) {
+        val bundle = Bundle().apply {
+            putString("platform", platform)
+        }
+        logEvent("community_link_opened", bundle)
+    }
+
+    fun logFeedbackOpened() {
+        logEvent("feedback_opened")
+    }
+
+    fun logEditProfileClicked() {
+        logEvent("edit_profile_clicked")
+    }
+    
+    fun logActivityGraphViewed() {
+        logEvent("activity_graph_viewed")
+    }
 }

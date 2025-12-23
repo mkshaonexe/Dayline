@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
@@ -55,6 +56,10 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.logScreenView("profile_screen")
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -167,7 +172,7 @@ fun ProfileScreen(
                     .height(80.dp)
                     .clickable {
                         viewModel.markTutorialClicked()
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mkshaon.com/dayline_app_tutorial"))
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://youtu.be/ye91YPZomwQ"))
                         try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
                     },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

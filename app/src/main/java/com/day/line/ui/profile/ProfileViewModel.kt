@@ -15,6 +15,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import com.day.line.data.SettingsRepository
+import com.day.line.analytics.AnalyticsManager
 
 import com.day.line.data.DailyTaskCount
 import java.util.Locale
@@ -39,7 +40,8 @@ data class ProfileUiState(
 class ProfileViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val userProfileRepository: UserProfileRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val analyticsManager: AnalyticsManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -158,6 +160,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 userProfileRepository.updateProfile(name, imageUri)
+                analyticsManager.logEditProfileClicked()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -167,6 +170,11 @@ class ProfileViewModel @Inject constructor(
     fun markTutorialClicked() {
         viewModelScope.launch {
             settingsRepository.setTutorialClicked()
+            analyticsManager.logTutorialClicked()
         }
+    }
+
+    fun logScreenView(screenName: String) {
+        analyticsManager.logScreenView(screenName)
     }
 }
