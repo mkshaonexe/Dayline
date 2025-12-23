@@ -28,8 +28,8 @@ android {
         applicationId = "com.day.line"
         minSdk = 24
         targetSdk = 36
-        versionCode = 89
-        versionName = "0.8.9"
+        versionCode = 92
+        versionName = "0.9.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
