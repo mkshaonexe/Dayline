@@ -30,6 +30,9 @@ class SettingsRepository @Inject constructor(
     private val _hasClickedEarlyAccess = MutableStateFlow(prefs.getBoolean("has_clicked_early_access", false))
     val hasClickedEarlyAccess: StateFlow<Boolean> = _hasClickedEarlyAccess.asStateFlow()
 
+    private val _hasClickedTutorial = MutableStateFlow(prefs.getBoolean("has_clicked_tutorial", false))
+    val hasClickedTutorial: StateFlow<Boolean> = _hasClickedTutorial.asStateFlow()
+
     fun setDarkTheme(isDark: Boolean) {
         prefs.edit().putBoolean("is_dark_theme", isDark).apply()
         _isDarkTheme.value = isDark
@@ -53,5 +56,10 @@ class SettingsRepository @Inject constructor(
     fun setEarlyAccessClicked() {
         prefs.edit().putBoolean("has_clicked_early_access", true).apply()
         _hasClickedEarlyAccess.value = true
+    }
+
+    fun setTutorialClicked() {
+        prefs.edit().putBoolean("has_clicked_tutorial", true).apply()
+        _hasClickedTutorial.value = true
     }
 }

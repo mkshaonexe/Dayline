@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import com.day.line.data.SettingsRepository
 
 import com.day.line.data.DailyTaskCount
 import java.util.Locale
@@ -33,14 +34,18 @@ data class ProfileUiState(
     val activityData: List<GraphPoint> = emptyList()
 )
 
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val userProfileRepository: UserProfileRepository
+    private val userProfileRepository: UserProfileRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState
+    
+    val hasClickedTutorial: StateFlow<Boolean> = settingsRepository.hasClickedTutorial
 
     init {
         loadStats()
@@ -156,6 +161,12 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    fun markTutorialClicked() {
+        viewModelScope.launch {
+            settingsRepository.setTutorialClicked()
         }
     }
 }
