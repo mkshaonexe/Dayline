@@ -17,7 +17,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Close
-
+import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.ImportantDevices
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
@@ -71,39 +73,11 @@ fun SettingsScreen(
     val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val themeColor by viewModel.themeColor.collectAsState()
     val updateStatus by viewModel.updateStatus.collectAsState()
+    val hasClickedEarlyAccess by viewModel.hasClickedEarlyAccess.collectAsState()
     val context = LocalContext.current
     var showColorPicker by remember { mutableStateOf(false) }
     var showFeedbackDialog by remember { mutableStateOf(false) }
     
-    // Manage Permissions (Notification & Alarms)
-    // Note: For simplicity, we are checking current status. Real-time updates might require observing lifecycle or composition updates.
-    var hasNotificationPermission by remember {
-        mutableStateOf(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-            } else {
-                true
-            }
-        )
-    }
-
-    var hasAlarmPermission by remember {
-        mutableStateOf(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                alarmManager.canScheduleExactAlarms()
-            } else {
-                true
-            }
-        )
-    }
-
-    // Permission Launchers
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { hasNotificationPermission = it }
-    )
-
     // Update Dialog
     if (updateStatus is UpdateStatus.Available) {
         val version = (updateStatus as UpdateStatus.Available).version
@@ -160,49 +134,39 @@ fun SettingsScreen(
         
         SettingsSection("Early Access") {
             SettingsItem(
-                icon = Icons.Default.ImportantDevices,
-                title = "Instal from Play Store",
-                subtitle = "Join our Beta Program",
-                onClick = { showFeedbackDialog = true }
+                icon = Icons.Default.Shop,
+                title = "Install from Play Store",
+                subtitle = "Get Early Access",
+                showBadge = !hasClickedEarlyAccess,
+                onClick = { 
+                    viewModel.markEarlyAccessClicked()
+                    showFeedbackDialog = true 
+                }
             )
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
         
-        SettingsSection("Permissions") {
-            // Notification Permission
-            SettingsActionItem(
-                icon = Icons.Default.Notifications,
-                title = "Notifications",
-                statusText = if (hasNotificationPermission) "Granted" else "Grant",
-                statusColor = if (hasNotificationPermission) DaylineOrange else MaterialTheme.colorScheme.error,
+        SettingsSection("Community") {
+            SettingsItem(
+                icon = Icons.Default.Group,
+                title = "Public Group",
+                subtitle = "Join our Telegram community",
                 onClick = {
-                    if (!hasNotificationPermission) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                        } else {
-                            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                            }
-                            context.startActivity(intent)
-                        }
-                    }
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/appdayline"))
+                    try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
                 }
             )
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            // Exact Alarm Permission
-            SettingsActionItem(
-                icon = Icons.Default.Schedule,
-                title = "Alarms & Reminders",
-                statusText = if (hasAlarmPermission) "Granted" else "Grant",
-                statusColor = if (hasAlarmPermission) DaylineOrange else MaterialTheme.colorScheme.error,
+            SettingsItem(
+                icon = Icons.Default.Apps,
+                title = "Other Apps",
+                subtitle = "Check out my other apps",
                 onClick = {
-                    if (!hasAlarmPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                        context.startActivity(intent)
-                    }
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://mkshaon.com/all_app"))
+                    try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
                 }
             )
         }
@@ -286,6 +250,7 @@ fun SettingsItem(
     subtitle: String? = null,
     hasSwitch: Boolean = false,
     isChecked: Boolean = false,
+    showBadge: Boolean = false,
     onCheckedChange: (Boolean) -> Unit = {},
     onClick: () -> Unit = {}
 ) {
@@ -328,6 +293,16 @@ fun SettingsItem(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+            }
+            
+            if (showBadge) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(Color.Red)
+                )
+                Spacer(modifier = Modifier.size(8.dp))
             }
             
             if (hasSwitch) {

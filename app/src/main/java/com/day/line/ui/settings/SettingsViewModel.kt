@@ -29,6 +29,7 @@ class SettingsViewModel @Inject constructor(
 
     val isDarkTheme: StateFlow<Boolean> = settingsRepository.isDarkTheme
     val themeColor: StateFlow<String> = settingsRepository.themeColor
+    val hasClickedEarlyAccess: StateFlow<Boolean> = settingsRepository.hasClickedEarlyAccess
 
     private val _updateStatus = MutableStateFlow<UpdateStatus>(UpdateStatus.Idle)
     val updateStatus: StateFlow<UpdateStatus> = _updateStatus.asStateFlow()
@@ -48,6 +49,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.setThemeColor(colorName)
             analyticsManager.logColorChanged(colorName)
+        }
+    }
+
+    fun markEarlyAccessClicked() {
+        viewModelScope.launch {
+            settingsRepository.setEarlyAccessClicked()
         }
     }
 

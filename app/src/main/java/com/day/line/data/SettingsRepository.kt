@@ -27,6 +27,9 @@ class SettingsRepository @Inject constructor(
     private val _userName = MutableStateFlow(prefs.getString("user_name", "") ?: "")
     val userName: StateFlow<String> = _userName.asStateFlow()
 
+    private val _hasClickedEarlyAccess = MutableStateFlow(prefs.getBoolean("has_clicked_early_access", false))
+    val hasClickedEarlyAccess: StateFlow<Boolean> = _hasClickedEarlyAccess.asStateFlow()
+
     fun setDarkTheme(isDark: Boolean) {
         prefs.edit().putBoolean("is_dark_theme", isDark).apply()
         _isDarkTheme.value = isDark
@@ -45,5 +48,10 @@ class SettingsRepository @Inject constructor(
     fun setUserName(name: String) {
         prefs.edit().putString("user_name", name).apply()
         _userName.value = name
+    }
+
+    fun setEarlyAccessClicked() {
+        prefs.edit().putBoolean("has_clicked_early_access", true).apply()
+        _hasClickedEarlyAccess.value = true
     }
 }
