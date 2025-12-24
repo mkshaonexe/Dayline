@@ -192,8 +192,8 @@ fun SettingsScreen(
                 onClick = {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:mkshaonnew31@gmail.com")
-                        putExtra(Intent.EXTRA_SUBJECT, "Dayline App Issue / Feature Request")
-                        putExtra(Intent.EXTRA_TEXT, "Describe here all the features you want in this app and the issue you found\n\n\nThank you")
+                        putExtra(Intent.EXTRA_SUBJECT, "Dayline app issu /support/ bug report")
+                        putExtra(Intent.EXTRA_TEXT, "Write here the problem \n\n Thank you")
                     }
                     try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
                 }
