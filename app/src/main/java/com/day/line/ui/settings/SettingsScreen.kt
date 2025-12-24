@@ -190,10 +190,10 @@ fun SettingsScreen(
                 title = "Contact Support",
                 subtitle = "DM for issues",
                 onClick = {
+                    val subject = Uri.encode("Dayline app issu /support/ bug report")
+                    val body = Uri.encode("Write here the problem \n\n Thank you")
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:mkshaonnew31@gmail.com")
-                        putExtra(Intent.EXTRA_SUBJECT, "Dayline app issu /support/ bug report")
-                        putExtra(Intent.EXTRA_TEXT, "Write here the problem \n\n Thank you")
+                        data = Uri.parse("mailto:mkshaonnew31@gmail.com?subject=$subject&body=$body")
                     }
                     try { context.startActivity(intent) } catch (e: Exception) { e.printStackTrace() }
                 }
