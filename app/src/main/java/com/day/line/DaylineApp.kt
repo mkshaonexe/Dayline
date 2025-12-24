@@ -10,6 +10,7 @@ import com.day.line.worker.UpdateWorker
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.installations.ktx.installations
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -22,6 +23,7 @@ class DaylineApp : Application(), Configuration.Provider {
     
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
+
     override fun onCreate() {
         super.onCreate()
         
@@ -32,7 +34,7 @@ class DaylineApp : Application(), Configuration.Provider {
         scheduleMisoWork()
         
         // Log Installation ID for In-App Messaging testing
-        com.google.firebase.installations.FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
+        Firebase.installations.id.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 android.util.Log.d("Installations", "Installation ID: " + task.result)
             } else {
