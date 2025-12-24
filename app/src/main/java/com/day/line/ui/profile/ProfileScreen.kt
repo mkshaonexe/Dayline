@@ -56,6 +56,7 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showEditDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.logScreenView("profile_screen")
@@ -124,6 +125,61 @@ fun ProfileScreen(
             }
             
             Spacer(modifier = Modifier.height(32.dp))
+
+            // Wake Up Time
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .clickable {
+                        val timeParts = uiState.wakeUpTime?.split(":")
+                        val currentHour = timeParts?.getOrNull(0)?.toIntOrNull() ?: 8
+                        val currentMinute = timeParts?.getOrNull(1)?.toIntOrNull() ?: 0
+                        
+                        android.app.TimePickerDialog(
+                            context,
+                            { _, hour, minute ->
+                                val time = String.format("%02d:%02d", hour, minute)
+                                viewModel.updateWakeUpTime(time)
+                            },
+                            currentHour,
+                            currentMinute,
+                            true
+                        ).show()
+                    },
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Wake Up Time",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Miso checks on you after this",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    Text(
+                        text = uiState.wakeUpTime ?: "08:00",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = DaylineOrange
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
             
             // Activity Graph
             Card(
@@ -164,7 +220,6 @@ fun ProfileScreen(
             
             // Tutorial Section
             val hasClickedTutorial by viewModel.hasClickedTutorial.collectAsState()
-            val context = LocalContext.current
             
             Card(
                 modifier = Modifier
