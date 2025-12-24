@@ -9,7 +9,6 @@ import androidx.work.WorkManager
 import com.day.line.worker.UpdateWorker
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.ktx.Firebase
 
 import dagger.hilt.android.HiltAndroidApp
@@ -34,14 +33,7 @@ class DaylineApp : Application(), Configuration.Provider {
         scheduleUpdateCheck()
         scheduleMisoWork()
         
-        // Log Installation ID for In-App Messaging testing
-        FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                android.util.Log.d("Installations", "Installation ID: " + task.result)
-            } else {
-                android.util.Log.e("Installations", "Unable to get Installation ID")
-            }
-        }
+
     }
 
     private fun scheduleUpdateCheck() {
