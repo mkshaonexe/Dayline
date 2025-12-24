@@ -93,7 +93,6 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.perf)
     implementation(libs.firebase.inappmessaging.display)
-    implementation("com.google.firebase:firebase-installations")
 
     
     // Coil
