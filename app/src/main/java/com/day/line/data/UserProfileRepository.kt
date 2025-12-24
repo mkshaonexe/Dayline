@@ -41,6 +41,13 @@ class UserProfileRepository @Inject constructor(
         userProfileDao.insertOrUpdateProfile(updatedProfile)
     }
 
+    suspend fun updateWakeUpTime(time: String) {
+        val currentProfile = userProfileDao.getUserProfileSync()
+        val updatedProfile = currentProfile?.copy(wakeUpTime = time)
+            ?: UserProfile(wakeUpTime = time)
+        userProfileDao.insertOrUpdateProfile(updatedProfile)
+    }
+
     private fun saveImageToInternalStorage(uriString: String?): String? {
         if (uriString == null) return null
         

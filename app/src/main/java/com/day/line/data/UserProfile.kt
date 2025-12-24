@@ -8,5 +8,6 @@ data class UserProfile(
     @PrimaryKey
     val id: Int = 1, // Single user profile
     val name: String = "John Doe",
-    val profileImageUri: String? = null
+    val profileImageUri: String? = null,
+    val wakeUpTime: String? = "08:00"
 )

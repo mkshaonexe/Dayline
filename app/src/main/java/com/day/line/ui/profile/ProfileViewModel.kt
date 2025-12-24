@@ -32,7 +32,8 @@ data class ProfileUiState(
     val completionRate: Int = 0,
     val tasksCreatedToday: Int = 0,
     val completedTasksToday: Int = 0,
-    val activityData: List<GraphPoint> = emptyList()
+    val activityData: List<GraphPoint> = emptyList(),
+    val wakeUpTime: String? = "08:00"
 )
 
 
@@ -100,7 +101,8 @@ class ProfileViewModel @Inject constructor(
                         completionRate = completionRate,
                         tasksCreatedToday = totalTasks,
                         completedTasksToday = completedTasks,
-                        activityData = fullWeekData
+                        activityData = fullWeekData,
+                        wakeUpTime = userProfile?.wakeUpTime
                     )
                 }.collect { newState ->
                     _uiState.value = newState
@@ -156,6 +158,16 @@ class ProfileViewModel @Inject constructor(
         return currentStreak
     }
     
+    fun updateWakeUpTime(time: String) {
+        viewModelScope.launch {
+            try {
+                userProfileRepository.updateWakeUpTime(time)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun updateProfile(name: String, imageUri: String?) {
         viewModelScope.launch {
             try {
