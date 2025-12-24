@@ -29,6 +29,16 @@ class DaylineApp : Application(), Configuration.Provider {
         firebaseAnalytics = Firebase.analytics
         
         scheduleUpdateCheck()
+        scheduleMisoWork()
+        
+        // Log Installation ID for In-App Messaging testing
+        com.google.firebase.installations.FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                android.util.Log.d("Installations", "Installation ID: " + task.result)
+            } else {
+                android.util.Log.e("Installations", "Unable to get Installation ID")
+            }
+        }
     }
 
     private fun scheduleUpdateCheck() {
@@ -44,6 +54,23 @@ class DaylineApp : Application(), Configuration.Provider {
             "UpdateCheck",
             ExistingPeriodicWorkPolicy.KEEP,
             updateWorkRequest
+        )
+    }
+
+    private fun scheduleMisoWork() {
+        val constraints = androidx.work.Constraints.Builder()
+            .setRequiredNetworkType(androidx.work.NetworkType.NOT_REQUIRED)
+            .build()
+            
+        // Check every 2 hours
+        val misoWorkRequest = PeriodicWorkRequestBuilder<com.day.line.worker.MisoWorker>(2, TimeUnit.HOURS)
+            .setConstraints(constraints)
+            .build()
+            
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "MisoWork",
+            ExistingPeriodicWorkPolicy.KEEP,
+            misoWorkRequest
         )
     }
 
